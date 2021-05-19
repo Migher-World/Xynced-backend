@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { sendObjectResponse } from '../../shared/response.transformer';
+import { sendObjectResponse } from '../shared/response.transformer';
 import { LoginDto, RegisterDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
