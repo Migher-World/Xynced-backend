@@ -1,4 +1,5 @@
 import {
+  sendListReponse,
   sendObjectResponse,
   sendPaginatedListReponse,
 } from '../response.transformer';
@@ -8,7 +9,14 @@ export const resolveResponse = async (
   message: string = 'Success',
 ) => {
   const response = await service;
-  return response && response.pagination
-    ? sendPaginatedListReponse(response, message)
-    : sendObjectResponse(response, message);
+  let finalresponse = null;
+  if (response && response.pagination) {
+    finalresponse = sendPaginatedListReponse(response, message);
+  } else if (response.length > 0) {
+    finalresponse = sendListReponse(response, message);
+  } else {
+    finalresponse = sendObjectResponse(response, message);
+  }
+
+  return finalresponse;
 };
