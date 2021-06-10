@@ -6,7 +6,7 @@ export abstract class AbstractController {
   service: any;
 
   create(@Body() payload: any) {
-    resolveResponse(
+    return resolveResponse(
       this.service.create(payload),
       `${this.service.modelName} Created`,
     );
@@ -15,24 +15,24 @@ export abstract class AbstractController {
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Get()
   findAll(@Query() pagination: AbstractPaginationDto) {
-    resolveResponse(this.service.findAll(pagination));
+    return resolveResponse(this.service.findAll(pagination));
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Get('/list/get')
   list() {
-    resolveResponse(this.service.list());
+    return resolveResponse(this.service.list());
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Get(':id')
   findOne(@Param('id') id: string) {
-    resolveResponse(this.service.findOne(id));
+    return resolveResponse(this.service.findOne(id));
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   update(@Param('id') id: string, @Body() payload: any) {
-    resolveResponse(
+    return resolveResponse(
       this.service.update(id, payload),
       `${this.service.modelName} Updated`,
     );
@@ -41,7 +41,7 @@ export abstract class AbstractController {
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Delete(':id')
   remove(@Param('id') id: string) {
-    resolveResponse(
+    return resolveResponse(
       this.service.remove(id),
       `${this.service.modelName} Deleted`,
     );
