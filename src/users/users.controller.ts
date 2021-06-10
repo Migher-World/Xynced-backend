@@ -1,22 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { sendObjectResponse } from '../shared/response.transformer';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Permissions } from '../shared/decorators/permission.decorator';
-import { PermissionGuard } from '../shared/guards/permissions.guard';
-import { AuthGuard } from '../shared/guards/auth.guard';
 import { AssignRoleDto } from './dto/assign-role.dto';
+import { resolveResponse } from '../shared/resolvers';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -28,14 +17,15 @@ export class UsersController {
   @Permissions('user.create')
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const response = await this.usersService.create(createUserDto);
-    return sendObjectResponse(response, 'Account Created');
+    resolveResponse(this.usersService.create(createUserDto), 'Account Created');
   }
 
   @Post('assign-role')
   async assignRole(@Body() assignRoleDto: AssignRoleDto) {
-    const response = await this.usersService.assignRole(assignRoleDto);
-    return sendObjectResponse(response, 'Role Assigned');
+    resolveResponse(
+      this.usersService.assignRole(assignRoleDto),
+      'Role Assigned',
+    );
   }
 
   // @Permissions('user.getAll')

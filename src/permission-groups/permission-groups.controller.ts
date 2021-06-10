@@ -18,6 +18,7 @@ import {
 } from '../shared/response.transformer';
 import { AbstractPaginationDto } from '../shared/dto/abstract-pagination.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { resolveResponse } from '../shared/resolvers';
 
 @ApiTags('Permission Groups')
 @Controller('permission-groups')
@@ -27,46 +28,44 @@ export class PermissionGroupsController {
   ) {}
 
   @Post()
-  async create(@Body() createPermissionGroupDto: CreatePermissionGroupDto) {
-    const response = await this.permissionGroupsService.create(
-      createPermissionGroupDto,
+  create(@Body() createPermissionGroupDto: CreatePermissionGroupDto) {
+    return resolveResponse(
+      this.permissionGroupsService.create(createPermissionGroupDto),
+      'Permission Group Created',
     );
-    return sendObjectResponse(response, 'Permission Group Created');
   }
 
   @Get()
-  async findAll(@Query() pagination: AbstractPaginationDto) {
-    const response = await this.permissionGroupsService.findAll(pagination);
-    return sendPaginatedListReponse(response, 'Success');
+  findAll(@Query() pagination: AbstractPaginationDto) {
+    return resolveResponse(this.permissionGroupsService.findAll(pagination));
   }
 
   @Get('/list/get')
-  async list() {
-    const response = await this.permissionGroupsService.list();
-    return sendListReponse(response, 'Success');
+  list() {
+    return resolveResponse(this.permissionGroupsService.list());
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const response = await this.permissionGroupsService.findOne(id);
-    return sendObjectResponse(response, 'Success');
+  findOne(@Param('id') id: string) {
+    return resolveResponse(this.permissionGroupsService.findOne(id));
   }
 
   @Put(':id')
-  async update(
+  update(
     @Param('id') id: string,
     @Body() updatePermissionGroupDto: UpdatePermissionGroupDto,
   ) {
-    const response = await this.permissionGroupsService.update(
-      id,
-      updatePermissionGroupDto,
+    return resolveResponse(
+      this.permissionGroupsService.update(id, updatePermissionGroupDto),
+      'Permission Group Updated',
     );
-    return sendObjectResponse(response, 'Permission Group Updated');
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const response = await this.permissionGroupsService.remove(id);
-    return sendObjectResponse(response, 'Permission Group Deleted');
+  remove(@Param('id') id: string) {
+    return resolveResponse(
+      this.permissionGroupsService.remove(id),
+      'Permission Group Deleted',
+    );
   }
 }

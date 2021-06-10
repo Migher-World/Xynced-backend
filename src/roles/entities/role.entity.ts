@@ -1,28 +1,16 @@
 import { Permission } from './../../permissions/entities/permission.entity';
 import {
   BeforeInsert,
-  Column,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
-import { AbstractEntity } from '../../shared/entities/abstract-entity';
-import { generateSlug } from '../../utils/functions';
 import { User } from '../../users/entities/user.entity';
+import { BasicEntity } from '../../shared/entities/basic-entity';
 
 @Entity('roles')
-export class Role extends AbstractEntity {
-  @Column()
-  name: string;
-
-  @Column()
-  slug: string;
-
-  @Column('text')
-  description: string;
-
+export class Role extends BasicEntity {
   @OneToMany(() => User, (user) => user.role)
   users: User[];
 
@@ -31,9 +19,4 @@ export class Role extends AbstractEntity {
   })
   @JoinTable()
   permissions: Permission[];
-
-  @BeforeInsert()
-  slugify() {
-    this.slug = generateSlug(this.name);
-  }
 }

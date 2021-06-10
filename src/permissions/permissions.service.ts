@@ -9,13 +9,13 @@ import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { Permission } from './entities/permission.entity';
 
 @Injectable()
-export class PermissionsService extends AbstractService {
+export class PermissionsService extends AbstractService<Permission> {
   constructor(
     @InjectRepository(Permission)
     private readonly permissionRepo: Repository<Permission>,
   ) {
     super();
     this.repository = this.permissionRepo;
-    this.name = 'Permission';
+    this.modelName = 'Permission';
   }
 }

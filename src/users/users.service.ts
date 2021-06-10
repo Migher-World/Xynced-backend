@@ -1,22 +1,21 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RolesService } from '../roles/roles.service';
+import { AbstractService } from '../shared/services/abstract-service.service';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
-export class UsersService {
+export class UsersService extends AbstractService<User> {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>, // private jwtService: JwtService,
     private readonly rolesService: RolesService,
-  ) {}
+  ) {
+    super();
+    this.repository = this.rolesService;
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -64,28 +63,6 @@ export class UsersService {
         return 0.5 - Math.random();
       })
       .join('');
-  }
-
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  async findOne(id: string) {
-    const response = await this.userRepo.findOne(id);
-
-    if (!response) {
-      throw new NotFoundException('User Not Found');
-    }
-
-    return response;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 
   async assignRole(assignRoleDto: AssignRoleDto) {
