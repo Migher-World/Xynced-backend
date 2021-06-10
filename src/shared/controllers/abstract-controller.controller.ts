@@ -1,51 +1,49 @@
-import { Body, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Delete, Get, Param, Query } from '@nestjs/common';
 import { AbstractPaginationDto } from '../dto/abstract-pagination.dto';
-import {
-  sendListReponse,
-  sendObjectResponse,
-  sendPaginatedListReponse,
-} from '../response.transformer';
+import { resolveResponse } from '../resolvers';
 
 export abstract class AbstractController {
   service: any;
-  name: string;
 
-  async create(@Body() payload: any) {
-    const response = await this.service.create(payload);
-    return sendObjectResponse(response, `${this.name} Created`);
+  create(@Body() payload: any) {
+    resolveResponse(
+      this.service.create(payload),
+      `${this.service.modelName} Created`,
+    );
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Get()
-  async findAll(@Query() pagination: AbstractPaginationDto) {
-    const response = await this.service.findAll(pagination);
-    return sendPaginatedListReponse(response, 'Success');
+  findAll(@Query() pagination: AbstractPaginationDto) {
+    resolveResponse(this.service.findAll(pagination));
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Get('/list/get')
-  async list() {
-    const response = await this.service.list();
-    return sendListReponse(response, 'Success');
+  list() {
+    resolveResponse(this.service.list());
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const response = await this.service.findOne(id);
-    return sendObjectResponse(response, 'Success');
+  findOne(@Param('id') id: string) {
+    resolveResponse(this.service.findOne(id));
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
-  async update(@Param('id') id: string, @Body() payload: any) {
-    const response = await this.service.update(id, payload);
-    return sendObjectResponse(response, `${this.name} Updated`);
+  update(@Param('id') id: string, @Body() payload: any) {
+    resolveResponse(
+      this.service.update(id, payload),
+      `${this.service.modelName} Updated`,
+    );
   }
 
   // @ApiResponse({ status: 200, type: AbstractResponse })
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const response = await this.service.remove(id);
-    return sendObjectResponse(response, `${this.name} Deleted`);
+  remove(@Param('id') id: string) {
+    resolveResponse(
+      this.service.remove(id),
+      `${this.service.modelName} Deleted`,
+    );
   }
 }
