@@ -14,7 +14,7 @@ export class UsersService extends AbstractService<User> {
     private readonly rolesService: RolesService,
   ) {
     super();
-    this.repository = this.rolesService;
+    this.repository = this.userRepo;
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -41,7 +41,7 @@ export class UsersService extends AbstractService<User> {
   }
 
   private randPassword(letters: number, numbers: number, either: number) {
-    var chars = [
+    const chars = [
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', // letters
       '0123456789', // numbers
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', // either

@@ -1,8 +1,8 @@
-import { AbstractEntity } from 'src/shared/entities/abstract-entity';
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { classToPlain, Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
+import { AbstractEntity } from '../../shared/entities/abstract-entity';
 
 @Entity('users')
 export class User extends AbstractEntity {
