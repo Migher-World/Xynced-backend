@@ -1,14 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { sendObjectResponse } from '../shared/response.transformer';
+import { CurrentUser } from '../shared/decorators/user.decorator';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { resolveResponse } from '../shared/resolvers';
+import { User } from '../users/entities/user.entity';
 import { LoginDto, RegisterDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -17,30 +12,22 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('register')
-  // async create(@Body() registerDto: RegisterDto) {
-  //   const response = await this.authService.register(registerDto);
-  //   return sendObjectResponse(response, 'Account Created');
-  // }
+  @Post('sign-up')
+  async create(@Body() registerDto: RegisterDto) {
+    return resolveResponse(
+      this.authService.register(registerDto),
+      'Account Created',
+    );
+  }
 
-  @Post('login')
+  @Post('sign-in')
   async login(@Body() loginDto: LoginDto) {
-    const response = await this.authService.login(loginDto);
-    return sendObjectResponse(response, 'Login Success');
+    return resolveResponse(this.authService.login(loginDto), 'Login Success');
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @UseGuards(AuthGuard)
+  @Get('me')
+  validateToken(@CurrentUser() user: User) {
+    return resolveResponse(user, 'Token is valid');
   }
 }
