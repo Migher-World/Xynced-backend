@@ -6,11 +6,18 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import EnvironmentVariables from './config/env.config';
 import * as basicAuth from 'express-basic-auth';
+import RedisStore from './shared/plugins/redis/redis';
 
 const appName = 'Example';
 const port = EnvironmentVariables.port;
 
 async function bootstrap() {
+  try {
+    await RedisStore.connect();
+  } catch (error) {
+    console.log('redis-error is ', error);
+  }
+
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
   app.enableCors();
