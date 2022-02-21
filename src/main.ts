@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
-import { DocumentBuilder } from '@nestjs/swagger/dist/document-builder';
-import { SwaggerModule } from '@nestjs/swagger/dist/swagger-module';
+import { DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import EnvironmentVariables from './config/env.config';
 import * as basicAuth from 'express-basic-auth';
@@ -34,11 +34,13 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
+
   SwaggerModule.setup('swagger', app, document, {
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
       persistAuthorization: true,
+      customSiteTitle: `${appName} API Docs`,
     },
   });
 
