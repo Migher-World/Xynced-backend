@@ -9,23 +9,16 @@ import { Server, Socket } from 'socket.io';
 import { verify } from 'jsonwebtoken';
 import { OnEvent } from '@nestjs/event-emitter';
 import { AppEvents } from '../constants/events';
-import { User } from '../modules/users/entities/user.entity';
 import { FirebaseMessagingService } from '@aginix/nestjs-firebase-admin';
-import { getRepository } from 'typeorm';
 import { NotificationEntity } from '../shared/alerts/notifications/entities/notification.entity';
 import EnvironmentVariables from '../config/env.config';
 
 @WebSocketGateway({
-  // namespace: '/',
-
-  cors: {
-    // origin: 'http://127.0.0.1:5500',
-    // methods: ['GET', 'POST'],
-  },
+  cors: {},
 })
 export class ListenerGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private firebaseMessageService: FirebaseMessagingService) {} // private readonly searchRequestsService: SearchRequestsService, // private readonly productsService: ProductsService
+  constructor(private firebaseMessageService: FirebaseMessagingService) {}
 
   @WebSocketServer()
   server: Server;
