@@ -13,6 +13,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { BullModule } from '@nestjs/bull';
 import RedisStore from './shared/plugins/redis/redis';
+import { FirebaseAdminModule } from '@aginix/nestjs-firebase-admin';
+import * as admin from 'firebase-admin';
+import { WebsocketModule } from './websockets/websocket.module';
 const mg = require('nodemailer-mailgun-transport');
 const redisUrl = new URL(EnvironmentVariables.redisUrl);
 
@@ -45,9 +48,16 @@ const redisUrl = new URL(EnvironmentVariables.redisUrl);
         tls: RedisStore.options,
       },
     }),
+    FirebaseAdminModule.forRootAsync({
+      useFactory: () => ({
+        credential: admin.credential.applicationDefault(),
+      }),
+    }),
+
     AuthModule,
     EmailsModule,
     NotificationsModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],
