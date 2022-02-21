@@ -2,6 +2,9 @@ import slugify from 'slugify';
 import EnvironmentVariables from '../../config/env.config';
 const url = require('url');
 import * as faker from 'faker';
+import * as tokenGen from 'otp-generator';
+import RedisStore from '../plugins/redis/redis';
+import { UnauthorizedException } from '@nestjs/common';
 
 class SlugifyOptions {
   lower: boolean;
@@ -47,5 +50,34 @@ export class Helper {
     const dbUrl = url.parse(EnvironmentVariables.typeormUrl);
     const scheme = dbUrl.protocol.substr(0, dbUrl.protocol.length - 1);
     return scheme;
+  }
+
+  static generateToken(length: number = 6, options: Record<string, any> = {}) {
+    return tokenGen.generate(length, {
+      upperCase: false,
+      specialChars: false,
+      alphabets: false,
+      digits: true,
+      ...options,
+    });
+  }
+
+  static async verifyOTP(identifier: string, code: string) {
+    const otp = await RedisStore.get(identifier);
+    if (otp.data != code) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+    await RedisStore.remove(identifier);
+    return {};
+  }
+
+  static numberWithCommas(x: number | string): string {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  static cleanQuery(value: string) {
+    if (!value) return null;
+    if (value == '') return null;
+    return value;
   }
 }

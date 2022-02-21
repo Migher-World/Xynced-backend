@@ -12,4 +12,6 @@ export default class EnvironmentVariables {
   static dbLogging = env.get('DATABASE_LOGGING').asBool();
   static docsPassword = env.get('DOCS_PASSWORD').asString();
   static redisUrl = env.get('REDIS_URL').asString();
+  static mailgunApiKey = env.get('MAILGUN_API_KEY').asString();
+  static mailgunDomain = env.get('MAILGUN_DOMAIN').asString();
 }

@@ -39,11 +39,19 @@ export class User extends AbstractEntity {
   @Column({ default: true })
   status: boolean;
 
+  @Column({ default: false })
+  emailVerified: boolean;
+
+  @Column({ default: false })
+  phoneNumberVerified: boolean;
+
   protected fullName: string;
+  protected verified: boolean;
 
   @BeforeInsert()
   async handleBeforeInsert() {
     this.password = await bcrypt.hash(this.password, 10);
+    this.verified = this.emailVerified || this.phoneNumberVerified;
   }
 
   @AfterLoad()
