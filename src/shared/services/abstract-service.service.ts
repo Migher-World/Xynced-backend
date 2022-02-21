@@ -8,6 +8,12 @@ export class AbstractService<T> {
   modelName: string;
   fields: any[] = ['id', 'name'];
 
+  constructor(repository, modelName, fields?) {
+    this.repository = repository;
+    this.modelName = modelName;
+    this.fields = fields;
+  }
+
   create(payload: any, ...args: any): Promise<any> {
     const entity = this.repository.create(payload);
     return this.repository.save(entity);
@@ -21,8 +27,10 @@ export class AbstractService<T> {
     return this.repository.find({ select: this.fields });
   }
 
-  async findOne(id: string, ...args: any): Promise<T> {
-    const response = await this.repository.findOne(id);
+  async findOne(value: string, key = 'id', ...args: any): Promise<T> {
+    const where = {};
+    where['key'] = value;
+    const response = await this.repository.findOne({ where });
 
     if (!response) {
       throw new NotFoundException(`${this.modelName} Not Found`);

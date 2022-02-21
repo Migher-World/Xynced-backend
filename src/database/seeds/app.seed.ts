@@ -1,8 +1,8 @@
 import { Connection, getConnection } from 'typeorm';
 import { Factory, Seeder } from 'typeorm-seeding';
-import { Role } from '../../roles/entities/role.entity';
-import { User } from '../../users/entities/user.entity';
 import * as faker from 'faker';
+import { Role } from '../../modules/roles/entities/role.entity';
+import { User } from '../../modules/users/entities/user.entity';
 
 export default class AppSeeder implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
@@ -53,7 +53,7 @@ export default class AppSeeder implements Seeder {
           password:
             '$2b$10$nAcoWCCNoPXuIgfOfJM86OK1GW9cEW6qhLKYkHC/bEffARLpdRZHC',
           roleId: 'cbe9a461-8369-453e-a5be-29c403b03ed0',
-          telephone: faker.phone.phoneNumber(),
+          phoneNumber: faker.phone.phoneNumber(),
         },
       ])
       .execute();

@@ -13,7 +13,7 @@ export class BasicEntity extends AbstractEntity {
   description: string;
 
   @BeforeInsert()
-  make_slug() {
+  handleBeforeInsert() {
     this.slug = Helper.slugify(this.name);
   }
 }
