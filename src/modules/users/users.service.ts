@@ -1,14 +1,9 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Helper } from '../../shared/helpers';
 import { AbstractService } from '../../shared/services/abstract-service.service';
 import { RolesService } from '../roles/roles.service';
-import { AssignRoleDto } from './dto/assign-role.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
@@ -53,7 +48,7 @@ export class UsersService extends AbstractService<User> {
     const response = this.userRepo.create({ ...createUserDto, password });
 
     const user = await this.userRepo.save(response);
-    return user.toJSON();
+    return user;
   }
 
   // async assignRole(assignRoleDto: AssignRoleDto) {
