@@ -32,12 +32,6 @@ export default class AppSeeder implements Seeder {
           description: 'User Role',
           slug: 'user',
         },
-        {
-          id: 'e10ecc87-64e5-4b40-9f10-69e0dfa94a8a',
-          name: 'Artisan',
-          description: 'Artisan Role',
-          slug: 'artisan',
-        },
       ])
       .execute();
 
@@ -49,7 +43,7 @@ export default class AppSeeder implements Seeder {
         {
           firstName: 'Admin',
           lastName: 'Admin',
-          email: 'admin@sample.com',
+          email: 'admin@example.com',
           password:
             '$2b$10$nAcoWCCNoPXuIgfOfJM86OK1GW9cEW6qhLKYkHC/bEffARLpdRZHC',
           roleId: 'cbe9a461-8369-453e-a5be-29c403b03ed0',
