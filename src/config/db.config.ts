@@ -14,4 +14,5 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   synchronize: EnvironmentVariables.synchronize,
   logging: EnvironmentVariables.dbLogging,
   dropSchema: false,
+  extra: EnvironmentVariables.typeormDriverExtra,
 };

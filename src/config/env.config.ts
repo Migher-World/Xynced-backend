@@ -7,6 +7,7 @@ export default class EnvironmentVariables {
   static jwtSecret = env.get('JWT_SECRET').asString();
   static expiresIn = env.get('JWT_DURATION').asString() ?? '1 year';
   static typeormUrl = env.get('TYPEORM_URL').asString();
+  static typeormDriverExtra = env.get('TYPEORM_DRIVER_EXTRA').asJson();
   static port = env.get('PORT').asInt() ?? 3000;
   static synchronize = env.get('TYPEORM_SYNCHRONIZE').asBool();
   static dbLogging = env.get('DATABASE_LOGGING').asBool();
