@@ -47,10 +47,10 @@ export class AbstractService<T> {
     return this.findOne(id);
   }
 
-  async remove(id: string, ...args: any): Promise<null> {
+  async remove(id: string, ...args: any): Promise<any> {
     await this.findOne(id);
     await this.repository.delete(id);
-    return null;
+    return {};
   }
 
   async resolveRelationships(
