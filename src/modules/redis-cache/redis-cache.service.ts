@@ -10,13 +10,17 @@ export class RedisCacheService {
   async getFromCacheWithFallback<T>(
     key: string,
     fallback: () => T,
+    transform?: (data: any) => T,
     options?: CachingConfig,
   ) {
     const cached = await this.getFromCache(key);
-    if (cached) return cached;
+    if (cached) {
+      if (transform) return transform(cached);
+      return cached;
+    }
     const data = await fallback();
     await this.set(key, data, options);
-    return data;
+    return transform ? transform(data) : data;
   }
 
   async getFromCache(key: string) {
