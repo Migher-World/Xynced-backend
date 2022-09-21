@@ -1,6 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { ClassConstructor } from 'class-transformer';
-import { getRepository, Repository } from 'typeorm';
+import { EntityTarget, getRepository } from 'typeorm';
 import { AbstractPaginationDto } from '../dto/abstract-pagination.dto';
 import { PaginateItems } from '../response.transformer';
 
@@ -9,7 +8,7 @@ export class AbstractService<T> {
   modelName: string;
   fields: any[] = ['id', 'name'];
 
-  constructor(repository, modelName, fields?) {
+  constructor(repository, modelName: string, fields?: string[]) {
     this.repository = repository;
     this.modelName = modelName;
     this.fields = fields;
@@ -30,7 +29,7 @@ export class AbstractService<T> {
 
   async findOne(value: string, key = 'id'): Promise<T> {
     const where = {};
-    where['key'] = value;
+    where[key] = value;
     const response = await this.repository.findOne({ where });
 
     if (!response) {
@@ -64,7 +63,7 @@ export class AbstractService<T> {
 
   async resolveRelationships<T>(
     payload: string[],
-    entity: ClassConstructor<T>,
+    entity: EntityTarget<T>,
     key = 'id',
   ): Promise<T[]> {
     const data = [];
