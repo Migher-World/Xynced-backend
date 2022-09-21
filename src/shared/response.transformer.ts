@@ -26,10 +26,10 @@ export function sendListReponse(data: any[], message: string) {
   };
 }
 
-export async function PaginateItems(
+export async function PaginateItems<T>(
   repository: any,
   options: IPaginationOptions,
-  searchOptions: FindConditions<unknown> | FindManyOptions<unknown> = {},
+  searchOptions: FindConditions<T> | FindManyOptions<T> = {},
 ) {
   const response = await paginate(repository, options, searchOptions);
 

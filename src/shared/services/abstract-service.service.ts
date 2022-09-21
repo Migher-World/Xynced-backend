@@ -1,4 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
+import { ClassConstructor } from 'class-transformer';
 import { getRepository, Repository } from 'typeorm';
 import { AbstractPaginationDto } from '../dto/abstract-pagination.dto';
 import { PaginateItems } from '../response.transformer';
@@ -14,20 +15,20 @@ export class AbstractService<T> {
     this.fields = fields;
   }
 
-  create(payload: any, ...args: any): Promise<any> {
+  create(payload: any): Promise<T> {
     const entity = this.repository.create(payload);
     return this.repository.save(entity);
   }
 
-  findAll(pagination: AbstractPaginationDto, ...args: any) {
-    return PaginateItems(this.repository, pagination);
+  findAll<T>(pagination: AbstractPaginationDto) {
+    return PaginateItems<T>(this.repository, pagination);
   }
 
-  list(...args: any): Promise<T[]> {
+  list(): Promise<T[]> {
     return this.repository.find({ select: this.fields });
   }
 
-  async findOne(value: string, key = 'id', ...args: any): Promise<T> {
+  async findOne(value: string, key = 'id'): Promise<T> {
     const where = {};
     where['key'] = value;
     const response = await this.repository.findOne({ where });
@@ -49,7 +50,7 @@ export class AbstractService<T> {
     return response;
   }
 
-  async update(id: string, payload: any, ...args: any): Promise<T> {
+  async update(id: string, payload: any): Promise<T> {
     await this.findOne(id);
     await this.repository.update(id, payload);
     return this.findOne(id);
@@ -61,11 +62,11 @@ export class AbstractService<T> {
     return {};
   }
 
-  async resolveRelationships(
-    payload: any[],
-    entity: any,
+  async resolveRelationships<T>(
+    payload: string[],
+    entity: ClassConstructor<T>,
     key = 'id',
-  ): Promise<any[]> {
+  ): Promise<T[]> {
     const data = [];
     for (const value of payload) {
       const where = {};
@@ -75,7 +76,6 @@ export class AbstractService<T> {
         data.push(item);
       }
     }
-    // console.log(data);
     return data;
   }
 }
