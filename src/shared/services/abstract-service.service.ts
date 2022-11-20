@@ -1,26 +1,28 @@
 import { NotFoundException } from '@nestjs/common';
-import { EntityTarget, getRepository } from 'typeorm';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { EntityTarget, FindManyOptions, FindOneOptions } from 'typeorm';
+import { AppDataSource } from '../../config/db.config';
+import { CacheService } from '../../modules/cache/cache.service';
 import { AbstractPaginationDto } from '../dto/abstract-pagination.dto';
-import { PaginateItems } from '../response.transformer';
 
 export class AbstractService<T> {
-  repository: any;
-  modelName: string;
-  fields: any[] = ['id', 'name'];
-
-  constructor(repository, modelName: string, fields?: string[]) {
-    this.repository = repository;
-    this.modelName = modelName;
-    this.fields = fields;
-  }
+  constructor(
+    protected repository,
+    protected modelName: string,
+    protected fields?: string[],
+    protected cache?: CacheService,
+  ) {}
 
   create(payload: any): Promise<T> {
     const entity = this.repository.create(payload);
     return this.repository.save(entity);
   }
 
-  findAll<T>(pagination: AbstractPaginationDto) {
-    return PaginateItems<T>(this.repository, pagination);
+  findAll<T>(
+    pagination: AbstractPaginationDto,
+    searchOptions: FindOneOptions<T> | FindManyOptions<T> = {},
+  ) {
+    return this.paginateItems<T>(this.repository, pagination, searchOptions);
   }
 
   list(): Promise<T[]> {
@@ -70,11 +72,36 @@ export class AbstractService<T> {
     for (const value of payload) {
       const where = {};
       where[key] = value;
-      const item = await getRepository(entity).findOne({ where: where });
+      const item = await AppDataSource.getRepository(entity).findOne({
+        where: where,
+      });
       if (item) {
         data.push(item);
       }
     }
     return data;
+  }
+
+  async paginateItems<T>(
+    repository: any,
+    options: IPaginationOptions,
+    searchOptions: FindOneOptions<T> | FindManyOptions<T> = {},
+  ) {
+    const response = await paginate(repository, options, searchOptions);
+
+    const pagination = {
+      page: Number(response.meta.currentPage),
+      pageCount: Number(response.meta.totalPages),
+      perPage: Number(response.meta.itemsPerPage),
+      total: Number(response.meta.totalItems),
+      skipped: Number(
+        response.meta.itemsPerPage * (response.meta.currentPage - 1),
+      ),
+    };
+
+    return {
+      list: response.items,
+      pagination,
+    };
   }
 }

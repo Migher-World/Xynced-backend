@@ -1,9 +1,8 @@
 import slugify from 'slugify';
-import EnvironmentVariables from '../../config/env.config';
+import env from '../../config/env.config';
 const url = require('url');
 import * as faker from 'faker';
 import * as tokenGen from 'otp-generator';
-import RedisStore from '../plugins/redis/redis';
 import { UnauthorizedException } from '@nestjs/common';
 
 class SlugifyOptions {
@@ -47,7 +46,7 @@ export class Helper {
   }
 
   static getScheme() {
-    const dbUrl = url.parse(EnvironmentVariables.typeormUrl);
+    const dbUrl = url.parse(env.typeormUrl);
     const scheme = dbUrl.protocol.substr(0, dbUrl.protocol.length - 1);
     return scheme;
   }
@@ -63,11 +62,12 @@ export class Helper {
   }
 
   static async verifyOTP(identifier: string, code: string) {
-    const otp = await RedisStore.get(identifier);
-    if (otp.data != code) {
-      throw new UnauthorizedException('Invalid OTP');
-    }
-    await RedisStore.remove(identifier);
+    // const otp = await RedisStore.get(identifier);
+    // if (otp.data != code) {
+    //   throw new UnauthorizedException('Invalid OTP');
+    // }
+    // await RedisStore.remove(identifier);
+    // return {};
     return {};
   }
 

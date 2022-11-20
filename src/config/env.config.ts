@@ -1,18 +1,20 @@
 import * as dotenv from 'dotenv';
-import * as env from 'env-var';
+import * as envVar from 'env-var';
 
 dotenv.config();
 
-export default class EnvironmentVariables {
-  static jwtSecret = env.get('JWT_SECRET').asString();
-  static expiresIn = env.get('JWT_DURATION').asString() ?? '1 year';
-  static typeormUrl = env.get('TYPEORM_URL').asString();
-  static typeormDriverExtra = env.get('TYPEORM_DRIVER_EXTRA').asJson();
-  static port = env.get('PORT').asInt() ?? 3000;
-  static synchronize = env.get('TYPEORM_SYNCHRONIZE').asBool();
-  static dbLogging = env.get('DATABASE_LOGGING').asBool();
-  static docsPassword = env.get('DOCS_PASSWORD').asString();
-  static redisUrl = env.get('REDIS_URL').asString();
-  static mailgunApiKey = env.get('MAILGUN_API_KEY').asString();
-  static mailgunDomain = env.get('MAILGUN_DOMAIN').asString();
-}
+const env = {
+  jwtSecret: envVar.get('JWT_SECRET').required().asString(),
+  expiresIn: envVar.get('JWT_DURATION').asString() ?? '1 year',
+  typeormUrl: envVar.get('TYPEORM_URL').required().asString(),
+  typeormDriverExtra: envVar.get('TYPEORM_DRIVER_EXTRA').asJson(),
+  port: envVar.get('PORT').asInt() ?? 3000,
+  synchronize: envVar.get('TYPEORM_SYNCHRONIZE').required().asBool(),
+  dbLogging: envVar.get('DATABASE_LOGGING').asBool(),
+  docsPassword: envVar.get('DOCS_PASSWORD').required().asString(),
+  redisUrl: envVar.get('REDIS_URL').required().asString(),
+  mailgunApiKey: envVar.get('MAILGUN_API_KEY').required().asString(),
+  mailgunDomain: envVar.get('MAILGUN_DOMAIN').required().asString(),
+};
+
+export default env;

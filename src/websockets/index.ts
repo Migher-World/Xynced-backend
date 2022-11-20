@@ -9,16 +9,15 @@ import { Server, Socket } from 'socket.io';
 import { verify } from 'jsonwebtoken';
 import { OnEvent } from '@nestjs/event-emitter';
 import { AppEvents } from '../constants/events';
-import { FirebaseMessagingService } from '@aginix/nestjs-firebase-admin';
 import { NotificationEntity } from '../shared/alerts/notifications/entities/notification.entity';
-import EnvironmentVariables from '../config/env.config';
+import env from '../config/env.config';
 
 @WebSocketGateway({
   cors: {},
 })
 export class ListenerGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private firebaseMessageService: FirebaseMessagingService) {}
+  // constructor(private firebaseMessageService: FirebaseMessagingService) {}
 
   @WebSocketServer()
   server: Server;
@@ -72,7 +71,7 @@ export class ListenerGateway
     const token: any = socket.handshake.query.token;
     console.log('connection request from user with token', token);
     if (!token) throw new WsException('Unauthorized');
-    const tokendata: any = verify(token, EnvironmentVariables.jwtSecret);
+    const tokendata: any = verify(token, env.jwtSecret);
     return tokendata;
   }
 

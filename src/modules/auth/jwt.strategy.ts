@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { User } from '../users/entities/user.entity';
 import { AuthPayload } from './auth.dto';
-import EnvironmentVariables from '../../config/env.config';
+import env from '../../config/env.config';
 
 dotenv.config();
 
@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
-      secretOrKey: EnvironmentVariables.jwtSecret,
+      secretOrKey: env.jwtSecret,
     });
   }
 

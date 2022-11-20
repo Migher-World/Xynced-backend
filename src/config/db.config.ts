@@ -1,18 +1,21 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { Helper } from '../shared/helpers';
-import EnvironmentVariables from './env.config';
+import env from './env.config';
 
 dotenv.config();
 
 const scheme = Helper.getScheme();
 
-export const typeOrmConfig: TypeOrmModuleOptions = {
+export const typeOrmConfig: DataSourceOptions = {
   type: scheme,
-  url: EnvironmentVariables.typeormUrl,
+  url: env.typeormUrl,
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
-  synchronize: EnvironmentVariables.synchronize,
-  logging: EnvironmentVariables.dbLogging,
+  synchronize: env.synchronize,
+  logging: env.dbLogging,
   dropSchema: false,
-  extra: EnvironmentVariables.typeormDriverExtra,
+  extra: env.typeormDriverExtra,
 };
+
+export const AppDataSource = new DataSource(typeOrmConfig);

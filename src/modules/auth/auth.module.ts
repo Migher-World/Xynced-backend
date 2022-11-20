@@ -8,7 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 
 import * as dotenv from 'dotenv';
-import EnvironmentVariables from '../../config/env.config';
+import env from '../../config/env.config';
 import { UsersModule } from '../users/users.module';
 
 dotenv.config();
@@ -16,9 +16,9 @@ dotenv.config();
 @Module({
   imports: [
     JwtModule.register({
-      secret: EnvironmentVariables.jwtSecret,
+      secret: env.jwtSecret,
       signOptions: {
-        expiresIn: EnvironmentVariables.expiresIn,
+        expiresIn: env.expiresIn,
       },
     }),
     PassportModule.register({

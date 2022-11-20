@@ -1,6 +1,3 @@
-import { paginate, IPaginationOptions } from 'nestjs-typeorm-paginate';
-import { FindConditions, FindManyOptions } from 'typeorm';
-
 export function sendObjectResponse(data: any, message: string) {
   return {
     status: true,
@@ -23,28 +20,5 @@ export function sendListReponse(data: any[], message: string) {
     status: true,
     message,
     data,
-  };
-}
-
-export async function PaginateItems<T>(
-  repository: any,
-  options: IPaginationOptions,
-  searchOptions: FindConditions<T> | FindManyOptions<T> = {},
-) {
-  const response = await paginate(repository, options, searchOptions);
-
-  const pagination = {
-    page: Number(response.meta.currentPage),
-    pageCount: Number(response.meta.totalPages),
-    perPage: Number(response.meta.itemsPerPage),
-    total: Number(response.meta.totalItems),
-    skipped: Number(
-      response.meta.itemsPerPage * (response.meta.currentPage - 1),
-    ),
-  };
-
-  return {
-    list: response.items,
-    pagination,
   };
 }
