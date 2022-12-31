@@ -1,4 +1,4 @@
-import cache, { CacheClass } from 'memory-cache';
+import { CacheClass, Cache } from 'memory-cache';
 import {
   ICache,
   ICacheSetCommand,
@@ -15,18 +15,26 @@ export class MemoryCache implements ICache {
     Map<string, any>
   >();
   protected hashKeys: Record<string, boolean> = {};
+  protected zSet: Map<string, Map<number, any>> = new Map<
+    string,
+    Map<number, any>
+  >();
 
   ttl: number;
 
   constructor(protected name: string, ttl = DEFAULT_CACHE_TTL) {
     this.ttl = ttl;
-    this.cache = new cache.Cache();
+    this.cache = new Cache();
   }
 
   ttls: Record<string, number> = {};
 
   async connect(): Promise<void> {
     //
+  }
+
+  disconnect(): Promise<void> {
+    return Promise.resolve();
   }
 
   async hset<T>(key: string | Buffer, field: string, value: T): Promise<void> {
@@ -39,7 +47,7 @@ export class MemoryCache implements ICache {
   async hget<T>(key: string | Buffer, field: string): Promise<T> {
     const keyToUse = Buffer.isBuffer(key) ? key.toString() : key;
     if (!this.hashCache.has(keyToUse)) return null;
-    return this.hashCache.get(keyToUse).get(field) as T;
+    return this.hashCache.get(keyToUse).get(field) || (null as T);
   }
   async hdel(key: string | Buffer, field: string): Promise<void> {
     const keyToUse = Buffer.isBuffer(key) ? key.toString() : key;
@@ -51,8 +59,22 @@ export class MemoryCache implements ICache {
     if (!this.hashCache.has(keyToUse)) return null;
     return Array.from(this.hashCache.get(keyToUse).keys());
   }
+
+  async hgetAll<T>(key: string | Buffer): Promise<T> {
+    const keyToUse = Buffer.isBuffer(key) ? key.toString() : key;
+    if (!this.hashCache.has(keyToUse)) return null;
+    return Array.from(this.hashCache.get(keyToUse).entries()).reduce(
+      (acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      },
+      {},
+    ) as T;
+  }
+
   async get<T>(key: string | Buffer): Promise<T> {
     if (this.isShuttingDown) return null;
+
     const keyToUse = Buffer.isBuffer(key) ? key.toString() : key;
     const result = this.cache.get(keyToUse);
     if (result === null) delete this.ttls[keyToUse];
@@ -69,11 +91,22 @@ export class MemoryCache implements ICache {
     }
     return values as T[];
   }
+
+  async hmget<T>(key: string | Buffer, fields: string[]): Promise<T[]> {
+    if (this.isShuttingDown) return fields.map(() => null);
+    const values = (await Promise.all(
+      fields.map((field: string) => this.hget(key, field)),
+    )) as string[];
+    return values as T[];
+  }
   async del(key: string | Buffer): Promise<void> {
     if (this.isShuttingDown) return null;
     const keyToUse = Buffer.isBuffer(key) ? key.toString() : key;
-    delete this.ttls[keyToUse];
-    return this.cache.del(keyToUse);
+    delete this.ttls[key as string];
+    this.cache.del(keyToUse);
+    this.zSet.delete(keyToUse);
+    this.hashCache.delete(keyToUse);
+    return;
   }
   async mdel(keys: string[] | Buffer[]): Promise<void> {
     if (this.isShuttingDown) return null;
@@ -145,9 +178,73 @@ export class MemoryCache implements ICache {
     );
   }
 
+  zAdd(key: string, score: number, value: string): Promise<void> {
+    if (!this.zSet.has(key)) {
+      this.zSet.set(key, new Map<number, any>());
+    }
+    this.zSet.get(key).set(score, value);
+    return Promise.resolve();
+  }
+  zCount(key: string, min: number, max: number): Promise<number> {
+    if (!this.zSet.has(key)) return Promise.resolve(0);
+    const count = Array.from(this.zSet.get(key).keys()).filter(
+      (a) => a >= min && a <= max,
+    )?.length;
+    return Promise.resolve(count);
+  }
+
+  zPopMin(key: string, amount = 1): Promise<string[]> {
+    if (!this.zSet.has(key)) return Promise.resolve([]);
+    const result = [];
+    Array.from(this.zSet.get(key).keys())
+      .sort((a, b) => a - b)
+      .slice(0, amount)
+      .forEach((score) => {
+        result.push(this.zSet.get(key).get(score));
+        result.push(score);
+        this.zSet.get(key).delete(score);
+      });
+    return Promise.resolve(result);
+  }
+  zRemRangeByScore(key: string, min: number, max: number): Promise<void> {
+    if (!this.zSet.has(key)) return null;
+    this.zSet.get(key).forEach((_, score) => {
+      if (score >= min && score <= max) {
+        this.zSet.get(key).delete(score);
+      }
+    });
+    return Promise.resolve();
+  }
+  zRevRange(key: string, start: number, stop: number): Promise<string[]> {
+    if (!this.zSet.has(key)) return Promise.resolve([]);
+    const orderedScores = Array.from(this.zSet.get(key).keys())
+      .sort((a, b) => b - a)
+      .slice(start, stop + 1);
+    const result = orderedScores.map((score) => this.zSet.get(key).get(score));
+    return Promise.resolve(result);
+  }
+
+  zRange(key: string, start: number, stop: number): Promise<string[]> {
+    if (!this.zSet.has(key)) return Promise.resolve([]);
+    const orderedScores = Array.from(this.zSet.get(key).keys())
+      .sort((a, b) => a - b)
+      .slice(start, stop + 1);
+    const result = orderedScores.map((score) => this.zSet.get(key).get(score));
+    return Promise.resolve(result);
+  }
+  zRangeByScore(key: string, min: number, max: number): Promise<string[]> {
+    if (!this.zSet.has(key)) return Promise.resolve([]);
+    const orderedScores = Array.from(this.zSet.get(key).keys())
+      .filter((a) => a >= min && a <= max)
+      .sort((a, b) => a - b);
+
+    const result = orderedScores.map((score) => this.zSet.get(key).get(score));
+    return Promise.resolve(result);
+  }
+
   async gracefulShutdown(): Promise<void> {
     await this.clear();
-    this.cache = new cache.Cache();
+    this.cache = new Cache();
     this.isShuttingDown = true;
   }
 
@@ -155,6 +252,8 @@ export class MemoryCache implements ICache {
 
   async clear(): Promise<void> {
     this.cache.clear();
+    this.hashCache.clear();
+    this.zSet.clear();
   }
 
   reset(): Promise<void> {

@@ -1,4 +1,4 @@
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
 export class AbstractResponse {
   @ApiResponseProperty()

@@ -15,6 +15,7 @@ const env = {
   redisUrl: envVar.get('REDIS_URL').required().asString(),
   mailgunApiKey: envVar.get('MAILGUN_API_KEY').required().asString(),
   mailgunDomain: envVar.get('MAILGUN_DOMAIN').required().asString(),
+  appName: envVar.get('APP_NAME').required().asString(),
 };
 
 export default env;

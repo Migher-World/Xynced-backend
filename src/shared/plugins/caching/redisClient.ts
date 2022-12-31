@@ -87,6 +87,11 @@ export class RedisClient implements ICache {
     return await this.client.connect();
   }
 
+  async disconnect(): Promise<void> {
+    if (this.shuttingDown) return;
+    return await this.client.disconnect();
+  }
+
   onConnected(listener: (...args: any[]) => void) {
     return this.client.on('connect', listener);
   }
@@ -100,7 +105,10 @@ export class RedisClient implements ICache {
     try {
       await this.client.hSet(key, field, value as string);
     } catch (error) {
-      this.logger.error(`Error hset for key: ${key}, field: ${field}`, error);
+      this.logger.error(
+        `Error hset for key: ${key}, field: ${field}, value: ${value}`,
+        error,
+      );
     }
     return null;
   }
@@ -119,12 +127,46 @@ export class RedisClient implements ICache {
     }
     return null;
   }
+
+  async hmget<T>(key: string | Buffer, fields: string[]): Promise<T[]> {
+    if (this.shuttingDown || !key || fields?.length === 0)
+      return fields?.map(() => null);
+    try {
+      const getAsBuffer = Buffer.isBuffer(key);
+      const cached = await this.client.hmGet(
+        commandOptions({ returnBuffers: getAsBuffer }),
+        key,
+        fields,
+      );
+      return cached as T[];
+    } catch (error) {
+      this.logger.error(`Error getting fields: ${fields}`, error);
+    }
+
+    return fields?.map(() => null);
+  }
+
+  async hgetAll<T>(key: string | Buffer): Promise<T> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      const getAsBuffer = Buffer.isBuffer(key);
+      const result = await this.client.hGetAll(
+        commandOptions({ returnBuffers: getAsBuffer }),
+        key,
+      );
+      if (JSON.stringify(result) == '{}') return null;
+      return result as T;
+    } catch (error) {
+      this.logger.error(`Error hgetAll for key: ${key}`, error);
+    }
+    return null;
+  }
   async hdel<T>(key: string | Buffer, field: string): Promise<T> {
     if (this.shuttingDown || !key || !field) return null;
     try {
       await this.client.hDel(key, field);
     } catch (error) {
-      this.logger.error(`Error hset for key: ${key}, field: ${field}`, error);
+      this.logger.error(`Error hdel for key: ${key}, field: ${field}`, error);
     }
     return null;
   }
@@ -278,5 +320,118 @@ export class RedisClient implements ICache {
     }
 
     return commands.map(() => null);
+  }
+
+  async zAdd(key: string, score: number, value: string): Promise<void> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      await this.client.zAdd(key, { score, value });
+    } catch (error) {
+      this.logger.error(
+        `Error zAdd for key: ${key}, score: ${score}, value: ${value}`,
+        error,
+      );
+    }
+    return null;
+  }
+  async zCount(key: string, min: number, max: number): Promise<number> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      return await this.client.zCount(key, min, max);
+    } catch (error) {
+      this.logger.error(
+        `Error zCount for key: ${key}, min: ${min}, max: ${max}`,
+        error,
+      );
+    }
+    return null;
+  }
+
+  async zPopMin(key: string, amount = 1): Promise<string[]> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      return await this.client.sendCommand(['ZPOPMIN', key, `${amount}`]);
+    } catch (error) {
+      this.logger.error(`Error zPopMin for key: ${key}`, error);
+    }
+    return null;
+  }
+
+  async zRemRangeByScore(key: string, min: number, max: number): Promise<void> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      await this.client.sendCommand([
+        'ZREMRANGEBYSCORE',
+        key,
+        `${min}`,
+        `${max}`,
+      ]);
+    } catch (error) {
+      this.logger.error(
+        `Error zRemRangeByScore for key: ${key}, min: ${min}, max: ${max}`,
+        error,
+      );
+    }
+  }
+
+  async zRevRange(key: string, start: number, stop: number): Promise<string[]> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      return await this.client.sendCommand([
+        'ZREVRANGE',
+        key,
+        `${start}`,
+        `${stop}`,
+      ]);
+    } catch (error) {
+      this.logger.error(
+        `Error zRevRange for key: ${key}, start: ${start}, stop: ${stop}`,
+        error,
+      );
+    }
+
+    return null;
+  }
+
+  async zRange(key: string, start: number, stop: number): Promise<string[]> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      return await this.client.sendCommand([
+        'ZRANGE',
+        key,
+        `${start}`,
+        `${stop}`,
+      ]);
+    } catch (error) {
+      this.logger.error(
+        `Error zRange for key: ${key}, start: ${start}, stop: ${stop}`,
+        error,
+      );
+    }
+
+    return null;
+  }
+
+  async zRangeByScore(
+    key: string,
+    min: number,
+    max: number,
+  ): Promise<string[]> {
+    if (this.shuttingDown || !key) return null;
+    try {
+      return await this.client.sendCommand([
+        'ZRANGEBYSCORE',
+        key,
+        `${min}`,
+        `${max}`,
+      ]);
+    } catch (error) {
+      this.logger.error(
+        `Error zRangeByScore for key: ${key}, min: ${min}, max: ${max}`,
+        error,
+      );
+    }
+
+    return null;
   }
 }
