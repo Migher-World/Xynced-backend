@@ -7,7 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 import env from './config/env.config';
 import * as basicAuth from 'express-basic-auth';
 
-const appName = 'Example';
+const appName = env.appName;
 const port = env.port;
 
 async function bootstrap() {
