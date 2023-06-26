@@ -1,35 +1,30 @@
 import { OnModuleInit } from '@nestjs/common';
 import env from '../../config/env.config';
-import { logger } from '../../shared/logger';
 import { ICache } from '../../shared/plugins/caching/ICache';
-import { ILogger } from '../../shared/plugins/caching/ILogger';
 import { MemoryCache } from '../../shared/plugins/caching/memoryCache';
 import { RedisClient } from '../../shared/plugins/caching/redisClient';
+import { logger } from '../../config/winston';
 
 export class CacheService implements OnModuleInit {
-  private memoryCache: ICache;
-  private remoteCache: ICache;
-  private logger: ILogger;
+  ttl = 6000;
+  constructor(private memoryCache: ICache, private remoteCache: ICache) {}
 
-  ttl: number = 6000;
-
-  constructor() {
-    this.logger = logger;
-  }
-
-  async get<T>(key: string): Promise<any> {
-    let value: string = await this.memoryCache.get(key);
-    if (!value) value = await this.remoteCache.get(key);
-    if (!value) return null;
+  async get(key: string): Promise<any> {
+    // let value = await this.memoryCache.get(key);
+    let value = null;
+    if (!value) {
+      value = await this.remoteCache.get(key);
+    }
+    if (!value) {
+      return null;
+    }
     await this.memoryCache.set(key, value, this.ttl);
-    const result = typeof value == 'string' ? value : JSON.parse(value);
-    return result as T;
+    return value;
   }
 
-  async set<T>(key: string, value: T, ttl: number = this.ttl): Promise<void> {
-    const toCache = typeof value == 'string' ? value : JSON.stringify(value);
-    await this.memoryCache.set(key, toCache, ttl);
-    await this.remoteCache.set(key, toCache, ttl);
+  async set(key: string, value: any, ttl: number = this.ttl): Promise<void> {
+    await this.memoryCache.set(key, value, ttl);
+    await this.remoteCache.set(key, value, ttl);
   }
 
   async delete(key: string): Promise<void> {
@@ -48,12 +43,24 @@ export class CacheService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    this.memoryCache = new MemoryCache(`${env.appName}-memory-cache`);
-    this.remoteCache = new RedisClient(
-      `${env.appName}-remote-cache`,
-      [{ url: env.redisUrl }],
-      this.logger,
-    );
+    this.memoryCache = new MemoryCache(``);
+    this.remoteCache = new RedisClient(``, [{ url: env.redisUrl }], logger);
     await this.connect();
+  }
+
+  async getOrSet(key: string, cb: () => Promise<any>, ttl: number = this.ttl): Promise<any> {
+    const value = await this.get(key);
+    if (value) {
+      return JSON.parse(value);
+    }
+    const result = await cb();
+    await this.set(key, JSON.stringify(result), ttl);
+    return result;
+  }
+
+  async getKeys(): Promise<string[]> {
+    const rkeys = await this.remoteCache.getKeys();
+    const mkeys = await this.memoryCache.getKeys();
+    return [...rkeys, ...mkeys];
   }
 }

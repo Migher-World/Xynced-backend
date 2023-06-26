@@ -3,7 +3,6 @@ import env from '../../config/env.config';
 const url = require('url');
 import * as faker from 'faker';
 import * as tokenGen from 'otp-generator';
-import { UnauthorizedException } from '@nestjs/common';
 
 class SlugifyOptions {
   lower: boolean;

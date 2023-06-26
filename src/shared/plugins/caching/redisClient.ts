@@ -434,4 +434,17 @@ export class RedisClient implements ICache {
 
     return null;
   }
+
+  async getKeys(): Promise<string[]> {
+    if (this.shuttingDown) {
+      return null;
+    }
+    try {
+      return await this.client.keys('*');
+    } catch (error) {
+      this.logger.error(`Error getting keys`, error);
+    }
+
+    return null;
+  }
 }

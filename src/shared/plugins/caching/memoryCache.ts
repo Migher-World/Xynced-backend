@@ -259,4 +259,8 @@ export class MemoryCache implements ICache {
   reset(): Promise<void> {
     return this.clear();
   }
+
+  async getKeys(): Promise<string[]> {
+    return Object.keys(this.cache.keys());
+  }
 }
