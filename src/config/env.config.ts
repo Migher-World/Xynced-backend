@@ -16,7 +16,7 @@ const env = {
   mailgunApiKey: envVar.get('MAILGUN_API_KEY').required().asString(),
   mailgunDomain: envVar.get('MAILGUN_DOMAIN').required().asString(),
   appName: envVar.get('APP_NAME').required().asString(),
-  enviroment: envVar.get('NODE_ENV').required().asString(),
+  environment: envVar.get('NODE_ENV').required().asString(),
 };
 
 export default env;
