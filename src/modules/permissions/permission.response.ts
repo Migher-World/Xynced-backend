@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AbstractResponse } from '../../shared/abstract.response';
+import { ResponseDTO } from '../../shared/resolvers';
 
-export class PermissionResponse extends AbstractResponse {
+export class PermissionResponse extends ResponseDTO<unknown> {
   // @ApiProperty()
   // id: string;
 

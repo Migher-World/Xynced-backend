@@ -2,13 +2,13 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Helper } from '../../shared/helpers';
-import { AbstractService } from '../../shared/services/abstract-service.service';
+import { BasicService } from '../../shared/services/basic-service.service';
 import { RolesService } from '../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
-export class UsersService extends AbstractService<User> {
+export class UsersService extends BasicService<User> {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>, // private jwtService: JwtService,
     private readonly rolesService: RolesService,

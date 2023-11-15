@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AbstractService } from '../../shared/services/abstract-service.service';
+import { BasicService } from '../../shared/services/basic-service.service';
 import { Permission } from '../permissions/entities/permission.entity';
 import { AddPermissionsToRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
 
 @Injectable()
-export class RolesService extends AbstractService<Role> {
+export class RolesService extends BasicService<Role> {
   constructor(
     @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
   ) {

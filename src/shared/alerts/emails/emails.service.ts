@@ -7,12 +7,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bull';
 import { Repository } from 'typeorm';
 import { AppEvents } from '../../../constants';
-import { AbstractService } from '../../services/abstract-service.service';
+import { BasicService } from '../../services/basic-service.service';
 import { CreateEmailDto } from './dto/create-email.dto';
 import { EmailEntity } from './entities/email.entity';
 
 @Injectable()
-export class EmailsService extends AbstractService<EmailEntity> {
+export class EmailsService extends BasicService<EmailEntity> {
   constructor(
     @InjectRepository(EmailEntity)
     private readonly emailRepo: Repository<EmailEntity>,

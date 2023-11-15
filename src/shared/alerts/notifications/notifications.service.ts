@@ -4,13 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AppEvents } from '../../../constants';
 import { User } from '../../../modules/users/entities/user.entity';
-import { AbstractService } from '../../services/abstract-service.service';
+import { BasicService } from '../../services/basic-service.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { NotificationEntity } from './entities/notification.entity';
 
 @Injectable()
-export class NotificationsService extends AbstractService<NotificationEntity> {
+export class NotificationsService extends BasicService<NotificationEntity> {
   constructor(
     @InjectRepository(NotificationEntity)
     private readonly notificationsRepo: Repository<NotificationEntity>,
