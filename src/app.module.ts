@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
@@ -19,7 +18,6 @@ const mg = require('nodemailer-mailgun-transport');
 @Module({
   imports: [
     GlobalModule,
-    TypeOrmModule.forRoot(typeOrmConfig),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     MailerModule.forRoot({
