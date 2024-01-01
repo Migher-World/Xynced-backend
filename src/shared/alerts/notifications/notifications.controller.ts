@@ -10,12 +10,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from '../../../modules/users/entities/user.entity';
 import { CurrentUser } from '../../decorators/current-user.decorator';
 import { AbstractPaginationDto } from '../../dto/abstract-pagination.dto';
-import { AuthGuard } from '../../guards/auth.guard';
 import { resolveResponse } from '../../resolvers';
 import { NotificationsService } from './notifications.service';
 
 @ApiBearerAuth()
-@UseGuards(AuthGuard)
 @ApiTags('Notifications')
 @Controller('notifications')
 export class NotificationsController {
