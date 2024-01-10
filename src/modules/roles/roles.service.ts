@@ -15,11 +15,11 @@ export class RolesService extends BasicService<Role> {
   }
 
   async addPermissionsToRole(addPermissionsToRoleDto: AddPermissionsToRoleDto) {
-    const { roleId, permissionsId } = addPermissionsToRoleDto;
+    const { roleId, permissionsIds } = addPermissionsToRoleDto;
     const role = await this.findOne(roleId);
 
     const permissions = await this.resolveRelationships(
-      permissionsId,
+      permissionsIds,
       Permission,
     );
     // for (const permissionId of permissionsId) {

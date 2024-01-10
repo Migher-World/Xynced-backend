@@ -15,5 +15,5 @@ export class AddPermissionsToRoleDto {
   roleId: string;
 
   @IsNotEmpty()
-  permissionsId: string[];
+  permissionsIds: string[];
 }
