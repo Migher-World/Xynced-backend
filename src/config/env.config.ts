@@ -6,7 +6,7 @@ dotenv.config();
 const env = {
   jwtSecret: envVar.get('JWT_SECRET').required().asString(),
   expiresIn: envVar.get('JWT_DURATION').asString() ?? '1 year',
-  typeormUrl: envVar.get('TYPEORM_URL').required().asString(),
+  dbUrl: envVar.get('DB_URL').required().asString(),
   typeormDriverExtra: envVar.get('TYPEORM_DRIVER_EXTRA').asJson(),
   port: envVar.get('PORT').asInt() ?? 3000,
   synchronize: envVar.get('TYPEORM_SYNCHRONIZE').required().asBool(),

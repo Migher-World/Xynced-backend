@@ -45,7 +45,7 @@ export class Helper {
   }
 
   static getScheme() {
-    const dbUrl = url.parse(env.typeormUrl);
+    const dbUrl = url.parse(env.dbUrl);
     const scheme = dbUrl.protocol.substr(0, dbUrl.protocol.length - 1);
     return scheme;
   }

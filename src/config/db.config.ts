@@ -10,7 +10,7 @@ const scheme = Helper.getScheme();
 
 export const typeOrmConfig: DataSourceOptions = {
   type: scheme,
-  url: env.typeormUrl,
+  url: env.dbUrl,
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
   synchronize: env.synchronize,
   logging: env.dbLogging,
