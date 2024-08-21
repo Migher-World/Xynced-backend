@@ -1,8 +1,9 @@
-import { Column, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { EmploymentStatusEnum, FaithEnum, GenderEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 import { User } from "../../users/entities/user.entity";
 import { AbstractEntity } from "../../../shared/entities/abstract-entity";
 
+@Entity('profile')
 export class Profile extends AbstractEntity {
     @Column()
     userId: string;
@@ -53,22 +54,22 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     profilePicture: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     pictures: string[];
 
     @Column({ nullable: true })
     bio: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     interests: string[];
 
     @Column({ nullable: true })
     doesFaithMatter: boolean;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     languages: string[];
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     relationshipGoals: string[];
 
     @Column({ nullable: true })
@@ -86,13 +87,13 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     locationPreference: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     matchPreferences: string[];
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     matchCulturalValues: string[];
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     faithBasePreferences: string[];
 
     @Column({ nullable: true })

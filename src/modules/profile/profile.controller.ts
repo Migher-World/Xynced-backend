@@ -5,8 +5,11 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { resolveResponse } from '../../shared/resolvers';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('profile')
+@ApiTags('Profile')
+@ApiBearerAuth()
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
