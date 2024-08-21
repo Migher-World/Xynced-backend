@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate, IsDateString } from 'class-validator';
 import { EmploymentStatusEnum, FaithEnum, GenderEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 
 export class CreateProfileDto {
@@ -10,9 +10,9 @@ export class CreateProfileDto {
     @IsOptional()
     preferredName: string;
 
-    @IsDate()
+    @IsDateString()
     @IsOptional()
-    dateOfBirth: Date
+    dateOfBirth: string;
 
     @IsEnum(GenderEnum)
     @IsOptional()

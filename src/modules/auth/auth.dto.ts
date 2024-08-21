@@ -11,14 +11,11 @@ export class LoginDto {
 
 export class RegisterDto {
   @IsNotEmpty()
-  firstName: string;
-
-  @IsNotEmpty()
-  lastName: string;
-
-  @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @IsNotEmpty()
+  country: string;
 
   @IsNotEmpty()
   @IsOptional()

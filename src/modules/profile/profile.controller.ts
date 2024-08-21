@@ -18,6 +18,11 @@ export class ProfileController {
     return resolveResponse(this.profileService.createOrUpdateProfile(user.id, createProfileDto));
   }
 
+  @Get()
+  getProfile(@CurrentUser() user: User) {
+    return resolveResponse(this.profileService.getProfile(user.id));
+  }
+
   // @Get()
   // findAll() {
   //   return this.profileService.findAll();

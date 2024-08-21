@@ -8,21 +8,20 @@ import { Profile } from './entities/profile.entity';
 
 @Injectable()
 export class ProfileService extends BasicService<Profile> {
-  constructor(
-    @InjectRepository(Profile) private profileRepository: Repository<Profile>
-  ) {
+  constructor(@InjectRepository(Profile) private profileRepository: Repository<Profile>) {
     super(profileRepository, 'Profile');
   }
 
   // create or update profile
-  async createOrUpdateProfile(
-    userId: string,
-    createProfileDto: CreateProfileDto
-  ) {
-    const profile = await this.findOne(userId, 'userId');
+  async createOrUpdateProfile(userId: string, createProfileDto: CreateProfileDto) {
+    const profile = await this.findOne(userId, 'userId', null, false);
     if (profile) {
       return this.update(profile.id, createProfileDto);
     }
-    return this.create(createProfileDto);
+    return this.create({ ...createProfileDto, userId });
+  }
+
+  async getProfile(userId: string) {
+    return this.findOne(userId, 'userId');
   }
 }

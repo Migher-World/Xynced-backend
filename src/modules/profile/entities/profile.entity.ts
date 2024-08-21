@@ -19,7 +19,7 @@ export class Profile extends AbstractEntity {
     preferredName: string;
 
     @Column({ nullable: true })
-    dateOfBirth: Date;
+    dateOfBirth: string;
 
     @Column({ nullable: true, enum: GenderEnum })
     gender: GenderEnum;
