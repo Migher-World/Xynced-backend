@@ -5,7 +5,7 @@ import env from './env.config';
 const scheme = Helper.getScheme();
 
 export const typeOrmConfig: DataSourceOptions = {
-  type: scheme,
+  type: 'postgres',
   url: env.dbUrl,
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
   synchronize: env.synchronize,
