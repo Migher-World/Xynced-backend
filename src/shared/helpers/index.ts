@@ -3,6 +3,8 @@ import env from '../../config/env.config';
 const url = require('url');
 import * as faker from 'faker';
 import * as tokenGen from 'otp-generator';
+import { CloudStorage } from '../plugins/cloud-storage';
+import { Cloudinary } from '../plugins/cloud-storage/cloudinary';
 
 class SlugifyOptions {
   lower: boolean;
@@ -60,16 +62,6 @@ export class Helper {
     });
   }
 
-  static async verifyOTP(identifier: string, code: string) {
-    // const otp = await RedisStore.get(identifier);
-    // if (otp.data != code) {
-    //   throw new UnauthorizedException('Invalid OTP');
-    // }
-    // await RedisStore.remove(identifier);
-    // return {};
-    return {};
-  }
-
   static numberWithCommas(x: number | string): string {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
@@ -78,5 +70,12 @@ export class Helper {
     if (!value) return null;
     if (value == '') return null;
     return value;
+  }
+
+  static async cloudinaryUpload(file: Express.Multer.File, options?: Record<string, unknown>) {
+    const storage = new CloudStorage(new Cloudinary());
+    const { path } = file;
+    const fileUrl = await storage.uploadFile(path, undefined, options);
+    return fileUrl;
   }
 }

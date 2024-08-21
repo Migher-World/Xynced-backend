@@ -5,24 +5,20 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { classToPlain, Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 import { AbstractEntity } from '../../../shared/entities/abstract-entity';
+import { Profile } from '../../profile/entities/profile.entity';
 
 @Entity('users')
 export class User extends AbstractEntity {
-  @Column()
-  firstName: string;
-
-  @Column()
-  lastName: string;
-
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ unique: true })
   phoneNumber: string;
 
   @Exclude()
@@ -39,24 +35,29 @@ export class User extends AbstractEntity {
   @Column({ default: true })
   status: boolean;
 
+  @Column({ default: 'Nigeria' })
+  country: string;
+
   @Column({ default: false })
   emailVerified: boolean;
 
   @Column({ default: false })
   phoneNumberVerified: boolean;
 
-  protected fullName: string;
+  @OneToOne(() => Profile, (profile) => profile.user, { eager: true })
+  @JoinColumn()
+  profile: Profile;
+
   protected verified: boolean;
 
   @BeforeInsert()
   async handleBeforeInsert() {
     this.password = await bcrypt.hash(this.password, 10);
-    this.verified = this.emailVerified || this.phoneNumberVerified;
   }
 
   @AfterLoad()
   handleAfterLoad() {
-    this.fullName = this.firstName + ' ' + this.lastName;
+    this.verified = this.emailVerified || this.phoneNumberVerified;
   }
 
   async comparePassword(password: string) {

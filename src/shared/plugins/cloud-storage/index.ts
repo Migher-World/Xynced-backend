@@ -8,8 +8,12 @@ export class CloudStorage {
     return this.storage.getFileUrl(filename);
   }
 
-  async uploadFile(filenameOrPath: string, body?: Buffer | Express.Multer.File): Promise<string> {
-    return this.storage.uploadFile(filenameOrPath, body);
+  async uploadFile(
+    filenameOrPath: string,
+    body?: Buffer | Express.Multer.File,
+    options?: Record<string, unknown>,
+  ): Promise<string> {
+    return this.storage.uploadFile(filenameOrPath, body, options);
   }
 
   async downloadFile(filename: string): Promise<Buffer> {

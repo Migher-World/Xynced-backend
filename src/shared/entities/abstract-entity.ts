@@ -1,3 +1,4 @@
+import { Exclude, instanceToPlain } from 'class-transformer';
 import {
   BaseEntity,
   CreateDateColumn,
@@ -16,6 +17,11 @@ export abstract class AbstractEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Exclude()
   @DeleteDateColumn()
   deletedAt: Date;
+
+  toJSON() {
+    return instanceToPlain(this);
+  }
 }

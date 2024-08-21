@@ -13,6 +13,9 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { BullModule } from '@nestjs/bull';
 import { WebsocketModule } from './websockets/websocket.module';
 import { GlobalModule } from './global.module';
+import { KycModule } from './modules/kyc/kyc.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import IORedis from 'ioredis';
 const mg = require('nodemailer-mailgun-transport');
 
 @Module({
@@ -35,7 +38,13 @@ const mg = require('nodemailer-mailgun-transport');
         },
       },
     }),
-    BullModule.forRoot({}),
+    BullModule.forRoot({
+      createClient: () =>
+        new IORedis(env.redisUrl, {
+          enableReadyCheck: false,
+          maxRetriesPerRequest: null,
+        }),
+    }),
     // FirebaseAdminModule.forRootAsync({
     //   useFactory: () => ({
     //     credential: admin.credential.applicationDefault(),
@@ -46,6 +55,8 @@ const mg = require('nodemailer-mailgun-transport');
     EmailsModule,
     NotificationsModule,
     WebsocketModule,
+    KycModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
