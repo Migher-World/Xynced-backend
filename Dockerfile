@@ -1,29 +1,23 @@
+# === Development Stage ===
 FROM node:16-alpine AS development
 WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production=false
 COPY . .
-RUN yarn install
 RUN yarn build
 
-FROM node:16-alpine
-WORKDIR /app
-# copy from build image
-COPY --from=development /app/dist ./dist
-COPY --from=development /app/node_modules ./node_modules
-COPY package.json ./
-
-CMD ["yarn", "run", "start:dev"]
-
-
+# === Production Stage ===
 FROM node:16-alpine AS production
 WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production=false
 COPY . .
-RUN yarn install
 RUN yarn build
 
+# === Final Stage ===
 FROM node:16-alpine
 WORKDIR /app
-# copy from build image
-COPY --from=production /app/dist ./dist
+COPY --from=development /app/dist ./dist
 COPY --from=production /app/node_modules ./node_modules
 COPY package.json ./
 

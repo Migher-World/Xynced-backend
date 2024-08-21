@@ -25,7 +25,7 @@ services:
   #     - api-network
   build:
     build: .
-    container_name: rental-api
+    container_name: xynced-api
     restart: always
     # environment:
     #   - REDIS_URL=redis://redis:6379
