@@ -1,10 +1,6 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import * as dotenv from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { Helper } from '../shared/helpers';
 import env from './env.config';
-
-dotenv.config();
 
 const scheme = Helper.getScheme();
 
