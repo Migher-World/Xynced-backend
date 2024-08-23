@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { KycService } from './kyc.service';
 import { resolveResponse } from '../../shared/resolvers';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
@@ -14,5 +14,10 @@ export class KycController {
   @Post()
   create(@Body() createKycDto: any, @CurrentUser() user: User) {
     return resolveResponse(this.kycService.createOrUpdateKyc(user.id, createKycDto));
+  }
+
+  @Get('/metadata')
+  getMetadata() {
+    return resolveResponse(this.kycService.getMetadata());
   }
 }
