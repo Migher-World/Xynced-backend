@@ -19,10 +19,6 @@ export class RegisterDto {
   country: string;
 
   @IsNotEmpty()
-  @IsOptional()
-  phoneNumber: string;
-
-  @IsNotEmpty()
   password: string;
 }
 
