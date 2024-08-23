@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthPayload, LoginDto, RegisterDto } from './auth.dto';
+import { AuthPayload, LoginDto, RegisterDto, VerifyOTPDto } from './auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { CacheService } from '../cache/cache.service';
@@ -20,6 +20,7 @@ export class AuthService {
 
   async signUp(credentials: RegisterDto) {
     const user = await this.usersService.create(credentials);
+    this.sendOtp(user.email);
     const payload: AuthPayload = { id: user.id };
     const token = this.jwtService.sign(payload);
     return { user: user.toJSON(), token };
@@ -41,7 +42,7 @@ export class AuthService {
   }
 
   async sendOtp(email: string) {
-    const otp = isDev() ? '123456' : await Helper.generateToken();
+    const otp = await this.generateOTP([email]);
 
     // Save to redis
     await this.cacheService.set(email, otp, 600);
@@ -57,5 +58,37 @@ export class AuthService {
       receiverEmail: email,
     };
     this.eventEmitter.emit(AppEvents.SEND_EMAIl, createEmailDto);
+  }
+
+  async verifyOTP(verifyOTPDto: VerifyOTPDto) {
+    const { code, identifier } = verifyOTPDto;
+    const otp = await this.cacheService.get(identifier);
+    if (otp !== code) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+    return true;
+  }
+
+  async verifyAccount(verifyOTPDto: VerifyOTPDto) {
+    const { identifier } = verifyOTPDto;
+    await this.verifyOTP(verifyOTPDto);
+    await this.cacheService.delete(identifier);
+    const user = await this.usersService.findOne(identifier, 'email');
+    user.emailVerified = true;
+    await user.save();
+    const payload: AuthPayload = { id: user.id };
+    const token = this.jwtService.sign(payload);
+    return {
+      user: user.toJSON(),
+      token,
+    };
+  }
+
+  async generateOTP(keys: string[]) {
+    const otp = isDev() ? '123456' : Helper.generateToken();
+    for (const item of keys) {
+      this.cacheService.set(item, otp, 600);
+    }
+    return otp;
   }
 }

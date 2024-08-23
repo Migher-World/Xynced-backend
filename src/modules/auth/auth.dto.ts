@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class LoginDto {
@@ -23,6 +24,21 @@ export class RegisterDto {
 
   @IsNotEmpty()
   password: string;
+}
+
+export class VerifyOTPDto {
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim().toLowerCase())
+  identifier: string;
+
+  @IsNotEmpty()
+  code: string;
+}
+
+export class GenerateOTPDto {
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim().toLowerCase())
+  identifier: string;
 }
 
 export interface AuthPayload {

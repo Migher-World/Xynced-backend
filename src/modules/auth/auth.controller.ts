@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { resolveResponse, sendObjectResponse } from '../../shared/resolvers';
 import { User } from '../users/entities/user.entity';
-import { LoginDto, RegisterDto } from './auth.dto';
+import { GenerateOTPDto, LoginDto, RegisterDto, VerifyOTPDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { Public } from '../../shared/decorators/public.decorator';
 
@@ -28,5 +28,20 @@ export class AuthController {
   @Get('me')
   validateToken(@CurrentUser() user: User) {
     return sendObjectResponse(user, 'Token is valid');
+  }
+
+  @Post('verify-otp')
+  async verifyOTP(@Body() verifyOTPDto: VerifyOTPDto) {
+    return resolveResponse(this.authService.verifyOTP(verifyOTPDto));
+  }
+
+  @Post('verify-account')
+  async verifyAccount(@Body() verifyAccountDto: VerifyOTPDto) {
+    return resolveResponse(this.authService.verifyAccount(verifyAccountDto));
+  }
+
+  @Post('send-otp')
+  async sendOtp(@Body() dto: GenerateOTPDto) {
+    return resolveResponse(this.authService.sendOtp(dto.identifier));
   }
 }
