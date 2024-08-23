@@ -78,4 +78,14 @@ export class Helper {
     const fileUrl = await storage.uploadFile(path, undefined, options);
     return fileUrl;
   }
+
+  static toSentenceCase(str: string) {
+    // change to sentence case (first letter uppercase) and remove underscores or dashes
+    return str
+      .replace(/_/g, ' ')
+      .replace(/-/g, ' ')
+      .replace(/\w\S*/g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+      });
+  }
 }

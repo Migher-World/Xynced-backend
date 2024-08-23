@@ -23,6 +23,11 @@ export class ProfileController {
     return resolveResponse(this.profileService.getProfile(user.id));
   }
 
+  @Get('/metadata')
+  getMetadata() {
+    return resolveResponse(this.profileService.getMetadata());
+  }
+
   // @Get()
   // findAll() {
   //   return this.profileService.findAll();
