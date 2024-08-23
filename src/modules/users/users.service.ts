@@ -17,23 +17,23 @@ export class UsersService extends BasicService<User> {
   }
 
   async checkDuplicate(user: Partial<User>) {
-    const { email, phoneNumber } = user;
+    const { email } = user;
     const isEmailExist = await this.userRepo.findOne({ where: { email } });
-    const isTelephoneExist = await this.userRepo.findOne({
-      where: { phoneNumber },
-    });
+    // const isTelephoneExist = await this.userRepo.findOne({
+    //   where: { phoneNumber },
+    // });
 
-    if (isEmailExist && isTelephoneExist) {
-      throw new BadRequestException('Email and phone number already exists');
-    }
+    // if (isEmailExist && isTelephoneExist) {
+    //   throw new BadRequestException('Email and phone number already exists');
+    // }
 
     if (isEmailExist) {
       throw new BadRequestException('Email exists');
     }
 
-    if (isTelephoneExist) {
-      throw new BadRequestException('Phone number exists');
-    }
+    // if (isTelephoneExist) {
+    //   throw new BadRequestException('Phone number exists');
+    // }
   }
 
   async create(createUserDto: CreateUserDto) {
