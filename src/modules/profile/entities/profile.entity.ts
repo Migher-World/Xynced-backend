@@ -66,6 +66,9 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     doesFaithMatter: boolean;
 
+    @Column({ nullable: true })
+    values: string;
+
     @Column({ nullable: true, type: 'simple-array' })
     languages: string[];
 

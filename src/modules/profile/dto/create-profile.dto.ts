@@ -70,6 +70,10 @@ export class CreateProfileDto {
     @IsOptional()
     interests: string[];
 
+    @IsString()
+    @IsOptional()
+    values: string;
+
     @IsBoolean()
     @IsOptional()
     doesFaithMatter: boolean;

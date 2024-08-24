@@ -28,6 +28,11 @@ export class ProfileController {
     return resolveResponse(this.profileService.getMetadata());
   }
 
+  @Get('/stage')
+  getStage(@CurrentUser() user: User) {
+    return resolveResponse(this.profileService.getStage(user.id));
+  }
+
   // @Get()
   // findAll() {
   //   return this.profileService.findAll();

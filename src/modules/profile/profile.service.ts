@@ -36,4 +36,31 @@ export class ProfileService extends BasicService<Profile> {
       residenceStatus: Object.values(ResidenceStatusEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
     }
   }
+
+  async getStage(userId: string) {
+    const profile = await this.findOne(userId, 'userId', null, false);
+
+    // const keys = Object.keys(profile).filter((key) => key !== 'id' && key !== 'userId');
+
+    const stages: Record<string, Array<keyof typeof profile>> = {
+      stage3a: ['dateOfBirth', 'gender', 'faith', 'relationshipStatus', 'employmentStatus'],
+      stage3b: ['residenceStatus', 'country', 'city', 'residenceStatus', 'countryCode', 'phoneNumber'],
+      stage4a: ['profilePicture'],
+      stage4b: ['pictures'],
+      stage4c: ['bio', 'interests'],
+      stage5a: ['values', 'doesFaithMatter', 'languages', 'relationshipGoals'],
+      stage5b: ['lifeGoals', 'educationalBackground', 'whatWouldYouLikeYourMatchToKnow'],
+      stage6a: ['agePreference', 'locationPreference', 'matchPreferences'],
+      stage6b: ['matchCulturalValues', 'faithBasePreferences', 'financialStabilityView', 'personalityTraitInMatch'],
+    }
+
+    const activeStage = Object.keys(stages).find((stage) => {
+      return stages[stage].some((key) => !profile[key]);
+    });
+
+    return {
+      activeStage,
+      stages,
+    } 
+  }
 }
