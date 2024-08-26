@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
-import { EmploymentStatusEnum, FaithEnum, GenderEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
+import { EmploymentStatusEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 import { User } from "../../users/entities/user.entity";
 import { AbstractEntity } from "../../../shared/entities/abstract-entity";
 
@@ -60,8 +60,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     bio: string;
 
-    @Column({ nullable: true, type: 'simple-array' })
-    interests: string[];
+    @Column({ nullable: true, type: 'simple-array', enum: InterestEnum })
+    interests: InterestEnum[];
 
     @Column({ nullable: true })
     doesFaithMatter: boolean;
@@ -87,8 +87,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     agePreference: string;
 
-    @Column({ nullable: true })
-    locationPreference: string;
+    @Column({ nullable: true, type: 'simple-array' })
+    locationPreference: string[];
 
     @Column({ nullable: true, type: 'simple-array' })
     matchPreferences: string[];
@@ -102,8 +102,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     financialStabilityView: string;
 
-    @Column({ nullable: true })
-    personalityTraitInMatch: string;
+    @Column({ nullable: true, type: 'simple-array' })
+    personalityTraitInMatch: string[];
 
     @Column({ nullable: true })
     familyAndSocialRelationshipPreferences: string;

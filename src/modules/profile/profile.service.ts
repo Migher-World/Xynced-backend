@@ -5,7 +5,7 @@ import { BasicService } from '../../shared/services/basic-service.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { EmploymentStatusEnum, FaithEnum, GenderEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
+import { EmploymentStatusEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
 import { Helper } from '../../shared/helpers';
 
 @Injectable()
@@ -34,6 +34,7 @@ export class ProfileService extends BasicService<Profile> {
       gender: Object.values(GenderEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       relationshipStatus: Object.values(RelationshipStatusEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       residenceStatus: Object.values(ResidenceStatusEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
+      interest: Object.values(InterestEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
     }
   }
 
@@ -44,7 +45,7 @@ export class ProfileService extends BasicService<Profile> {
 
     const stages: Record<string, Array<keyof typeof profile>> = {
       stage3a: ['dateOfBirth', 'gender', 'faith', 'relationshipStatus', 'employmentStatus'],
-      stage3b: ['residenceStatus', 'country', 'city', 'residenceStatus', 'countryCode', 'phoneNumber'],
+      stage3b: ['profession', 'country', 'city', 'residenceStatus', 'countryCode', 'phoneNumber'],
       stage4a: ['profilePicture'],
       stage4b: ['pictures'],
       stage4c: ['bio', 'interests'],
@@ -52,6 +53,7 @@ export class ProfileService extends BasicService<Profile> {
       stage5b: ['lifeGoals', 'educationalBackground', 'whatWouldYouLikeYourMatchToKnow'],
       stage6a: ['agePreference', 'locationPreference', 'matchPreferences'],
       stage6b: ['matchCulturalValues', 'faithBasePreferences', 'financialStabilityView', 'personalityTraitInMatch'],
+      stage6c: ['familyAndSocialRelationshipPreferences', 'healthAndLifestyleChoices', 'pastExperiences', 'dealBreaker'],
     }
 
     const activeStage = Object.keys(stages).find((stage) => {
