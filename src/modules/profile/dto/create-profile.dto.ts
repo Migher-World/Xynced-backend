@@ -99,9 +99,9 @@ export class CreateProfileDto {
     @IsOptional()
     whatWouldYouLikeYourMatchToKnow: string;
 
-    @IsString()
+    @IsArray()
     @IsOptional()
-    agePreference: string;
+    agePreference: string[];
 
     @IsArray()
     @IsOptional()

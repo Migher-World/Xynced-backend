@@ -84,8 +84,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     whatWouldYouLikeYourMatchToKnow: string;
 
-    @Column({ nullable: true })
-    agePreference: string;
+    @Column({ nullable: true, type: 'simple-array' })
+    agePreference: string[];
 
     @Column({ nullable: true, type: 'simple-array' })
     locationPreference: string[];
