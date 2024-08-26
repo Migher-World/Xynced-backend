@@ -76,6 +76,9 @@ export class Profile extends AbstractEntity {
     relationshipGoals: string[];
 
     @Column({ nullable: true })
+    children: string;
+
+    @Column({ nullable: true })
     lifeGoals: string;
 
     @Column({ nullable: true })

@@ -89,6 +89,10 @@ export class CreateProfileDto {
 
     @IsString()
     @IsOptional()
+    children: string;
+
+    @IsString()
+    @IsOptional()
     lifeGoals: string;
 
     @IsString()
