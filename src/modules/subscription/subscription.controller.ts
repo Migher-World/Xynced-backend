@@ -13,6 +13,11 @@ import { Public } from '../../shared/decorators/public.decorator';
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
+  @Get()
+  async getUserSubscription(@CurrentUser() user: User) {
+    return resolveResponse(this.subscriptionService.getUserSubscription(user));
+  }
+
   @Post()
   async createSubscription(@Body() payload: CreateSubscriptionDto, @CurrentUser() user: User) {
     return resolveResponse(this.subscriptionService.createSubscription(

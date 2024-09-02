@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BasicService } from '../../shared/services/basic-service.service';
 import { plans, Subscription, SubscriptionStatusEnum } from './entities/subscription.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { User } from '../users/entities/user.entity';
 import Stripe from 'stripe';
 import { AppDataSource } from '../../config/db.config';
 
+// TODO: webhook to cancel subscription when expired
 @Injectable()
 export class SubscriptionService extends BasicService<Subscription> {
   constructor(
@@ -20,6 +21,14 @@ export class SubscriptionService extends BasicService<Subscription> {
 
   async getPlans() {
     return plans;
+  }
+
+  async getUserSubscription(user: User) {
+    const sub = await this.subscriptionRepository.findOne({ where: { userId: user.id, status: SubscriptionStatusEnum.ACTIVE } });
+    if (!sub) {
+        throw new BadRequestException('User has no active subscription');
+    }
+    return sub;
   }
 
   async createSubscription(subscription: CreateSubscriptionDto, user: User) {

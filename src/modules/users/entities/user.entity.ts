@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
@@ -12,6 +13,7 @@ import { classToPlain, Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 import { AbstractEntity } from '../../../shared/entities/abstract-entity';
 import { Profile } from '../../profile/entities/profile.entity';
+import { Subscription } from 'rxjs';
 
 @Entity('users')
 export class User extends AbstractEntity {
