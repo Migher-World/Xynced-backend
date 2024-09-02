@@ -15,7 +15,9 @@ import { WebsocketModule } from './websockets/websocket.module';
 import { GlobalModule } from './global.module';
 import { KycModule } from './modules/kyc/kyc.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 import IORedis from 'ioredis';
+import { StripeModule } from 'nestjs-stripe';
 const mg = require('nodemailer-mailgun-transport');
 
 @Module({
@@ -45,6 +47,10 @@ const mg = require('nodemailer-mailgun-transport');
           maxRetriesPerRequest: null,
         }),
     }),
+    StripeModule.forRoot({
+      apiKey: 'my_secret_key',
+      apiVersion: '2024-06-20'
+    }),
     // FirebaseAdminModule.forRootAsync({
     //   useFactory: () => ({
     //     credential: admin.credential.applicationDefault(),
@@ -57,6 +63,7 @@ const mg = require('nodemailer-mailgun-transport');
     WebsocketModule,
     KycModule,
     ProfileModule,
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
