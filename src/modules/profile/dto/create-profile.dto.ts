@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate, IsDateString } from 'class-validator';
-import { EmploymentStatusEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
+import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 
 export class CreateProfileDto {
     @IsString()
@@ -75,9 +75,9 @@ export class CreateProfileDto {
     @IsOptional()
     values: string;
 
-    @IsBoolean()
     @IsOptional()
-    doesFaithMatter: boolean;
+    @IsEnum(FaithBasedMatchEnum)
+    doesFaithMatter: FaithBasedMatchEnum;
 
     @IsArray()
     @IsOptional()
@@ -87,9 +87,9 @@ export class CreateProfileDto {
     @IsOptional()
     relationshipGoals: string[];
 
-    @IsString()
     @IsOptional()
-    children: string;
+    @IsEnum(ChildrenEnum)
+    children: ChildrenEnum;
 
     @IsString()
     @IsOptional()

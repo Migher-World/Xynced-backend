@@ -5,7 +5,7 @@ import { BasicService } from '../../shared/services/basic-service.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { EmploymentStatusEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
+import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
 import { Helper } from '../../shared/helpers';
 
 @Injectable()
@@ -35,6 +35,8 @@ export class ProfileService extends BasicService<Profile> {
       relationshipStatus: Object.values(RelationshipStatusEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       residenceStatus: Object.values(ResidenceStatusEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       interest: Object.values(InterestEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
+      faithBasedMatch: Object.values(FaithBasedMatchEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
+      children: Object.values(ChildrenEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
     }
   }
 

@@ -80,3 +80,15 @@ export enum InterestEnum {
     HISTORY = 'history',
     POLITICS = 'politics',
 }
+
+export enum FaithBasedMatchEnum {
+    YES = 'Yes, faith is important to me',
+    NO = 'No, faith is not important to me',
+    MAYBE = 'Open to dating someone with different faith',
+}
+
+export enum ChildrenEnum {
+    NO = 'Not planning on having children',
+    YES = 'Planning on having children',
+    MAYBE = 'Open to the idea of having children',
+}

@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
-import { EmploymentStatusEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
+import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 import { User } from "../../users/entities/user.entity";
 import { AbstractEntity } from "../../../shared/entities/abstract-entity";
 
@@ -63,8 +63,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true, type: 'simple-array', enum: InterestEnum })
     interests: InterestEnum[];
 
-    @Column({ nullable: true })
-    doesFaithMatter: boolean;
+    @Column({ nullable: true, enum: FaithBasedMatchEnum })
+    doesFaithMatter: FaithBasedMatchEnum;
 
     @Column({ nullable: true })
     values: string;
@@ -75,8 +75,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true, type: 'simple-array' })
     relationshipGoals: string[];
 
-    @Column({ nullable: true })
-    children: string;
+    @Column({ nullable: true, enum: ChildrenEnum })
+    children: ChildrenEnum;
 
     @Column({ nullable: true })
     lifeGoals: string;
