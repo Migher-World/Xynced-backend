@@ -126,3 +126,23 @@ export enum RelationshipGoalsEnum {
     SERIOUS_RELATIONSHIP = 'Serious relationship',
     MARRIAGE = 'Marriage',
 }
+
+export enum PersonalityTraitEnum {
+    KIND_AND_COMPASSIONATE = 'Kind and compassionate',
+    HONEST_AND_TRUSTWORTHY = 'Honest and trustworthy',
+    LOYAL_AND_COMMITTED = 'Loyal and committed',
+    FUNNY_AND_HUMOROUS = 'Funny and humorous',
+    INTELLIGENT_AND_CURIOUS = 'Intelligent and curious',
+    ADVENTUROUS_AND_SPONTANEOUS = 'Adventurous and spontaneous',
+    PATIENT_AND_UNDERSTANDING = 'Patient and understanding',
+    OPTIMISTIC_AND_POSITIVE = 'Optimistic and positive',
+    GENEROUS_AND_THOUGHTFUL = 'Generous and thoughtful',
+    CREATIVE_AND_ARTISTIC = 'Creative and artistic',
+    INDEPENDENT_AND_SELF_SUFFICIENT = 'Independent and self-sufficient',
+    AMBITIOUS_AND_DRIVEN = 'Ambitious and driven',
+    EASYGOING_AND_LAIDBACK = 'Easygoing and laidback',
+    OUTGOING_AND_SOCIAL = 'Outgoing and social',
+    INTROVERTED_AND_THOUGHTFUL = 'Introverted and thoughtful',
+    ROMANTIC_AND_SENTIMENTAL = 'Romantic and sentimental',
+    SPIRITUAL_AND_FAITHFUL = 'Spiritual and faithful',
+}

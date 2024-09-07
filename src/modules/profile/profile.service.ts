@@ -5,7 +5,7 @@ import { BasicService } from '../../shared/services/basic-service.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LifestyleEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
+import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LifestyleEnum, PersonalityTraitEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
 import { Helper } from '../../shared/helpers';
 
 @Injectable()
@@ -39,6 +39,7 @@ export class ProfileService extends BasicService<Profile> {
       children: Object.values(ChildrenEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       lifestyleChoices: Object.values(LifestyleEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       relationshipGoals: Object.values(RelationshipGoalsEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
+      personalityTraitInMatch: Object.values(PersonalityTraitEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
     }
   }
 
