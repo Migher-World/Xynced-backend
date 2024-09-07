@@ -146,3 +146,37 @@ export enum PersonalityTraitEnum {
     ROMANTIC_AND_SENTIMENTAL = 'Romantic and sentimental',
     SPIRITUAL_AND_FAITHFUL = 'Spiritual and faithful',
 }
+
+export enum CulturalValuesEnum {
+    FAMILY = 'Family',
+    RELIGION = 'Religion',
+    TRADITION = 'Tradition',
+    LANGUAGE = 'Language',
+    FOOD = 'Food',
+    HOLIDAYS = 'Holidays',
+    CLOTHING = 'Cloting',
+}
+
+export enum LanguagesEnum {
+    ENGLISH = 'English',
+    SPANISH = 'Spanish',
+    FRENCH = 'French',
+    GERMAN = 'German',
+    CHINESE = 'Chinese',
+    JAPANESE = 'Japanese',
+    KOREAN = 'Korean',
+    ARABIC = 'Arabic',
+    RUSSIAN = 'Russian',
+    PORTUGUESE = 'Portuguese',
+    ITALIAN = 'Italian',
+    HINDI = 'Hindi',
+    BENGALI = 'Bengali',
+    URDU = 'Urdu',
+    PUNJABI = 'Punjabi',
+    TELEGU = 'Telegu',
+    TAMIL = 'Tamil',
+    MARATHI = 'Marathi',
+    GUJARATI = 'Gujarati',
+    KANNADA = 'Kannada',
+    MALAYALAM = 'Malayalam',
+}
