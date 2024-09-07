@@ -92,3 +92,37 @@ export enum ChildrenEnum {
     YES = 'Planning on having children',
     MAYBE = 'Open to the idea of having children',
 }
+
+export enum LifestyleEnum {
+    HEALTHY_EATING = 'Healthy eating',
+    REGULAR_EXERCISE = 'Regular exercise',
+    SUFFICIENT_SLEEP = 'Sufficient sleep',
+    NO_SMOKING = 'No smoking',
+    STRESS_MANAGEMENT = 'Stress management',
+    ALCOHOL_IN_MODERATION = 'Alcohol in moderation',
+    MEDICAL_CHECKUPS = 'Regular medical checkups',
+    VACCINATIONS = 'Up-to-date vaccinations',
+    HYDRATION = 'Adequate hydration',
+    VEGETARIAN = 'Vegetarian',
+    VEGAN = 'Vegan',
+    GLUTEN_FREE = 'Gluten-free',
+    LOW_CARB = 'Low-carb',
+    INTERMITTENT_FASTING = 'Intermittent fasting',
+    YOGA = 'Yoga',
+    PILATES = 'Pilates',
+    RUNNING = 'Running',
+    CYCLING = 'Cycling',
+    SWIMMING = 'Swimming',
+    WEIGHT_TRAINING = 'Weight training',
+    MENTAL_HEALTH = 'Mental health',
+    PERSONAL_CARE = 'Personal care',
+    SKIN_CARE = 'Skin care',
+    ENVIROMENTAL_CONSCIOUSNESS = 'Environmental consciousness',
+    COMMUNITY_INVOLVEMENT = 'Community involvement',
+}
+
+export enum RelationshipGoalsEnum {
+    CASUAL_DATING = 'Casual dating',
+    SERIOUS_RELATIONSHIP = 'Serious relationship',
+    MARRIAGE = 'Marriage',
+}
