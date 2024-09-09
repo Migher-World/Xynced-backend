@@ -61,6 +61,7 @@ export class ProfileService extends BasicService<Profile> {
       stage6a: ['agePreference', 'locationPreference', 'matchPreferences'],
       stage6b: ['matchCulturalValues', 'faithBasePreferences', 'financialStabilityView', 'personalityTraitInMatch'],
       stage6c: ['familyAndSocialRelationshipPreferences', 'healthAndLifestyleChoices', 'pastExperiences', 'dealBreaker'],
+      final: ['awareXyncedForLTR', 'readyForLTR', 'doYouHaveChildren', 'howManyChildren', 'willYouBeOpenWithYourMatch', 'theseWillBeMadeVisible'],
     }
 
     const activeStage = Object.keys(stages).find((stage) => {
