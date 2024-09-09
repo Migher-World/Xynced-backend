@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate, IsDateString, IsNumber } from 'class-validator';
 import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 
 export class CreateProfileDto {
@@ -146,4 +146,28 @@ export class CreateProfileDto {
     @IsString()
     @IsOptional()
     dealBreaker: string;
+
+    @IsBoolean()
+    @IsOptional()
+    awareXyncedForLTR: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    readyForLTR: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    doYouHaveChildren: boolean;
+
+    @IsNumber()
+    @IsOptional()
+    howManyChildren: number;
+
+    @IsBoolean()
+    @IsOptional()
+    willYouBeOpenWithYourMatch: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    theseWillBeMadeVisible: boolean;
 }

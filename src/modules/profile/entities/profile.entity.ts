@@ -119,4 +119,23 @@ export class Profile extends AbstractEntity {
 
     @Column({ nullable: true })
     dealBreaker: string;
+
+    // qustions part
+    @Column({ nullable: true })
+    awareXyncedForLTR: boolean;
+
+    @Column({ nullable: true })
+    readyForLTR: boolean;
+
+    @Column({ nullable: true })
+    doYouHaveChildren: boolean;
+
+    @Column({ nullable: true })
+    howManyChildren: number;
+
+    @Column({ nullable: true })
+    willYouBeOpenWithYourMatch: boolean;
+
+    @Column({ nullable: true })
+    theseWillBeMadeVisible: boolean;
 }

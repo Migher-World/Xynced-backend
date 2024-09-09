@@ -41,7 +41,7 @@ export class ProfileService extends BasicService<Profile> {
       relationshipGoals: Object.values(RelationshipGoalsEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       personalityTraitInMatch: Object.values(PersonalityTraitEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
       culturalValues: Object.values(CulturalValuesEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
-      languages: Object.values(LanguagesEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
+      languages: Object.values(LanguagesEnum ).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
     }
   }
 
