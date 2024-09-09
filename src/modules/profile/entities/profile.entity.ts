@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { AfterLoad, Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 import { User } from "../../users/entities/user.entity";
 import { AbstractEntity } from "../../../shared/entities/abstract-entity";
@@ -138,4 +138,11 @@ export class Profile extends AbstractEntity {
 
     @Column({ nullable: true })
     theseWillBeMadeVisible: boolean;
+
+    protected age: number;
+
+    @AfterLoad()
+    handleAfterLoad() {
+        this.age = new Date().getFullYear() - new Date(this.dateOfBirth).getFullYear();
+    }
 }
