@@ -11,6 +11,7 @@ import { CacheService } from '../../modules/cache/cache.service';
 import { AbstractPaginationDto } from '../dto/abstract-pagination.dto';
 import { CACHE_LIMIT } from '../../config/cacheKeys';
 import { SelectQueryBuilder } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 
 //TODO: Fix all the type errors in this file
 export class BasicService<T> {
@@ -167,7 +168,7 @@ export class BasicService<T> {
     const response = await this.repository.findOne({ where, relations });
 
     if (!response && fail) {
-      throw new EntityNotFoundError(this.modelName, value);
+      throw new NotFoundException(`${this.modelName} Not Found`);
     }
 
     return response;
