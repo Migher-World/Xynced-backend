@@ -111,8 +111,8 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true })
     familyAndSocialRelationshipPreferences: string;
 
-    @Column({ nullable: true })
-    healthAndLifestyleChoices: string;
+    @Column({ nullable: true, type: 'simple-array' })
+    healthAndLifestyleChoices: string[];
 
     @Column({ nullable: true })
     pastExperiences: string;

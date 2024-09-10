@@ -135,9 +135,9 @@ export class CreateProfileDto {
     @IsOptional()
     familyAndSocialRelationshipPreferences: string;
 
-    @IsString()
+    @IsArray()
     @IsOptional()
-    healthAndLifestyleChoices: string;
+    healthAndLifestyleChoices: string[];
 
     @IsString()
     @IsOptional()
