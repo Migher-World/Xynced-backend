@@ -106,7 +106,7 @@ export class AuthService {
     };
 
     this.eventEmitter.emit(AppEvents.SEND_EMAIl, emailDto);
-    return isEmailExist;
+    return { message: 'Reset Password Email Sent' };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
@@ -115,13 +115,18 @@ export class AuthService {
 
     // Retrieve Otp from Cache
     const storedOtp = await this.cacheService.get(email);
+
     if (otp != storedOtp) {
       throw new UnauthorizedException('Invalid OTP');
     }
 
     const user = await this.usersService.findOne(email, 'email');
-    Object.assign(user, { password: newPassword });
-    const updatedUserPassword = await this.usersService.update(user.id, user);
+
+    user.password = newPassword;
+
+    const updatedUserPassword = await user.save();
+
+    this.cacheService.delete(email);
 
     return updatedUserPassword;
   }

@@ -46,7 +46,7 @@ export class User extends AbstractEntity {
   @Column({ default: false })
   phoneNumberVerified: boolean;
 
-  @OneToOne(() => Profile, (profile) => profile.user, { eager: true })
+  @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
 
   protected verified: boolean;
