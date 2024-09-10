@@ -66,7 +66,7 @@ export class Profile extends AbstractEntity {
     @Column({ nullable: true, enum: FaithBasedMatchEnum })
     doesFaithMatter: FaithBasedMatchEnum;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, type: 'simple-array' })
     values: string[];
 
     @Column({ nullable: true, type: 'simple-array' })
