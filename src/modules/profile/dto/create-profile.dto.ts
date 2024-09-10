@@ -71,9 +71,9 @@ export class CreateProfileDto {
     @IsEnum(InterestEnum, { each: true })
     interests: InterestEnum[];
 
-    @IsString()
+    @IsArray()
     @IsOptional()
-    values: string;
+    values: string[];
 
     @IsOptional()
     @IsEnum(FaithBasedMatchEnum)

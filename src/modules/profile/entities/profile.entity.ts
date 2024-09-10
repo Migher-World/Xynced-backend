@@ -67,7 +67,7 @@ export class Profile extends AbstractEntity {
     doesFaithMatter: FaithBasedMatchEnum;
 
     @Column({ nullable: true })
-    values: string;
+    values: string[];
 
     @Column({ nullable: true, type: 'simple-array' })
     languages: string[];
