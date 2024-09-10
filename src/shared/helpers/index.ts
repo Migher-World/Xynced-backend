@@ -2,6 +2,7 @@ import slugify from 'slugify';
 import env from '../../config/env.config';
 const url = require('url');
 import * as faker from 'faker';
+import * as bcrypt from 'bcrypt';
 import * as tokenGen from 'otp-generator';
 import { CloudStorage } from '../plugins/cloud-storage';
 import { Cloudinary } from '../plugins/cloud-storage/cloudinary';
@@ -13,6 +14,10 @@ class SlugifyOptions {
 
 export class Helper {
   static faker = faker;
+
+  static async hash(string: string) {
+    return bcrypt.hash(string, 10);
+  }
 
   static slugify(name: string, options?: SlugifyOptions) {
     if (options) {

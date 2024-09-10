@@ -1,5 +1,5 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthPayload, LoginDto, RegisterDto, VerifyOTPDto } from './auth.dto';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthPayload, LoginDto, RegisterDto, RequestResetPasswordDto, ResetPasswordDto, VerifyOTPDto } from './auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { CacheService } from '../cache/cache.service';
@@ -91,4 +91,39 @@ export class AuthService {
     }
     return otp;
   }
+
+  async requestResetPassword(requestResetPasswordDto: RequestResetPasswordDto) {
+    const { email } = requestResetPasswordDto;
+    const isEmailExist = await this.usersService.findOne(email, 'email');
+    // Generate otp
+    const otp = await this.generateOTP([email]);
+    const emailDto: CreateEmailDto = {
+      receiverEmail: email,
+      subject: 'Reset password',
+      template: 'setPassword',
+      senderEmail: 'Xynced Info <info@lendhive.app>',
+      metaData: { code: otp, email },
+    };
+
+    this.eventEmitter.emit(AppEvents.SEND_EMAIl, emailDto);
+    return isEmailExist;
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { email, password, otp } = resetPasswordDto;
+    const newPassword = await Helper.hash(password);
+
+    // Retrieve Otp from Cache
+    const storedOtp = await this.cacheService.get(email);
+    if (otp != storedOtp) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+
+    const user = await this.usersService.findOne(email, 'email');
+    Object.assign(user, { password: newPassword });
+    const updatedUserPassword = await this.usersService.update(user.id, user);
+
+    return updatedUserPassword;
+  }
+
 }
