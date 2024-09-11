@@ -14,17 +14,6 @@ export class MatchService extends BasicService<Match> {
   }
 
   async getMatches(user: User) {
-    // return this.matchRepo.find({
-    //   where: { userId: user.id },
-    //   select: ['matchedUserId', 'isAccepted', 'isRejected'],
-    //   relations: {
-    //     matchedUser: {
-    //       profile: {
-    //         fullName: true
-    //       }
-    //     }
-    //   }
-    // });
     const userProfile = user.profile;
     const query = this.matchRepo.createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
@@ -60,6 +49,11 @@ export class MatchService extends BasicService<Match> {
     const doesFaithMatter = profile.doesFaithMatter;
     const culturalValuesPreference = profile.matchCulturalValues;
     const languagesPreference = profile.languages;
+
+    // if any of the preferences are not set, return an error
+    if (!interests || !agePreference || !childrenPreference || !doesFaithMatter || !culturalValuesPreference || !languagesPreference) {
+      throw new BadRequestException('Please set your preferences to get matches. To set your preferences, go to your profile');
+    }
 
     // get similar interests
     const similarInterests = await AppDataSource.query(
