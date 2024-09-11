@@ -25,15 +25,23 @@ export class MatchService extends BasicService<Match> {
     //     }
     //   }
     // });
+    const userProfile = user.profile;
     const query = this.matchRepo.createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
       .andWhere('match.isRejected = false')
       .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected'])
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
-      .leftJoinAndSelect('matchedUser.profile', 'profile')
-      .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture']);
+      .leftJoin('matchedUser.profile', 'profile')
+      .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture', 'profile.city', 'profile.pictures', 'profile.interests']);
 
-    return query.getMany();
+    const data = await query.getMany();
+    // get shared interests
+    const result = data.map((match) => {
+      const sharedInterests = userProfile.interests.filter((interest) => match.matchedUser.profile.interests.includes(interest));
+      return { ...match, sharedInterests };
+    });
+
+    return result;
   }
 
   async getPotentialMatches(user: User) {

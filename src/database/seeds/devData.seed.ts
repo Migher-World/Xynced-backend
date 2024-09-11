@@ -20,12 +20,12 @@ import {
 
 export default class devDataSeeder {
   public async run(_: unknown, connection: DataSource): Promise<void> {
-    const entities = [User, Profile];
+    // const entities = [User, Profile];
 
-    for (const singleEntity of entities) {
-      const repository = connection.getRepository(singleEntity);
-      repository.query(`TRUNCATE TABLE "${repository.metadata.tableName}" CASCADE;`);
-    }
+    // for (const singleEntity of entities) {
+    //   const repository = connection.getRepository(singleEntity);
+    //   repository.query(`TRUNCATE TABLE "${repository.metadata.tableName}" CASCADE;`);
+    // }
 
     const password = await Helper.hash('password');
 
