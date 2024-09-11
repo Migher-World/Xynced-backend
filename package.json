@@ -23,6 +23,7 @@
     "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.4.0",
     "@nestjs-modules/mailer": "1.8.1",
     "@nestjs/bull": "^0.6.2",
     "@nestjs/common": "^9.2.0",
@@ -73,6 +74,7 @@
     "stripe": "^16.9.0",
     "swagger-ui-express": "^4.1.5",
     "typeorm": "^0.3.10",
+    "typeorm-seeding": "^1.6.1",
     "winston": "^3.8.2"
   },
   "devDependencies": {

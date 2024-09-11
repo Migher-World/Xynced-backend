@@ -13,7 +13,7 @@ export class MatchController {
 
   @Get()
   getMatches(@CurrentUser() user: User) {
-    return resolveResponse(this.matchService.getMatches(user));
+    return resolveResponse(this.matchService.getPotentialMatches(user));
   }
 
   @Post('accept/:matchId')

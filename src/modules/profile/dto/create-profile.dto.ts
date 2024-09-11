@@ -1,5 +1,5 @@
 import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate, IsDateString, IsNumber } from 'class-validator';
-import { ChildrenEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
+import { ChildrenEnum, CulturalValuesEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LanguagesEnum, LifestyleEnum, PersonalityTraitEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 
 export class CreateProfileDto {
     @IsString()
@@ -81,11 +81,13 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    languages: string[];
+    @IsEnum(LanguagesEnum, { each: true })
+    languages: LanguagesEnum[];
 
     @IsArray()
     @IsOptional()
-    relationshipGoals: string[];
+    @IsEnum(RelationshipGoalsEnum, { each: true })
+    relationshipGoals: RelationshipGoalsEnum[];
 
     @IsOptional()
     @IsEnum(ChildrenEnum)
@@ -117,11 +119,13 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    matchCulturalValues: string[];
+    @IsEnum(CulturalValuesEnum, { each: true })
+    matchCulturalValues: CulturalValuesEnum[];
 
     @IsArray()
     @IsOptional()
-    faithBasePreferences: string[];
+    @IsEnum(FaithEnum, { each: true })
+    faithBasePreferences: FaithEnum[];
 
     @IsString()
     @IsOptional()
@@ -129,7 +133,8 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    personalityTraitInMatch: string[];
+    @IsEnum(PersonalityTraitEnum, { each: true })
+    personalityTraitInMatch: PersonalityTraitEnum[];
 
     @IsString()
     @IsOptional()
@@ -137,7 +142,8 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    healthAndLifestyleChoices: string[];
+    @IsEnum(LifestyleEnum, { each: true })
+    healthAndLifestyleChoices: LifestyleEnum[];
 
     @IsString()
     @IsOptional()

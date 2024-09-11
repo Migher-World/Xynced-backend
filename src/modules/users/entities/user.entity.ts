@@ -37,7 +37,7 @@ export class User extends AbstractEntity {
   @Column({ default: true })
   status: boolean;
 
-  @Column({ default: 'Nigeria' })
+  @Column({ default: 'Canada' })
   country: string;
 
   @Column({ default: false })

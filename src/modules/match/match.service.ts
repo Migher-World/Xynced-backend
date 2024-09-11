@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { AppDataSource } from '../../config/db.config';
+import { Profile } from '../profile/entities/profile.entity';
 
 @Injectable()
 export class MatchService extends BasicService<Match> {
@@ -13,19 +14,34 @@ export class MatchService extends BasicService<Match> {
   }
 
   async getMatches(user: User) {
-    return this.matchRepo.find({
-      where: { userId: user.id },
-    });
+    // return this.matchRepo.find({
+    //   where: { userId: user.id },
+    //   select: ['matchedUserId', 'isAccepted', 'isRejected'],
+    //   relations: {
+    //     matchedUser: {
+    //       profile: {
+    //         fullName: true
+    //       }
+    //     }
+    //   }
+    // });
+    const query = this.matchRepo.createQueryBuilder('match')
+      .where('match.userId = :userId', { userId: user.id })
+      .andWhere('match.isRejected = false')
+      .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected'])
+      .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoinAndSelect('matchedUser.profile', 'profile')
+      .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture']);
+
+    return query.getMany();
   }
 
   async getPotentialMatches(user: User) {
     // check if the user has already been matched
-    const checkMatches = await this.matchRepo.find({
-      where: { userId: user.id },
-    });
+    const checkMatches = await this.getMatches(user);
 
     if (checkMatches.length) {
-      return checkMatches;
+      return checkMatches.slice(0, 3);
     }
 
     const profile = user.profile;
@@ -39,32 +55,32 @@ export class MatchService extends BasicService<Match> {
 
     // get similar interests
     const similarInterests = await AppDataSource.query(
-      `SELECT * FROM profiles WHERE interests && '{${interests.join(',')}}'`,
+      `SELECT * FROM profile WHERE "interests" && ARRAY[${interests.map((interest) => `'${interest}'`)}]`,
     );
 
     // get similar age preferences
     const similarAgePreferences = await AppDataSource.query(
-      `SELECT * FROM profiles WHERE agePreference && '{${agePreference.join(',')}}'`,
+      `SELECT * FROM profile WHERE "age" BETWEEN ${agePreference[0]} AND ${agePreference[1]}`,
     );
 
     // get children preferences match
     const similarChildrenPreferences = await AppDataSource.query(
-        `SELECT * FROM profiles WHERE children = '${childrenPreference}'`,
+        `SELECT * FROM profile WHERE "children" = '${childrenPreference}'`,
     );
 
     // get faith matters match
     const similarFaithMatters = await AppDataSource.query(
-        `SELECT * FROM profiles WHERE doesFaithMatter = '${doesFaithMatter}'`,
+        `SELECT * FROM profile WHERE "doesFaithMatter" = '${doesFaithMatter}'`,
     );
 
     // get cultural values match
     const similarCulturalValues = await AppDataSource.query(
-        `SELECT * FROM profiles WHERE matchCulturalValues && '{${culturalValuesPreference.join(',')}}'`,
+        `SELECT * FROM profile WHERE "matchCulturalValues" && ARRAY[${culturalValuesPreference.map((culturalValue) => `'${culturalValue}'`)}]`,
     );
 
     // get languages match
     const similarLanguages = await AppDataSource.query(
-        `SELECT * FROM profiles WHERE languages && '{${languagesPreference.join(',')}}'`,
+        `SELECT * FROM profile WHERE "languages" && ARRAY[${languagesPreference.map((language) => `'${language}'`)}]`,
     );
 
     // get most closest match based on the above queries, i.e the user with the most similar interests, age preferences, etc
@@ -80,10 +96,10 @@ export class MatchService extends BasicService<Match> {
 
     const potentialMatchesMap = new Map();
     potentialMatches.forEach((match) => {
-        if (potentialMatchesMap.has(match.id)) {
-            potentialMatchesMap.set(match.id, potentialMatchesMap.get(match.id) + 1);
+        if (potentialMatchesMap.has(match.userId)) {
+            potentialMatchesMap.set(match.userId, potentialMatchesMap.get(match.userId) + 1);
         } else {
-            potentialMatchesMap.set(match.id, 1);
+            potentialMatchesMap.set(match.userId, 1);
         }
     });
 
@@ -93,10 +109,10 @@ export class MatchService extends BasicService<Match> {
 
     // create the top 3 matches
     const top3Matches = matches.slice(0, 3);
-    const data = this.matchRepo.create(top3Matches.map((id) => ({ userId: user.id, matchId: id })));
-    const result = await this.matchRepo.save(data);
+    const data = this.matchRepo.create(top3Matches.map((id) => ({ userId: user.id, matchedUserId: id })));
+    await this.matchRepo.save(data);
 
-    return result;
+    return this.getMatches(user);
   }
 
   async acceptMatch(user: User, matchId: string) {

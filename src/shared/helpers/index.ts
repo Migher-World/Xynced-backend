@@ -1,7 +1,7 @@
 import slugify from 'slugify';
 import env from '../../config/env.config';
 const url = require('url');
-import * as faker from 'faker';
+import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 import * as tokenGen from 'otp-generator';
 import { CloudStorage } from '../plugins/cloud-storage';
