@@ -29,7 +29,7 @@ export class AuthService {
   async signIn(loginDto: LoginDto) {
     try {
       const { email, password } = loginDto;
-      const user = await this.usersService.findOne(email, 'email');
+      const user = await this.usersService.findOne(email, 'email', ['profile']);
       if (user && (await user.comparePassword(password))) {
         const payload: AuthPayload = { id: user.id };
         const token = this.jwtService.sign(payload);
