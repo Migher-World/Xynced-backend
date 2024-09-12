@@ -33,6 +33,28 @@ export class MatchService extends BasicService<Match> {
     return result;
   }
 
+  async getMatchById(user: User, matchId: string) {
+    const query = this.matchRepo.createQueryBuilder('match')
+      .where('match.id = :id', { id: matchId })
+      .andWhere('match.userId = :userId', { userId: user.id })
+      .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoin('matchedUser.profile', 'profile')
+      .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture', 'profile.city', 'profile.pictures', 'profile.interests'])
+      .getOne();
+
+    const match = await query;
+    if (!match) {
+      throw new BadRequestException('Match not found');
+    }
+
+    const result = {
+      ...match,
+      sharedInterests: user.profile.interests.filter((interest) => match.matchedUser.profile.interests.includes(interest)),
+    }
+
+    return result;
+  }
+
   async getPotentialMatches(user: User) {
     // check if the user has already been matched
     const checkMatches = await this.getMatches(user);

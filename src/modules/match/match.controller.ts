@@ -16,6 +16,11 @@ export class MatchController {
     return resolveResponse(this.matchService.getPotentialMatches(user));
   }
 
+  @Get(':id')
+  getMatch(@CurrentUser() user: User, @Param('id') matchId: string) {
+    return resolveResponse(this.matchService.getMatchById(user, matchId));
+  }
+
   @Post('accept/:matchId')
   acceptMatch(@CurrentUser() user: User, @Param('matchId') matchId: string) {
     return resolveResponse(this.matchService.acceptMatch(user, matchId));
