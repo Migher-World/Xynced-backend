@@ -23,25 +23,25 @@ export enum PlanFeatureEnum {
 
 export const plans = [
   {
-    name: 'Basic',
-    description: 'Basic Plan',
+    name: 'Xynced Starter',
+    description: 'This plan allows you to take the initial steps towards finding your soulmate.',
     amount: 0,
     duration: 7,
     status: PlanStatusEnum.ACTIVE,
     features: [PlanFeatureEnum.UNLIMITED_MESSAGES],
   },
   {
-    name: 'Standard',
-    description: 'Standard Plan',
-    amount: 10,
+    name: 'Xynced Guided',
+    description: 'This plan provides a personalized matchmaking experience.',
+    amount: 35,
     duration: 30,
     status: PlanStatusEnum.ACTIVE,
     features: [PlanFeatureEnum.UNLIMITED_MESSAGES, PlanFeatureEnum.PERSONALIZED_MATCH, PlanFeatureEnum.AI_MATCHING],
   },
   {
-    name: 'Premium',
-    description: 'Premium Plan',
-    amount: 30,
+    name: 'Xynced Elite',
+    description: 'This plan offers a premium matchmaking service and relationship mentorship.',
+    amount: 0,
     duration: 30,
     status: PlanStatusEnum.ACTIVE,
     features: [
