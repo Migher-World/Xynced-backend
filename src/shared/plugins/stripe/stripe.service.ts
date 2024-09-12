@@ -35,7 +35,7 @@ export class StripeService {
         });
     }
 
-    async getProducs(): Promise<Stripe.ApiList<Stripe.Product>> {
+    async getProducts(): Promise<Stripe.ApiList<Stripe.Product>> {
         return this.stripe.products.list({
             expand: ['data.default_price'],
         });

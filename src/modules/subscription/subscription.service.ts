@@ -39,25 +39,26 @@ export class SubscriptionService extends BasicService<Subscription> {
     }
 
     const customer = await this.stripeService.createCustomer(user.email, user.profile.fullName);
-    const products = await this.stripeService.getProducs();
+    const products = await this.stripeService.getProducts();
     const product = products.data.find(
       (product) => product.name.toLowerCase() === subscription.plan.toLocaleLowerCase(),
     );
     const price = product.default_price as Stripe.Price;
+    if (price.unit_amount == 0) {
+      const subscription = this.subscriptionRepository.create({
+        userId: user.id,
+        plan: plans.find((plan) => plan.amount === 0),
+        status: SubscriptionStatusEnum.ACTIVE,
+      });
+      return this.subscriptionRepository.save(subscription);
+    }
     const session = await this.stripeService.createCheckoutSession(
       price.id,
       customer.id,
       subscription.successUrl,
       subscription.cancelUrl,
     );
-    return session;
-    // const newSubscription = this.subscriptionRepository.create({
-    //   userId: user.id,
-    //   plan: plans.find((plan) => plan.name === subscription.plan),
-    //   amount: price.unit_amount,
-    //   stripeSubscriptionId: session.id,
-    // });
-    // return this.subscriptionRepository.save(newSubscription);
+    return session.url;
   }
 
   async handleWebhook(payload: Stripe.Event) {

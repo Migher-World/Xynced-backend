@@ -26,7 +26,7 @@ export const plans = [
     name: 'Xynced Starter',
     description: 'This plan allows you to take the initial steps towards finding your soulmate.',
     amount: 0,
-    duration: 7,
+    duration: 30,
     status: PlanStatusEnum.ACTIVE,
     features: [PlanFeatureEnum.UNLIMITED_MESSAGES],
   },
