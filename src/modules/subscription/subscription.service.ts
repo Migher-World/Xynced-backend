@@ -32,6 +32,12 @@ export class SubscriptionService extends BasicService<Subscription> {
   }
 
   async createSubscription(subscription: CreateSubscriptionDto, user: User) {
+    // check if user has active subscription
+    const activeSubscription = await this.subscriptionRepository.findOne({ where: { userId: user.id, status: SubscriptionStatusEnum.ACTIVE } });
+    if (activeSubscription) {
+      return activeSubscription;
+    }
+
     const customer = await this.stripeService.createCustomer(user.email, user.profile.fullName);
     const products = await this.stripeService.getProducs();
     const product = products.data.find(
