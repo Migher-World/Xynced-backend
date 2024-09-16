@@ -161,7 +161,10 @@ export class MatchService extends BasicService<Match> {
     const matches = await this.matchRepo.find({ where: { userId: user.id } });
     await this.matchRepo.remove(matches);
     // store that user has reshuffled
-    await this.cacheService.set(`reshuffled-${user.id}`, true);
+    await this.cacheService.set(`reshuffled-${user.id}`, true, null);
+    // store matched users
+    const matchedUsers = matches.map((match) => match.matchedUserId);
+    await this.cacheService.set(`matched-${user.id}`, matchedUsers, null);
     return this.getPotentialMatches(user);
   }
 
