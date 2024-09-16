@@ -130,7 +130,14 @@ export class MatchService extends BasicService<Match> {
 
     const sortedPotentialMatches = [...potentialMatchesMap.entries()].sort((a, b) => b[1] - a[1]);
 
-    const matches = sortedPotentialMatches.map(([id]) => id);
+    let matches = sortedPotentialMatches.map(([id]) => id);
+
+    // check if user has reshuffled and remove previously matched users
+    const matchedUsers = await this.cacheService.get(`matched-${user.id}`);
+    if (matchedUsers) {
+      const filteredMatches = matches.filter((id) => !matchedUsers.includes(id));
+      matches = filteredMatches;
+    }
 
     // create the top 3 matches
     const top3Matches = matches.slice(0, 3);
