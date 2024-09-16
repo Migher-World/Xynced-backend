@@ -16,6 +16,9 @@ export class Match extends AbstractEntity {
   @ManyToOne(() => User)
   matchedUser: User;
 
+  @Column()
+  percentage: number;
+
   @Column({ default: false })
   isAccepted: boolean;
 

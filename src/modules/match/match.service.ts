@@ -19,7 +19,7 @@ export class MatchService extends BasicService<Match> {
     const query = this.matchRepo.createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
       .andWhere('match.isRejected = false')
-      .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected'])
+      .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected', 'match.percentage'])
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('matchedUser.profile', 'profile')
       .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture', 'profile.city', 'profile.pictures', 'profile.interests']);
@@ -121,11 +121,20 @@ export class MatchService extends BasicService<Match> {
 
     const potentialMatchesMap = new Map();
     potentialMatches.forEach((match) => {
-        if (potentialMatchesMap.has(match.userId)) {
-            potentialMatchesMap.set(match.userId, potentialMatchesMap.get(match.userId) + 1);
-        } else {
-            potentialMatchesMap.set(match.userId, 1);
-        }
+      const id = match.userId;
+      if (potentialMatchesMap.has(id)) {
+        potentialMatchesMap.set(id, potentialMatchesMap.get(id) + 1);
+      } else {
+        potentialMatchesMap.set(id, 1);
+      }
+    });
+
+    // add percentage match to each user based on the preferences and should not be more than 100%
+    const percentageMatchMap = new Map();
+
+    potentialMatchesMap.forEach((value, key) => {
+      const percentageMatch = Math.floor((value / 6) * 100);
+      percentageMatchMap.set(key, percentageMatch);
     });
 
     const sortedPotentialMatches = [...potentialMatchesMap.entries()].sort((a, b) => b[1] - a[1]);
@@ -141,7 +150,7 @@ export class MatchService extends BasicService<Match> {
 
     // create the top 3 matches
     const top3Matches = matches.slice(0, 3);
-    const data = this.matchRepo.create(top3Matches.map((id) => ({ userId: user.id, matchedUserId: id })));
+    const data = this.matchRepo.create(top3Matches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })));
     await this.matchRepo.save(data);
 
     return this.getMatches(user);
