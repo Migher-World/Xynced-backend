@@ -6,10 +6,11 @@ import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { AppDataSource } from '../../config/db.config';
 import { Profile } from '../profile/entities/profile.entity';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class MatchService extends BasicService<Match> {
-  constructor(@InjectRepository(Match) private matchRepo: Repository<Match>) {
+  constructor(@InjectRepository(Match) private matchRepo: Repository<Match>, private cacheService: CacheService) {
     super(matchRepo, 'Match');
   }
 
@@ -149,6 +150,19 @@ export class MatchService extends BasicService<Match> {
     match.isRejected = false;
     await this.matchRepo.save(match);
     return match;
+  }
+
+  async reshuffleMatches(user: User) {
+    // check if user has reshuffled
+    const reshuffled = await this.cacheService.get(`reshuffled-${user.id}`);
+    if (reshuffled) {
+      throw new BadRequestException('You have already reshuffled your matches');
+    }
+    const matches = await this.matchRepo.find({ where: { userId: user.id } });
+    await this.matchRepo.remove(matches);
+    // store that user has reshuffled
+    await this.cacheService.set(`reshuffled-${user.id}`, true);
+    return this.getPotentialMatches(user);
   }
 
   async declineMatch(user: User, matchId: string) {

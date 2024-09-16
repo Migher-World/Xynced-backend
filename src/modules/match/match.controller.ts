@@ -30,4 +30,9 @@ export class MatchController {
   declineMatch(@CurrentUser() user: User, @Param('matchId') matchId: string) {
     return resolveResponse(this.matchService.declineMatch(user, matchId));
   }
+
+  @Post('reshuffle')
+  reshuffleMatches(@CurrentUser() user: User) {
+    return resolveResponse(this.matchService.reshuffleMatches(user));
+  }
 }
