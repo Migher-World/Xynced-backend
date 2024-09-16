@@ -49,6 +49,8 @@ export class SubscriptionService extends BasicService<Subscription> {
         userId: user.id,
         plan: plans.find((plan) => plan.amount === 0),
         status: SubscriptionStatusEnum.ACTIVE,
+        startDate: new Date(),
+        endDate: new Date(new Date().setDate(new Date().getDate() + 30)),
       });
       return this.subscriptionRepository.save(subscription);
     }
