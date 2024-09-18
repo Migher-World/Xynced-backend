@@ -19,7 +19,7 @@ export class MatchService extends BasicService<Match> {
     const query = this.matchRepo.createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
       .andWhere('match.isRejected = false')
-      .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected', 'match.percentage'])
+      .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected', 'match.percentage', 'match.id'])
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('matchedUser.profile', 'profile')
       .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture', 'profile.city', 'profile.pictures', 'profile.interests']);
