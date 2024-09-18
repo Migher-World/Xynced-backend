@@ -92,7 +92,7 @@ export class Subscription extends AbstractEntity {
   @Column({ default: false })
   isCancelled: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   stripeSubscriptionId: string;
 
   // @Column()
