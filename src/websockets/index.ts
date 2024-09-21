@@ -11,6 +11,8 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { AppEvents } from '../constants/events';
 import { NotificationEntity } from '../shared/alerts/notifications/entities/notification.entity';
 import env from '../config/env.config';
+import { User } from '../modules/users/entities/user.entity';
+import { Message } from '../modules/messages/entities/message.entity';
 
 @WebSocketGateway({
   cors: {},
@@ -29,6 +31,11 @@ export class ListenerGateway
     const { createdForId } = notification;
 
     // this.sendNotification(createdForId, notification, 'notification');
+  }
+
+  @OnEvent(AppEvents.MESSAGE_CREATED)
+  async messageCreatedTrigger(message: Message & { receiver: User }) {
+    this.messageCreated(message);
   }
 
   async handleConnection(socket: Socket) {
@@ -73,6 +80,23 @@ export class ListenerGateway
     if (!token) throw new WsException('Unauthorized');
     const tokendata: any = verify(token, env.jwtSecret);
     return tokendata;
+  }
+
+  async messageCreated(message: Message & { receiver: User }) {
+    const { receiver, body } = message;
+    if (this.connectedUsers.indexOf(receiver.id) !== -1) {
+      this.server.to(receiver.id).emit('new-message', message);
+    } 
+    // else {
+    //   const notification: PushNotification = {
+    //     userId: receiver.id,
+    //     title: 'New Message',
+    //     body: `${body.slice(0, 50)}...`,
+    //     token: receiver.deviceToken,
+    //   };
+
+    //   this.eventEmitter.emit(AppEvents.SEND_FIREBASE_NOTIFICATION, notification);
+    // }
   }
 
   // async sendNotification(userId: string, notification: NotificationEntity, eventId: string) {

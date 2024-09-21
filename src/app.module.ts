@@ -19,6 +19,8 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
 import IORedis from 'ioredis';
 import { StripeModule } from 'nestjs-stripe';
 import { MatchModule } from './modules/match/match.module';
+import { ConversationModule } from './modules/conversation/conversation.module';
+import { MessagesModule } from './modules/messages/messages.module';
 const mg = require('nodemailer-mailgun-transport');
 
 @Module({
@@ -66,6 +68,8 @@ const mg = require('nodemailer-mailgun-transport');
     ProfileModule,
     SubscriptionModule,
     MatchModule,
+    ConversationModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

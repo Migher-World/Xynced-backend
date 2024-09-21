@@ -8,6 +8,7 @@ import { Interaction } from './entities/interaction.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Match, Interaction])],
   controllers: [MatchController],
-  providers: [MatchService]
+  providers: [MatchService],
+  exports: [MatchService],
 })
 export class MatchModule {}
