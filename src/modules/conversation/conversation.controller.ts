@@ -6,13 +6,13 @@ import { User } from '../users/entities/user.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
-@Controller('conversation')
+@Controller('conversations')
 @ApiTags('Conversations')
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
-  @Post(':rentalId')
-  async createConversation(@Param('rentalId') rentalId: string, @CurrentUser() user: User) {
+  @Post(':matchId')
+  async createConversation(@Param('matchId') rentalId: string, @CurrentUser() user: User) {
     return resolveResponse(this.conversationService.createConversation(rentalId, user));
   }
 
