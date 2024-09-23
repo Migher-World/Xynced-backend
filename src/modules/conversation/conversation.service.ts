@@ -7,6 +7,8 @@ import { MatchService } from '../match/match.service';
 import { User } from '../users/entities/user.entity';
 import { AppEvents } from '../../constants';
 import { OnEvent } from '@nestjs/event-emitter';
+import { AppDataSource } from '../../config/db.config';
+import { Message } from '../messages/entities/message.entity';
 
 @Injectable()
 export class ConversationService extends BasicService<Conversation> {
@@ -76,9 +78,37 @@ export class ConversationService extends BasicService<Conversation> {
 
     const conversations = await query.getMany();
 
-    const result = conversations.map((conversation) => {
+    const result = conversations.map(async (conversation) => {
       const processed = conversation.toDto(user);
-      //
+      processed.unread = await this.getUnreadMessagesCount(conversation.id, user.id);
+      processed.lastMessage = await this.getLatestMessage(conversation.id);
+      return processed;
     });
+
+    return Promise.all(result);
+  }
+
+  async getUnreadMessagesCount(conversationId: string, receiverId: string) {
+    const query = AppDataSource.getRepository(Message)
+      .createQueryBuilder('message')
+      .select('COUNT(message.id)', 'count')
+      .leftJoin('message.conversation', 'conversation')
+      .where('conversation.id = :conversationId', { conversationId })
+      .andWhere('message.receiverId = :receiverId', { receiverId })
+      .andWhere('message.read = false');
+
+    const { count } = await query.getRawOne();
+
+    return count;
+  }
+
+  async getLatestMessage(conversationId: string) {
+    const query = AppDataSource.getRepository(Message)
+      .createQueryBuilder('message')
+      .where('message.conversationId = :conversationId', { conversationId })
+      .orderBy('message.createdAt', 'DESC')
+      .limit(1);
+
+    return query.getOne();
   }
 }
