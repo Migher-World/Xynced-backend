@@ -59,6 +59,8 @@ export class ConversationService extends BasicService<Conversation> {
       .leftJoinAndSelect('conversation.match', 'match')
       .leftJoinAndSelect('conversation.user', 'user')
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoin('matchedUser.profile', 'profile')
+      .addSelect(['profile.fullName', 'profile.profilePicture'])
       .andWhere('match.isAccepted = true')
       .andWhere('(conversation.userId = :userId OR match.matchedUserId = :userId)', { userId: user.id });
 
@@ -73,6 +75,8 @@ export class ConversationService extends BasicService<Conversation> {
       .leftJoinAndSelect('conversation.match', 'match')
       .leftJoinAndSelect('conversation.user', 'user')
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoin('matchedUser.profile', 'profile')
+      .addSelect(['profile.fullName', 'profile.profilePicture'])
       .andWhere('(conversation.userId = :userId OR match.matchedUserId = :userId)', { userId: user.id })
       .orderBy('conversation.updatedAt', 'DESC');
 
