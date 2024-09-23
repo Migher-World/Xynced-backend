@@ -45,7 +45,7 @@ export class MessagesService extends BasicService<Message> {
   }
 
   async getConversationMessages(conversationId: string, user: User) {
-    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['rental']);
+    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['match']);
     if (![conversation.userId, conversation.match.matchedUserId].includes(user.id)) {
       throw new BadRequestException('You are not allowed to view this conversation');
     }
