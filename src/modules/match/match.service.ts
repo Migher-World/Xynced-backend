@@ -165,10 +165,7 @@ export class MatchService extends BasicService<Match> {
       throw new BadRequestException('You have already accepted a match');
     }
 
-    const match = await this.matchRepo.findOne({ where: { userId: user.id, matchedUserId: matchId } });
-    if (!match) {
-      throw new BadRequestException('Match not found');
-    }
+    const match = await this.findOne(matchId);
 
     match.isAccepted = true;
     match.isRejected = false;
