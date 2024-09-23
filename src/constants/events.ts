@@ -3,4 +3,5 @@ export enum AppEvents {
   SEND_NOTIFICATION = 'send_notification',
   SEND_EMAIl = 'send_email',
   MESSAGE_CREATED = 'message.created',
+  MATCH_ACCEPTED = 'match.accepted',
 }

@@ -7,10 +7,12 @@ import { User } from '../users/entities/user.entity';
 import { AppDataSource } from '../../config/db.config';
 import { Profile } from '../profile/entities/profile.entity';
 import { CacheService } from '../cache/cache.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AppEvents } from '../../constants';
 
 @Injectable()
 export class MatchService extends BasicService<Match> {
-  constructor(@InjectRepository(Match) private matchRepo: Repository<Match>, private cacheService: CacheService) {
+  constructor(@InjectRepository(Match) private matchRepo: Repository<Match>, private cacheService: CacheService, private readonly eventEmitter: EventEmitter2,) {
     super(matchRepo, 'Match');
   }
 
@@ -157,6 +159,12 @@ export class MatchService extends BasicService<Match> {
   }
 
   async acceptMatch(user: User, matchId: string) {
+    // ensure that user has not already accepted a match
+    const previousMatch = await this.matchRepo.findOne({ where: { userId: user.id, isAccepted: true } });
+    if (previousMatch) {
+      throw new BadRequestException('You have already accepted a match');
+    }
+
     const match = await this.matchRepo.findOne({ where: { userId: user.id, matchedUserId: matchId } });
     if (!match) {
       throw new BadRequestException('Match not found');
@@ -165,6 +173,10 @@ export class MatchService extends BasicService<Match> {
     match.isAccepted = true;
     match.isRejected = false;
     await this.matchRepo.save(match);
+    this.eventEmitter.emit(AppEvents.MATCH_ACCEPTED, {
+      matchId,
+      user,
+    });
     return match;
   }
 
