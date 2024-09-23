@@ -15,7 +15,7 @@ export class Message extends AbstractEntity {
   @Column('text')
   body: string;
 
-  @Column('jsonb')
+  @Column('jsonb', { nullable: true })
   metadata: Record<string, unknown>;
 
   @ManyToOne(() => User)

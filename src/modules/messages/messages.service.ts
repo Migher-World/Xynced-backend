@@ -27,6 +27,8 @@ export class MessagesService extends BasicService<Message> {
     }
     const receiver = await this.getReceiver(conversationId, user.id);
 
+    console.log('receiver', receiver);
+
     const message = await super.create({ ...payload, userId: user.id, receiverId: receiver.id });
 
     const response = { ...message, receiver };
@@ -37,7 +39,7 @@ export class MessagesService extends BasicService<Message> {
   }
 
   private async getReceiver(conversationId: string, userId: string) {
-    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['match']);
+    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['match', 'match.matchedUser']);
     if (conversation.userId === userId) {
       return conversation.match.matchedUser;
     }
@@ -55,7 +57,7 @@ export class MessagesService extends BasicService<Message> {
   }
 
   async markAsRead(conversationId: string, receiverId: string) {
-    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['rental']);
+    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['match']);
     if (![conversation.userId, conversation.match.matchedUserId].includes(receiverId)) {
       throw new BadRequestException('You are not allowed to mark this conversation as read');
     }
