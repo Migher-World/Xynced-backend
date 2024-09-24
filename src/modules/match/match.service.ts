@@ -12,24 +12,47 @@ import { AppEvents } from '../../constants';
 
 @Injectable()
 export class MatchService extends BasicService<Match> {
-  constructor(@InjectRepository(Match) private matchRepo: Repository<Match>, private cacheService: CacheService, private readonly eventEmitter: EventEmitter2,) {
+  constructor(
+    @InjectRepository(Match) private matchRepo: Repository<Match>,
+    private cacheService: CacheService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {
     super(matchRepo, 'Match');
   }
 
   async getMatches(user: User) {
     const userProfile = user.profile;
-    const query = this.matchRepo.createQueryBuilder('match')
+    const query = this.matchRepo
+      .createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
+      .orWhere('match.matchedUserId = :userId', { userId: user.id })
       .andWhere('match.isRejected = false')
-      .select(['match.matchedUserId', 'match.isAccepted', 'match.isRejected', 'match.percentage', 'match.id'])
+      .select([
+        'match.matchedUserId',
+        'match.userAccepted',
+        'match.matchAccepted',
+        'match.isRejected',
+        'match.percentage',
+        'match.id',
+      ])
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('matchedUser.profile', 'profile')
-      .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture', 'profile.city', 'profile.pictures', 'profile.interests']);
+      .addSelect([
+        'profile.fullName',
+        'profile.age',
+        'profile.bio',
+        'profile.profilePicture',
+        'profile.city',
+        'profile.pictures',
+        'profile.interests',
+      ]);
 
     const data = await query.getMany();
     // get shared interests
     const result = data.map((match) => {
-      const sharedInterests = userProfile.interests.filter((interest) => match.matchedUser.profile.interests.includes(interest));
+      const sharedInterests = userProfile.interests.filter((interest) =>
+        match.matchedUser.profile.interests.includes(interest),
+      );
       return { ...match, sharedInterests };
     });
 
@@ -37,12 +60,21 @@ export class MatchService extends BasicService<Match> {
   }
 
   async getMatchById(user: User, matchId: string) {
-    const query = this.matchRepo.createQueryBuilder('match')
+    const query = this.matchRepo
+      .createQueryBuilder('match')
       .where('match.id = :id', { id: matchId })
       .andWhere('match.userId = :userId', { userId: user.id })
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('matchedUser.profile', 'profile')
-      .addSelect(['profile.fullName', 'profile.age', 'profile.bio', 'profile.profilePicture', 'profile.city', 'profile.pictures', 'profile.interests'])
+      .addSelect([
+        'profile.fullName',
+        'profile.age',
+        'profile.bio',
+        'profile.profilePicture',
+        'profile.city',
+        'profile.pictures',
+        'profile.interests',
+      ])
       .getOne();
 
     const match = await query;
@@ -52,8 +84,10 @@ export class MatchService extends BasicService<Match> {
 
     const result = {
       ...match,
-      sharedInterests: user.profile.interests.filter((interest) => match.matchedUser.profile.interests.includes(interest)),
-    }
+      sharedInterests: user.profile.interests.filter((interest) =>
+        match.matchedUser.profile.interests.includes(interest),
+      ),
+    };
 
     return result;
   }
@@ -62,9 +96,11 @@ export class MatchService extends BasicService<Match> {
     // check if the user has already been matched
     const checkMatches = await this.getMatches(user);
 
-    if (checkMatches.length) {
+    if (checkMatches.length >= 3) {
       return checkMatches.slice(0, 3);
     }
+
+    const matchesLeft = 3 - checkMatches.length;
 
     const profile = user.profile;
     const interests = profile.interests;
@@ -76,8 +112,17 @@ export class MatchService extends BasicService<Match> {
     const languagesPreference = profile.languages;
 
     // if any of the preferences are not set, return an error
-    if (!interests || !agePreference || !childrenPreference || !doesFaithMatter || !culturalValuesPreference || !languagesPreference) {
-      throw new BadRequestException('Please set your preferences to get matches. To set your preferences, go to your profile');
+    if (
+      !interests ||
+      !agePreference ||
+      !childrenPreference ||
+      !doesFaithMatter ||
+      !culturalValuesPreference ||
+      !languagesPreference
+    ) {
+      throw new BadRequestException(
+        'Please set your preferences to get matches. To set your preferences, go to your profile',
+      );
     }
 
     // get similar interests
@@ -92,33 +137,35 @@ export class MatchService extends BasicService<Match> {
 
     // get children preferences match
     const similarChildrenPreferences = await AppDataSource.query(
-        `SELECT * FROM profile WHERE "children" = '${childrenPreference}'`,
+      `SELECT * FROM profile WHERE "children" = '${childrenPreference}'`,
     );
 
     // get faith matters match
     const similarFaithMatters = await AppDataSource.query(
-        `SELECT * FROM profile WHERE "doesFaithMatter" = '${doesFaithMatter}'`,
+      `SELECT * FROM profile WHERE "doesFaithMatter" = '${doesFaithMatter}'`,
     );
 
     // get cultural values match
     const similarCulturalValues = await AppDataSource.query(
-        `SELECT * FROM profile WHERE "matchCulturalValues" && ARRAY[${culturalValuesPreference.map((culturalValue) => `'${culturalValue}'`)}]`,
+      `SELECT * FROM profile WHERE "matchCulturalValues" && ARRAY[${culturalValuesPreference.map(
+        (culturalValue) => `'${culturalValue}'`,
+      )}]`,
     );
 
     // get languages match
     const similarLanguages = await AppDataSource.query(
-        `SELECT * FROM profile WHERE "languages" && ARRAY[${languagesPreference.map((language) => `'${language}'`)}]`,
+      `SELECT * FROM profile WHERE "languages" && ARRAY[${languagesPreference.map((language) => `'${language}'`)}]`,
     );
 
     // get most closest match based on the above queries, i.e the user with the most similar interests, age preferences, etc
 
     const potentialMatches = [
-        ...similarInterests,
-        ...similarAgePreferences,
-        ...similarChildrenPreferences,
-        ...similarFaithMatters,
-        ...similarCulturalValues,
-        ...similarLanguages,
+      ...similarInterests,
+      ...similarAgePreferences,
+      ...similarChildrenPreferences,
+      ...similarFaithMatters,
+      ...similarCulturalValues,
+      ...similarLanguages,
     ];
 
     const potentialMatchesMap = new Map();
@@ -150,30 +197,37 @@ export class MatchService extends BasicService<Match> {
       matches = filteredMatches;
     }
 
-    // create the top 3 matches
-    const top3Matches = matches.slice(0, 3);
-    const data = this.matchRepo.create(top3Matches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })));
+    // create the matches left
+    const topMatches = matches.slice(0, matchesLeft);
+    const data = this.matchRepo.create(
+      topMatches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })),
+    );
     await this.matchRepo.save(data);
 
     return this.getMatches(user);
   }
 
   async acceptMatch(user: User, matchId: string) {
-    // ensure that user has not already accepted a match
-    const previousMatch = await this.matchRepo.findOne({ where: { userId: user.id, isAccepted: true } });
-    if (previousMatch) {
-      throw new BadRequestException('You have already accepted a match');
-    }
-
     const match = await this.findOne(matchId);
 
-    match.isAccepted = true;
+    if (![match.userId, match.matchedUserId].includes(user.id)) {
+      throw new BadRequestException('Match not found');
+    }
+
+    if (match.isRejected) {
+      throw new BadRequestException('Match has been rejected');
+    }
+
+    user.id === match.userId ? (match.userAccepted = true) : (match.matchAccepted = true);
+
     match.isRejected = false;
     await this.matchRepo.save(match);
-    this.eventEmitter.emit(AppEvents.MATCH_ACCEPTED, {
-      matchId,
-      user,
-    });
+    if (match.userAccepted && match.matchAccepted) {
+      this.eventEmitter.emit(AppEvents.MATCH_ACCEPTED, {
+        matchId,
+        user,
+      });
+    }
     return match;
   }
 
@@ -200,7 +254,6 @@ export class MatchService extends BasicService<Match> {
     }
 
     match.isRejected = true;
-    match.isAccepted = false; 
     await this.matchRepo.save(match);
     return match;
   }

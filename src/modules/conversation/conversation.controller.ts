@@ -11,10 +11,10 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
-  @Post(':matchId')
-  async createConversation(@Param('matchId') rentalId: string, @CurrentUser() user: User) {
-    return resolveResponse(this.conversationService.createConversation(rentalId, user));
-  }
+  // @Post(':matchId')
+  // async createConversation(@Param('matchId') rentalId: string, @CurrentUser() user: User) {
+  //   return resolveResponse(this.conversationService.createConversation(rentalId, user));
+  // }
 
   @Get()
   async findConversations(@CurrentUser() user: User) {

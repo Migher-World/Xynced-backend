@@ -27,9 +27,9 @@ export class ConversationService extends BasicService<Conversation> {
 
   async createConversation(matchId: string, user: User) {
     const match = await this.matchService.findOne(matchId);
-    if (!match || match.isAccepted === false || ![match.userId, match.matchedUserId].includes(user.id)) {
-      throw new BadRequestException('You are not allowed to create conversation for this match');
-    }
+    // if (!match || match.isAccepted === false || ![match.userId, match.matchedUserId].includes(user.id)) {
+    //   throw new BadRequestException('You are not allowed to create conversation for this match');
+    // }
     const conversation = await this.conversationsRepo.findOne({
       where: {
         matchId: match.id,
@@ -61,7 +61,8 @@ export class ConversationService extends BasicService<Conversation> {
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('matchedUser.profile', 'profile')
       .addSelect(['profile.fullName', 'profile.profilePicture'])
-      .andWhere('match.isAccepted = true')
+      .andWhere('match.userAccepted = true')
+      .andWhere('match.matchAccepted = true')
       .andWhere('(conversation.userId = :userId OR match.matchedUserId = :userId)', { userId: user.id });
 
     const conversation = await query.getOne();

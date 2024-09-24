@@ -20,7 +20,10 @@ export class Match extends AbstractEntity {
   percentage: number;
 
   @Column({ default: false })
-  isAccepted: boolean;
+  userAccepted: boolean;
+
+  @Column({ default: false })
+  matchAccepted: boolean;
 
   @Column({ default: false })
   isRejected: boolean;
