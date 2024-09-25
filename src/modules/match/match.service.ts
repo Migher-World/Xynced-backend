@@ -168,12 +168,6 @@ export class MatchService extends BasicService<Match> {
       ...similarLanguages,
     ];
 
-    // ensure that the user is not included in the potential matches
-    const userIndex = potentialMatches.findIndex((match) => match.id === user.id);
-    if (userIndex > -1) {
-      potentialMatches.splice(userIndex, 1);
-    }
-
     const potentialMatchesMap = new Map();
     potentialMatches.forEach((match) => {
       const id = match.userId;
@@ -183,6 +177,9 @@ export class MatchService extends BasicService<Match> {
         potentialMatchesMap.set(id, 1);
       }
     });
+
+    // ensure that the user is not matched with themselves
+    potentialMatchesMap.delete(user.id);
 
     // add percentage match to each user based on the preferences and should not be more than 100%
     const percentageMatchMap = new Map();
