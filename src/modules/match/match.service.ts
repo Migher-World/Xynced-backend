@@ -168,6 +168,12 @@ export class MatchService extends BasicService<Match> {
       ...similarLanguages,
     ];
 
+    // ensure that the user is not included in the potential matches
+    const userIndex = potentialMatches.findIndex((match) => match.id === user.id);
+    if (userIndex > -1) {
+      potentialMatches.splice(userIndex, 1);
+    }
+
     const potentialMatchesMap = new Map();
     potentialMatches.forEach((match) => {
       const id = match.userId;
@@ -208,6 +214,12 @@ export class MatchService extends BasicService<Match> {
   }
 
   async acceptMatch(user: User, matchId: string) {
+    // check if user already has a match
+    const userMatches = await this.getMatches(user);
+    if(userMatches.find(match => match.userAccepted && match.matchAccepted && !match.isRejected)) {
+      throw new BadRequestException('You already have a match');
+    }
+    
     const match = await this.findOne(matchId);
 
     if (![match.userId, match.matchedUserId].includes(user.id)) {
@@ -218,7 +230,7 @@ export class MatchService extends BasicService<Match> {
       throw new BadRequestException('Match has been rejected');
     }
 
-    user.id === match.userId ? (match.userAccepted = true) : (match.matchAccepted = true);
+    user.id === match.userId ? match.userAccepted = true : match.matchAccepted = true;
 
     match.isRejected = false;
     await this.matchRepo.save(match);

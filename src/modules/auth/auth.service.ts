@@ -94,14 +94,14 @@ export class AuthService {
 
   async requestResetPassword(requestResetPasswordDto: RequestResetPasswordDto) {
     const { email } = requestResetPasswordDto;
-    const isEmailExist = await this.usersService.findOne(email, 'email');
+    // await this.usersService.findOne(email, 'email');
     // Generate otp
     const otp = await this.generateOTP([email]);
     const emailDto: CreateEmailDto = {
       receiverEmail: email,
       subject: 'Reset password',
       template: 'setPassword',
-      senderEmail: 'Xynced Info <info@lendhive.app>',
+      senderEmail: 'Xynced Info <webmaster@xynced.com>',
       metaData: { code: otp, email },
     };
 
