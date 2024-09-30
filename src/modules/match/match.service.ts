@@ -86,7 +86,9 @@ export class MatchService extends BasicService<Match> {
       .where('match.id = :id', { id: matchId })
       .andWhere('match.userId = :userId', { userId: user.id })
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoinAndSelect('match.user', 'user')
       .leftJoin('matchedUser.profile', 'profile')
+      .leftJoin('user.profile', 'userProfile')
       .addSelect([
         'profile.fullName',
         'profile.age',
@@ -95,12 +97,28 @@ export class MatchService extends BasicService<Match> {
         'profile.city',
         'profile.pictures',
         'profile.interests',
+        'userProfile.fullName',
+        'userProfile.age',
+        'userProfile.bio',
+        'userProfile.profilePicture',
+        'userProfile.city',
+        'userProfile.pictures',
+        'userProfile.interests',
       ])
       .getOne();
 
     const match = await query;
     if (!match) {
       throw new BadRequestException('Match not found');
+    }
+
+    if(user.id === match.matchedUserId){
+      const temp = match.user;
+      const tempUserAccepted = match.userAccepted;
+      match.userAccepted = match.matchAccepted;
+      match.user = match.matchedUser;
+      match.matchedUser = temp;
+      match.matchAccepted = tempUserAccepted;
     }
 
     const result = {

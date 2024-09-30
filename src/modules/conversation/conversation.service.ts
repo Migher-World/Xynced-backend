@@ -87,9 +87,9 @@ export class ConversationService extends BasicService<Conversation> {
       .createQueryBuilder('conversation')
       .leftJoinAndSelect('conversation.match', 'match')
       // .leftJoinAndSelect('conversation.user', 'user')
-      .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      
       .leftJoinAndSelect('match.user', 'user')
-      .leftJoin('matchedUser.profile', 'profile')
+      .leftJoin('matchedUser.profile', 'profile').leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('user.profile', 'userProfile')
       .addSelect(['profile.fullName', 'profile.profilePicture', 'userProfile.fullName', 'userProfile.profilePicture'])
       .andWhere('(conversation.userId = :userId OR match.matchedUserId = :userId)', { userId: user.id })
