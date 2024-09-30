@@ -53,7 +53,10 @@ export class MatchService extends BasicService<Match> {
       const sharedInterests = userProfile.interests.filter((interest) =>
         match.matchedUser.profile.interests.includes(interest),
       );
-      return { ...match, sharedInterests };
+      // check if other user has accepted the match
+      let accepted = false;
+      match.userId === user.id ? (accepted = match.userAccepted) : (accepted = match.matchAccepted);
+      return { ...match, sharedInterests, requestAccepted: accepted };
     });
 
     return result;

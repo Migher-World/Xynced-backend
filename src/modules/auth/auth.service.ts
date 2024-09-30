@@ -94,7 +94,7 @@ export class AuthService {
 
   async requestResetPassword(requestResetPasswordDto: RequestResetPasswordDto) {
     const { email } = requestResetPasswordDto;
-    // await this.usersService.findOne(email, 'email');
+    await this.usersService.findOne(email, 'email');
     // Generate otp
     const otp = await this.generateOTP([email]);
     const emailDto: CreateEmailDto = {
