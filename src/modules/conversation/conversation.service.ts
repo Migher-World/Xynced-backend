@@ -57,33 +57,55 @@ export class ConversationService extends BasicService<Conversation> {
       .createQueryBuilder('conversation')
       .where('conversation.id = :id', { id })
       .leftJoinAndSelect('conversation.match', 'match')
-      .leftJoinAndSelect('conversation.user', 'user')
+      // .leftJoinAndSelect('conversation.user', 'user')
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoinAndSelect('match.user', 'user')
       .leftJoin('matchedUser.profile', 'profile')
-      .addSelect(['profile.fullName', 'profile.profilePicture'])
+      .leftJoin('user.profile', 'userProfile')
+      .addSelect(['profile.fullName', 'profile.profilePicture', 'userProfile.fullName', 'userProfile.profilePicture'])
       .andWhere('match.userAccepted = true')
       .andWhere('match.matchAccepted = true')
       .andWhere('(conversation.userId = :userId OR match.matchedUserId = :userId)', { userId: user.id });
 
     const conversation = await query.getOne();
 
-    return conversation.toDto(user);
+    // const result = 
+      if (user.id === conversation.match.matchedUserId) {
+        const temp = conversation.match.user;
+        const tempUserAccepted = conversation.match.userAccepted;
+        conversation.match.userAccepted = conversation.match.matchAccepted;
+        conversation.match.user = conversation.match.matchedUser;
+        conversation.match.matchedUser = temp;
+        conversation.match.matchAccepted = tempUserAccepted;
+      }
+
+    return conversation.toDto(user, conversation.match);
   }
 
   async findConversations(user: User) {
     const query = this.conversationsRepo
       .createQueryBuilder('conversation')
       .leftJoinAndSelect('conversation.match', 'match')
-      .leftJoinAndSelect('conversation.user', 'user')
+      // .leftJoinAndSelect('conversation.user', 'user')
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoinAndSelect('match.user', 'user')
       .leftJoin('matchedUser.profile', 'profile')
-      .addSelect(['profile.fullName', 'profile.profilePicture'])
+      .leftJoin('user.profile', 'userProfile')
+      .addSelect(['profile.fullName', 'profile.profilePicture', 'userProfile.fullName', 'userProfile.profilePicture'])
       .andWhere('(conversation.userId = :userId OR match.matchedUserId = :userId)', { userId: user.id })
       .orderBy('conversation.updatedAt', 'DESC');
 
     const conversations = await query.getMany();
 
     const result = conversations.map(async (conversation) => {
+      if (user.id === conversation.match.matchedUserId) {
+        const temp = conversation.match.user;
+        const tempUserAccepted = conversation.match.userAccepted;
+        conversation.match.userAccepted = conversation.match.matchAccepted;
+        conversation.match.user = conversation.match.matchedUser;
+        conversation.match.matchedUser = temp;
+        conversation.match.matchAccepted = tempUserAccepted;
+      }
       const processed = conversation.toDto(user);
       processed.unread = await this.getUnreadMessagesCount(conversation.id, user.id);
       processed.lastMessage = await this.getLatestMessage(conversation.id);

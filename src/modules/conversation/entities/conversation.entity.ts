@@ -19,14 +19,14 @@ export class Conversation extends AbstractEntity {
   @Column()
   userId: string;
 
-  toDto(authUser: User) {
+  toDto(authUser: User, match?: Match) {
     const payload = {
       id: this.id,
       receiverId: this.match.matchedUserId,
       receiver: this.match.matchedUser,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      match: this.match,
+      match: match ?? this.match,
       lastMessage: {},
       unread: 0,
     };
