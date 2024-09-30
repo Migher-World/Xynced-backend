@@ -39,7 +39,7 @@ export class MessagesService extends BasicService<Message> {
   }
 
   private async getReceiver(conversationId: string, userId: string) {
-    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['match', 'match.matchedUser']);
+    const conversation = await this.conversationsService.findOne(conversationId, 'id', ['match', 'match.matchedUser', 'user']);
     if (conversation.userId === userId) {
       return conversation.match.matchedUser;
     }
