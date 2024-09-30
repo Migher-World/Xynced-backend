@@ -27,8 +27,6 @@ export class MessagesService extends BasicService<Message> {
     }
     const receiver = await this.getReceiver(conversationId, user.id);
 
-    console.log('receiver', receiver);
-
     const message = await super.create({ ...payload, userId: user.id, receiverId: receiver.id });
 
     const response = { ...message, receiver };
