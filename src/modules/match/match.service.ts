@@ -26,7 +26,6 @@ export class MatchService extends BasicService<Match> {
       .createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
       .orWhere('match.matchedUserId = :userId', { userId: user.id })
-      .andWhere('match.isRejected = false')
       .select([
         'match.matchedUserId',
         'match.userAccepted',
@@ -34,6 +33,7 @@ export class MatchService extends BasicService<Match> {
         'match.isRejected',
         'match.percentage',
         'match.id',
+        'match.userId',
       ])
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoin('matchedUser.profile', 'profile')
@@ -55,8 +55,25 @@ export class MatchService extends BasicService<Match> {
       );
       // check if other user has accepted the match
       let accepted = false;
-      match.userId === user.id ? (accepted = match.userAccepted) : (accepted = match.matchAccepted);
-      return { ...match, sharedInterests, requestAccepted: accepted };
+      let iHaveAccepted = false;
+      // let IHaveAccepted be true if the user has accepted the match, it could be the user or the matched use
+      if (match.userAccepted && match.matchAccepted) {
+        console.log('both accepted');
+        accepted = true;
+        iHaveAccepted = true;
+      } else if (match.userId === user.id && match.userAccepted) {
+        console.log('i have accepted');
+        iHaveAccepted = true;
+        accepted = match.matchAccepted;
+      } else if (match.matchedUserId === user.id && match.matchAccepted) {
+        console.log('other user has accepted');
+        iHaveAccepted = true;
+        accepted = match.userAccepted;
+      }
+
+      // let accepted be true if the other user has accepted the match
+
+      return { ...match, sharedInterests, requestAccepted: accepted, iHaveAccepted };
     });
 
     return result;
