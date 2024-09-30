@@ -26,6 +26,7 @@ export class MatchService extends BasicService<Match> {
       .createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
       .orWhere('match.matchedUserId = :userId', { userId: user.id })
+      // .andWhere('match.isRejected = false')
       .select([
         'match.matchedUserId',
         'match.userAccepted',
@@ -36,6 +37,8 @@ export class MatchService extends BasicService<Match> {
         'match.userId',
       ])
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
+      .leftJoinAndSelect('match.user', 'user')
+      .leftJoin('user.profile', 'userProfile')
       .leftJoin('matchedUser.profile', 'profile')
       .addSelect([
         'profile.fullName',
@@ -45,6 +48,13 @@ export class MatchService extends BasicService<Match> {
         'profile.city',
         'profile.pictures',
         'profile.interests',
+        'userProfile.fullName',
+        'userProfile.age',
+        'userProfile.bio',
+        'userProfile.profilePicture',
+        'userProfile.city',
+        'userProfile.pictures',
+        'userProfile.interests',
       ]);
 
     const data = await query.getMany();
@@ -53,27 +63,18 @@ export class MatchService extends BasicService<Match> {
       const sharedInterests = userProfile.interests.filter((interest) =>
         match.matchedUser.profile.interests.includes(interest),
       );
-      // check if other user has accepted the match
-      let accepted = false;
-      let iHaveAccepted = false;
-      // let IHaveAccepted be true if the user has accepted the match, it could be the user or the matched use
-      if (match.userAccepted && match.matchAccepted) {
-        console.log('both accepted');
-        accepted = true;
-        iHaveAccepted = true;
-      } else if (match.userId === user.id && match.userAccepted) {
-        console.log('i have accepted');
-        iHaveAccepted = true;
-        accepted = match.matchAccepted;
-      } else if (match.matchedUserId === user.id && match.matchAccepted) {
-        console.log('other user has accepted');
-        iHaveAccepted = true;
-        accepted = match.userAccepted;
+      if(user.id === match.matchedUserId){
+        const temp = match.user;
+        const tempUserAccepted = match.userAccepted;
+        match.userAccepted = match.matchAccepted;
+        match.user = match.matchedUser;
+        match.matchedUser = temp;
+        match.matchAccepted = tempUserAccepted;
       }
 
       // let accepted be true if the other user has accepted the match
 
-      return { ...match, sharedInterests, requestAccepted: accepted, iHaveAccepted };
+      return { ...match, sharedInterests };
     });
 
     return result;
