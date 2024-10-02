@@ -25,7 +25,7 @@ export class MatchService extends BasicService<Match> {
     const query = this.matchRepo
       .createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
-      // .orWhere('match.matchedUserId = :userId', { userId: user.id })
+      .orWhere('match.matchedUserId = :userId', { userId: user.id })
       // .andWhere('match.isRejected = false')
       .select([
         'match.matchedUserId',
@@ -296,8 +296,8 @@ export class MatchService extends BasicService<Match> {
   }
 
   async declineMatch(user: User, matchId: string) {
-    const match = await this.matchRepo.findOne({ where: { userId: user.id, matchedUserId: matchId } });
-    if (!match) {
+    const match = await this.findOne(matchId);
+    if (![match.userId, match.matchedUserId].includes(user.id)) {
       throw new BadRequestException('Match not found');
     }
 
