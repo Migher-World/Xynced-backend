@@ -26,7 +26,7 @@ export class MatchService extends BasicService<Match> {
       .createQueryBuilder('match')
       .where('match.userId = :userId', { userId: user.id })
       .orWhere('match.matchedUserId = :userId', { userId: user.id })
-      // .andWhere('match.isRejected = false')
+      .andWhere('match.isRejected = false')
       .select([
         'match.matchedUserId',
         'match.userAccepted',
