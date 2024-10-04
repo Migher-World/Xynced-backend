@@ -65,7 +65,7 @@ export class MatchService extends BasicService<Match> {
       const sharedInterests = userProfile.interests.filter((interest) =>
         match.matchedUser.profile.interests.includes(interest),
       );
-      if(user.id === match.matchedUserId){
+      if (user.id === match.matchedUserId) {
         const temp = match.user;
         const tempUserAccepted = match.userAccepted;
         match.userAccepted = match.matchAccepted;
@@ -86,8 +86,6 @@ export class MatchService extends BasicService<Match> {
     const query = this.matchRepo
       .createQueryBuilder('match')
       .where('match.id = :id', { id: matchId })
-      .andWhere('match.userId = :userId', { userId: user.id })
-      .orWhere('match.matchedUserId = :userId', { userId: user.id })
       .leftJoinAndSelect('match.matchedUser', 'matchedUser')
       .leftJoinAndSelect('match.user', 'user')
       .leftJoin('matchedUser.profile', 'profile')
@@ -114,7 +112,7 @@ export class MatchService extends BasicService<Match> {
       throw new BadRequestException('Match not found');
     }
 
-    if(user.id === match.matchedUserId){
+    if (user.id === match.matchedUserId) {
       const temp = match.user;
       const tempUserAccepted = match.userAccepted;
       match.userAccepted = match.matchAccepted;
@@ -255,12 +253,12 @@ export class MatchService extends BasicService<Match> {
   async acceptMatch(user: User, matchId: string) {
     // check if user already has a match
     const userMatches = await this.getMatches(user);
-    if(userMatches.find(match => match.userAccepted && match.matchAccepted && !match.isRejected)) {
+    if (userMatches.find((match) => match.userAccepted && match.matchAccepted && !match.isRejected)) {
       throw new BadRequestException('You already have a match');
     }
 
     const match = await this.findOne(matchId);
-    
+
     // check if user already accepted the match
     if (user.id === match.userId && match.userAccepted) {
       throw new BadRequestException('You have already accepted this match');
@@ -274,7 +272,7 @@ export class MatchService extends BasicService<Match> {
       throw new BadRequestException('Match has been rejected');
     }
 
-    user.id === match.userId ? match.userAccepted = true : match.matchAccepted = true;
+    user.id === match.userId ? (match.userAccepted = true) : (match.matchAccepted = true);
 
     match.isRejected = false;
     await this.matchRepo.save(match);
@@ -291,7 +289,7 @@ export class MatchService extends BasicService<Match> {
       createdForId: [match.userId, match.matchedUserId].find((id) => id !== user.id),
       recordId: matchId,
       metaData: {},
-    }
+    };
     this.eventEmitter.emit(AppEvents.CREATE_NOTIFICATION, notification);
     return match;
   }
@@ -332,7 +330,7 @@ export class MatchService extends BasicService<Match> {
       createdForId: [match.userId, match.matchedUserId].find((id) => id !== user.id),
       recordId: matchId,
       metaData: {},
-    }
+    };
     this.eventEmitter.emit(AppEvents.CREATE_NOTIFICATION, notification);
     return match;
   }
@@ -342,4 +340,3 @@ export class MatchService extends BasicService<Match> {
     return !cannotReshuffle;
   }
 }
-
