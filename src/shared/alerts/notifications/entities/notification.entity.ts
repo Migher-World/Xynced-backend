@@ -28,6 +28,6 @@ export class NotificationEntity extends AbstractEntity {
   @Column('jsonb')
   metaData: Record<string, any>;
 
-  @Column({ type: 'enum', enum: NotificationTypes })
+  @Column()
   type: NotificationTypes;
 }

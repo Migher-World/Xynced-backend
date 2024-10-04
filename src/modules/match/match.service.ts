@@ -9,6 +9,8 @@ import { Profile } from '../profile/entities/profile.entity';
 import { CacheService } from '../cache/cache.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AppEvents } from '../../constants';
+import { CreateNotificationDto } from '../../shared/alerts/notifications/dto/create-notification.dto';
+import { NotificationTypes } from '../../shared/alerts/notifications/enum/notification-types.enum';
 
 @Injectable()
 export class MatchService extends BasicService<Match> {
@@ -233,7 +235,7 @@ export class MatchService extends BasicService<Match> {
     let matches = sortedPotentialMatches.map(([id]) => id);
 
     // check if user has reshuffled and remove previously matched users
-    const matchedUsersString = await this.cacheService.get(`matched-${user.id}`);
+    const matchedUsersString = await this.cacheService.get(`xyncedMatch:matched-${user.id}`);
     const matchedUsers = matchedUsersString ? JSON.parse(matchedUsersString) : null;
     if (matchedUsers) {
       const filteredMatches = matches.filter((id) => !matchedUsers.includes(id));
@@ -256,8 +258,13 @@ export class MatchService extends BasicService<Match> {
     if(userMatches.find(match => match.userAccepted && match.matchAccepted && !match.isRejected)) {
       throw new BadRequestException('You already have a match');
     }
-    
+
     const match = await this.findOne(matchId);
+    
+    // check if user already accepted the match
+    if (user.id === match.userId && match.userAccepted) {
+      throw new BadRequestException('You have already accepted this match');
+    }
 
     if (![match.userId, match.matchedUserId].includes(user.id)) {
       throw new BadRequestException('Match not found');
@@ -277,23 +284,31 @@ export class MatchService extends BasicService<Match> {
         user,
       });
     }
-    this.cacheService.set(`cannot-reshuffle-${user.id}`, true, null);
+    this.cacheService.set(`xyncedMatch:cannot-reshuffle-${user.id}`, 'true', null);
+    const notification: CreateNotificationDto = {
+      type: NotificationTypes.MATCH_ACCEPTED,
+      createdById: user.id,
+      createdForId: [match.userId, match.matchedUserId].find((id) => id !== user.id),
+      recordId: matchId,
+      metaData: {},
+    }
+    this.eventEmitter.emit(AppEvents.CREATE_NOTIFICATION, notification);
     return match;
   }
 
   async reshuffleMatches(user: User) {
     // check if user has reshuffled
-    const cannotReshuffle = await this.cacheService.get(`cannot-reshuffle-${user.id}`);
+    const cannotReshuffle = await this.cacheService.get(`xyncedMatch:cannot-reshuffle-${user.id}`);
     if (cannotReshuffle) {
       throw new BadRequestException('You have already reshuffled your matches');
     }
     const matches = await this.matchRepo.find({ where: { userId: user.id } });
     await this.matchRepo.remove(matches);
     // store that user has reshuffled
-    await this.cacheService.set(`cannot-reshuffle-${user.id}`, true, null);
+    this.cacheService.set(`xyncedMatch:cannot-reshuffle-${user.id}`, 'true', null);
     // store matched users
     const matchedUsers = matches.map((match) => match.matchedUserId);
-    await this.cacheService.set(`matched-${user.id}`, JSON.stringify(matchedUsers), null);
+    this.cacheService.set(`xyncedMatch:matched-${user.id}`, JSON.stringify(matchedUsers), null);
     return this.getPotentialMatches(user);
   }
 
@@ -305,17 +320,25 @@ export class MatchService extends BasicService<Match> {
 
     match.isRejected = true;
     await this.matchRepo.save(match);
-    this.cacheService.set(`cannot-reshuffle-${user.id}`, true, null);
+    this.cacheService.set(`xyncedMatch:cannot-reshuffle-${user.id}`, 'true', null);
     // add matched user to cache
-    const matchedUsersString = await this.cacheService.get(`matched-${user.id}`);
+    const matchedUsersString = await this.cacheService.get(`xyncedMatch:matched-${user.id}`);
     const matchedUsers = matchedUsersString ? JSON.parse(matchedUsersString) : [];
     matchedUsers.push(match.matchedUserId);
-    await this.cacheService.set(`matched-${user.id}`, JSON.stringify(matchedUsers), null);
+    this.cacheService.set(`xyncedMatch:matched-${user.id}`, JSON.stringify(matchedUsers), null);
+    const notification: CreateNotificationDto = {
+      type: NotificationTypes.MATCH_DECLINED,
+      createdById: user.id,
+      createdForId: [match.userId, match.matchedUserId].find((id) => id !== user.id),
+      recordId: matchId,
+      metaData: {},
+    }
+    this.eventEmitter.emit(AppEvents.CREATE_NOTIFICATION, notification);
     return match;
   }
 
   async canReshuffle(user: User) {
-    const cannotReshuffle = await this.cacheService.get(`cannot-reshuffle-${user.id}`);
+    const cannotReshuffle = await this.cacheService.get(`xyncedMatch:cannot-reshuffle-${user.id}`);
     return !cannotReshuffle;
   }
 }

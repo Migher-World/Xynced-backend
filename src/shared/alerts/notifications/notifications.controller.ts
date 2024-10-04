@@ -30,11 +30,7 @@ export class NotificationsController {
     @CurrentUser() user: User,
   ) {
     return resolveResponse(
-      this.notificationsService.findAll(pagination, {
-        where: {
-          createdForId: user.id,
-        },
-      }),
+      this.notificationsService.findAll(pagination, user),
     );
   }
 

@@ -8,6 +8,7 @@ import { BasicService } from '../../services/basic-service.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { NotificationEntity } from './entities/notification.entity';
+import { AbstractPaginationDto } from '../../dto/abstract-pagination.dto';
 
 @Injectable()
 export class NotificationsService extends BasicService<NotificationEntity> {
@@ -19,12 +20,22 @@ export class NotificationsService extends BasicService<NotificationEntity> {
     super(notificationsRepo, 'Notification');
   }
 
-  @OnEvent('notifications.create')
+  @OnEvent(AppEvents.CREATE_NOTIFICATION)
   async create(createNotificationDto: CreateNotificationDto) {
     const data = this.notificationsRepo.create(createNotificationDto);
     const notification = await this.notificationsRepo.save(data);
     this.eventEmitter.emit(AppEvents.SEND_NOTIFICATION, notification);
     return notification;
+  }
+
+  async findAll(pagination: AbstractPaginationDto, user: User) {
+    const query = this.notificationsRepo.createQueryBuilder('notifications')
+    .where('notifications.createdForId = :userId', { userId: user.id })
+      .leftJoinAndSelect('notifications.createdBy', 'createdBy')
+      .leftJoinAndSelect('notifications.createdFor', 'createdFor')
+      .orderBy('notifications.createdAt', 'DESC');
+
+      return this.paginate(query, pagination);
   }
 
   async markAsRead(id: string, user: User) {
