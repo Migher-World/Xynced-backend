@@ -233,7 +233,8 @@ export class MatchService extends BasicService<Match> {
     let matches = sortedPotentialMatches.map(([id]) => id);
 
     // check if user has reshuffled and remove previously matched users
-    const matchedUsers = await this.cacheService.get(`matched-${user.id}`);
+    const matchedUsersString = await this.cacheService.get(`matched-${user.id}`);
+    const matchedUsers = matchedUsersString ? JSON.parse(matchedUsersString) : null;
     if (matchedUsers) {
       const filteredMatches = matches.filter((id) => !matchedUsers.includes(id));
       matches = filteredMatches;
@@ -276,22 +277,23 @@ export class MatchService extends BasicService<Match> {
         user,
       });
     }
+    this.cacheService.set(`cannot-reshuffle-${user.id}`, true, null);
     return match;
   }
 
   async reshuffleMatches(user: User) {
     // check if user has reshuffled
-    const reshuffled = await this.cacheService.get(`reshuffled-${user.id}`);
-    if (reshuffled) {
+    const cannotReshuffle = await this.cacheService.get(`cannot-reshuffle-${user.id}`);
+    if (cannotReshuffle) {
       throw new BadRequestException('You have already reshuffled your matches');
     }
     const matches = await this.matchRepo.find({ where: { userId: user.id } });
     await this.matchRepo.remove(matches);
     // store that user has reshuffled
-    await this.cacheService.set(`reshuffled-${user.id}`, true, null);
+    await this.cacheService.set(`cannot-reshuffle-${user.id}`, true, null);
     // store matched users
     const matchedUsers = matches.map((match) => match.matchedUserId);
-    await this.cacheService.set(`matched-${user.id}`, matchedUsers, null);
+    await this.cacheService.set(`matched-${user.id}`, JSON.stringify(matchedUsers), null);
     return this.getPotentialMatches(user);
   }
 
@@ -303,6 +305,18 @@ export class MatchService extends BasicService<Match> {
 
     match.isRejected = true;
     await this.matchRepo.save(match);
+    this.cacheService.set(`cannot-reshuffle-${user.id}`, true, null);
+    // add matched user to cache
+    const matchedUsersString = await this.cacheService.get(`matched-${user.id}`);
+    const matchedUsers = matchedUsersString ? JSON.parse(matchedUsersString) : [];
+    matchedUsers.push(match.matchedUserId);
+    await this.cacheService.set(`matched-${user.id}`, JSON.stringify(matchedUsers), null);
     return match;
   }
+
+  async canReshuffle(user: User) {
+    const cannotReshuffle = await this.cacheService.get(`cannot-reshuffle-${user.id}`);
+    return !cannotReshuffle;
+  }
 }
+

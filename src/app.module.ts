@@ -22,29 +22,58 @@ import { MatchModule } from './modules/match/match.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { MessagesModule } from './modules/messages/messages.module';
 const mg = require('nodemailer-mailgun-transport');
+const { google } = require('googleapis');
+
+const oauth2Client = new google.auth.OAuth2(
+  env.googleapis.clientId,
+  env.googleapis.clientSecret,
+  'http://localhost'
+);
+
+
+const refreshToken = "1//03bwqTfsWUpsuCgYIARAAGAMSNwF-L9Irz_aMFm3Gvmsd16wR68r2je4qjz5IZLr4zd1NQJ9Ka_lpzPgw-tQ31z643VpulHJy2g0";
+
+oauth2Client.setCredentials({
+  refresh_token: refreshToken
+});
+
+
 
 @Module({
   imports: [
     GlobalModule,
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.EMAIL_HOST,
-        secure: true,
-        port: 465,
-        auth: {
-          // type: "OAuth2",
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      },
-      template: {
-        dir: __dirname + '/templates',
-        adapter: new PugAdapter(),
-        options: {
-          strict: true,
-        },
+    MailerModule.forRootAsync({
+      useFactory: async () => {
+        const accessToken = await oauth2Client.getAccessToken();
+        
+        console.log(accessToken.token);
+        
+        return {
+          transport: {
+            // host: process.env.EMAIL_HOST,
+            // secure: true,
+            // port: 465,
+            service: 'gmail',
+            auth: {
+              type: 'OAuth2',
+              clientId: env.googleapis.clientId,
+              clientSecret: env.googleapis.clientId,
+              refreshToken: refreshToken,
+              accessToken: accessToken.token,
+              user: env.emailUser,
+              // pass: env.emailHost,
+            },
+          },
+          template: {
+            dir: __dirname + '/templates',
+            adapter: new PugAdapter(),
+            options: {
+              strict: true,
+            },
+          },
+        }
       },
     }),
     BullModule.forRoot({

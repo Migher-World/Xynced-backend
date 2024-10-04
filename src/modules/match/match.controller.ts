@@ -16,6 +16,11 @@ export class MatchController {
     return resolveResponse(this.matchService.getPotentialMatches(user));
   }
 
+  @Get('can-reshuffle')
+  canReshuffle(@CurrentUser() user: User) {
+    return resolveResponse(this.matchService.canReshuffle(user));
+  }
+
   @Get(':id')
   getMatch(@CurrentUser() user: User, @Param('id') matchId: string) {
     return resolveResponse(this.matchService.getMatchById(user, matchId));
