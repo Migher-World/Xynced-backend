@@ -51,19 +51,27 @@ oauth2Client.setCredentials({
         console.log(accessToken.token);
         
         return {
+          // transport: {
+          //   // host: process.env.EMAIL_HOST,
+          //   // secure: true,
+          //   // port: 465,
+          //   service: 'gmail',
+          //   auth: {
+          //     type: 'OAuth2',
+          //     clientId: env.googleapis.clientId,
+          //     clientSecret: env.googleapis.clientId,
+          //     refreshToken: refreshToken,
+          //     accessToken: accessToken.token,
+          //     user: env.emailUser,
+          //     // pass: env.emailHost,
+          //   },
+          // },
           transport: {
-            // host: process.env.EMAIL_HOST,
-            // secure: true,
-            // port: 465,
-            service: 'gmail',
+            host: env.emailHost,
+            secure: true,
             auth: {
-              type: 'OAuth2',
-              clientId: env.googleapis.clientId,
-              clientSecret: env.googleapis.clientId,
-              refreshToken: refreshToken,
-              accessToken: accessToken.token,
               user: env.emailUser,
-              // pass: env.emailHost,
+              pass: env.emailPassword,
             },
           },
           template: {
