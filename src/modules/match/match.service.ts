@@ -82,6 +82,7 @@ export class MatchService extends BasicService<Match> {
     return result;
   }
 
+  // TODO: Reshuffle not removing all and also matched people should not be suggested
   async getMatchById(user: User, matchId: string) {
     const query = this.matchRepo
       .createQueryBuilder('match')
@@ -207,8 +208,21 @@ export class MatchService extends BasicService<Match> {
       ...similarLanguages,
     ];
 
+    // remove users that have already been matched by checking the matches table in the database
+    const usersWithMatch = await this.matchRepo.createQueryBuilder('match')
+    .where('match.userId = :userId', { userId: user.id })
+    .orWhere('match.matchedUserId = :userId', { userId: user.id })
+    .andWhere('match.userAccepted = true')
+    .andWhere('match.matchAccepted = true')
+    .getMany();
+
+    const matchedUsersIds = usersWithMatch.map((match) => match.userId);
+
+    const potentialMatchesFiltered = potentialMatches.filter((match) => !matchedUsersIds.includes(match.userId));
+  
+
     const potentialMatchesMap = new Map();
-    potentialMatches.forEach((match) => {
+    potentialMatchesFiltered.forEach((match) => {
       const id = match.userId;
       if (potentialMatchesMap.has(id)) {
         potentialMatchesMap.set(id, potentialMatchesMap.get(id) + 1);
@@ -300,8 +314,10 @@ export class MatchService extends BasicService<Match> {
     if (cannotReshuffle) {
       throw new BadRequestException('You have already reshuffled your matches');
     }
-    const matches = await this.matchRepo.find({ where: { userId: user.id } });
-    await this.matchRepo.remove(matches);
+    const matches = await this.getPotentialMatches(user);
+    const ids = matches.map((match) => match.id);
+    // delete all matches
+    await this.matchRepo.delete(ids);
     // store that user has reshuffled
     this.cacheService.set(`xyncedMatch:cannot-reshuffle-${user.id}`, 'true', null);
     // store matched users
