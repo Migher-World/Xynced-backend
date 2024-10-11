@@ -38,6 +38,9 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true, enum: GenderEnum })
   gender: GenderEnum;
 
+  @Column({ nullable: true, enum: GenderEnum })
+  preferredGender: GenderEnum;
+
   @Column({ nullable: true, enum: FaithEnum })
   faith: FaithEnum;
 

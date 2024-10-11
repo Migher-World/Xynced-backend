@@ -1,9 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { resolveResponse } from '../../shared/resolvers';
+import { AbstractPaginationDto } from '../../shared/dto/abstract-pagination.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -19,6 +20,11 @@ export class UsersController {
       this.usersService.create(createUserDto),
       'Account Created',
     );
+  }
+
+  @Get()
+  findAll(@Query() pagination: AbstractPaginationDto) {
+    return this.usersService.findAll(pagination);
   }
 
   // @Post('assign-role')

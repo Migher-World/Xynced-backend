@@ -40,4 +40,9 @@ export class MatchController {
   reshuffleMatches(@CurrentUser() user: User) {
     return resolveResponse(this.matchService.reshuffleMatches(user));
   }
+
+  @Get('/admin/match-analysis')
+  getMatchAnalysis() {
+    return resolveResponse(this.matchService.getMatchAnalysis());
+  }
 }

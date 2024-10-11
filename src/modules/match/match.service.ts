@@ -146,7 +146,7 @@ export class MatchService extends BasicService<Match> {
     const interests = profile.interests;
     const agePreference = profile.agePreference;
     const childrenPreference = profile.children;
-    // const genderPreference = profile.gender;
+    const genderPreference = profile.preferredGender;
     const doesFaithMatter = profile.doesFaithMatter;
     const culturalValuesPreference = profile.matchCulturalValues;
     const languagesPreference = profile.languages;
@@ -156,6 +156,7 @@ export class MatchService extends BasicService<Match> {
       !interests ||
       !agePreference ||
       !childrenPreference ||
+      !genderPreference ||
       !doesFaithMatter ||
       !culturalValuesPreference ||
       !languagesPreference
@@ -173,6 +174,11 @@ export class MatchService extends BasicService<Match> {
     // get similar age preferences
     const similarAgePreferences = await AppDataSource.query(
       `SELECT * FROM profile WHERE "age" BETWEEN ${agePreference[0]} AND ${agePreference[1]}`,
+    );
+
+    // get similar gender preferences
+    const similarGenderPreferences = await AppDataSource.query(
+      `SELECT * FROM profile where "gender" && ${genderPreference}`
     );
 
     // get children preferences match
@@ -206,6 +212,7 @@ export class MatchService extends BasicService<Match> {
       ...similarFaithMatters,
       ...similarCulturalValues,
       ...similarLanguages,
+      ...similarGenderPreferences,
     ];
 
     // remove users that have already been matched by checking the matches table in the database
@@ -320,6 +327,13 @@ export class MatchService extends BasicService<Match> {
     await this.matchRepo.delete(ids);
     // store that user has reshuffled
     this.cacheService.set(`xyncedMatch:cannot-reshuffle-${user.id}`, 'true', null);
+    // store reshuffle count
+    const reshuffleCount = await this.cacheService.get(`xyncedMatch:reshuffle-count`);
+    if (reshuffleCount) {
+      await this.cacheService.set(`xyncedMatch:reshuffle-count`, String(Number(reshuffleCount) + 1), null);
+    } else {
+      await this.cacheService.set(`xyncedMatch:reshuffle-count`, '1', null);
+    }
     // store matched users
     const matchedUsers = matches.map((match) => match.matchedUserId);
     this.cacheService.set(`xyncedMatch:matched-${user.id}`, JSON.stringify(matchedUsers), null);
@@ -354,5 +368,28 @@ export class MatchService extends BasicService<Match> {
   async canReshuffle(user: User) {
     const cannotReshuffle = await this.cacheService.get(`xyncedMatch:cannot-reshuffle-${user.id}`);
     return !cannotReshuffle;
+  }
+
+  async getMatchAnalysis() {
+    // this should give the average match compatibility, match success rate, match distribution in terms of age and location, all in percentages.
+    // also show the percentage of unmatched and also reshuffle rate
+
+    const matches = await this.matchRepo.find();
+    const totalMatches = matches.length;
+    const totalMatched = matches.filter((match) => match.userAccepted && match.matchAccepted).length;
+    const totalUnmatched = matches.filter((match) => match.isRejected).length;
+    const reshuffles = await this.cacheService.get(`xyncedMatch:reshuffle-count`);
+    const reshuffleRate = (Number(reshuffles) / totalMatches) * 100;
+
+    const totalPercentage = matches.reduce((acc, match) => acc + match.percentage, 0);
+
+    const averageMatchQuality = totalPercentage / totalMatches;
+    const matchSuccessRate = (totalMatched / totalMatches) * 100;
+
+    return {
+      averageMatchQuality,
+      matchSuccessRate,
+      reshuffleRate,
+    };
   }
 }
