@@ -1,8 +1,15 @@
+// import { Injectable } from '@nestjs/common';
+// import { I18nService } from 'nestjs_i18n';
+
+// @Injectable()
+// export class EnumService {
+//   constructor(private readonly i18n: I18nService) {}
+// }
 export enum GenderEnum {
     MALE = 'male',
     FEMALE = 'female',
-    NON_BINARY = 'non-binary',
-    PREFER_NOT_TO_SAY = 'prefer-not-to-say',
+    NON_BINARY = 'non_binary',
+    PREFER_NOT_TO_SAY = 'prefer_not_to_say',
 }
 
 export enum RelationshipStatusEnum {
@@ -12,27 +19,27 @@ export enum RelationshipStatusEnum {
     WIDOWED = 'widowed',
     SEPARATED = 'separated',
     ENGAGED = 'engaged',
-    OPEN_RELATIONSHIP = 'open-relationship',
+    OPEN_RELATIONSHIP = 'open_relationship',
 }
 
 export enum FaithEnum {
-    CHRISTIAN_PENTICOSTAL = 'christian-penticostal',
-    CHRISTIAN_CATHOLIC = 'christian-catholic',
+    CHRISTIAN_PENTICOSTAL = 'christian_penticostal',
+    CHRISTIAN_CATHOLIC = 'christian_catholic',
     MUSLIM = 'muslim',
     HINDU = 'hindu',
     BUDDHIST = 'buddhist',
     JUDAISM = 'judaism',
     SIKHISM = 'sikhism',
-    AFRICAN_TRADITIONAL = 'african-traditional',
+    AFRICAN_TRADITIONAL = 'african_traditional',
     ATHEIST = 'atheist',
-    NON_RELIGIOUS = 'non-religious',
+    NON_RELIGIOUS = 'non_religious',
     OTHER = 'other',
 }
 
 export enum EmploymentStatusEnum {
-    EMPLOYED_FULL_TIME = 'employed-full-time',
-    EMPLOYED_PART_TIME = 'employed-part-time',
-    SELF_EMPLOYED = 'self-employed',
+    EMPLOYED_FULL_TIME = 'employed_full_time',
+    EMPLOYED_PART_TIME = 'employed_part_time',
+    SELF_EMPLOYED = 'self_employed',
     UNEMPLOYED = 'unemployed',
     STUDENT = 'student',
     RETIRED = 'retired',
@@ -43,28 +50,28 @@ export enum EmploymentStatusEnum {
 
 export enum ResidenceStatusEnum {
     CITIZEN = 'citizen',
-    PERMANENT_RESIDENT = 'permanent-resident',
-    TEMPORARY_RESIDENT = 'temporary-resident',
-    WORK_VISA = 'work-visa',
-    STUDENT_VISA = 'student-visa',
+    PERMANENT_RESIDENT = 'permanent_resident',
+    TEMPORARY_RESIDENT = 'temporary_resident',
+    WORK_VISA = 'work_visa',
+    STUDENT_VISA = 'student_visa',
 }
 
 export enum InterestEnum {
-    ART_AND_DESIGN = 'art-and-design',
-    BOOKS_AND_WRITING = 'books-and-writing',
-    COOKING_AND_FOOD = 'cooking-and-food',
+    ART_AND_DESIGN = 'art_and_design',
+    BOOKS_AND_WRITING = 'books_and_writing',
+    COOKING_AND_FOOD = 'cooking_and_food',
     DANCING = 'dancing',
-    FASHION_AND_STYLE = 'fashion-and-style',
+    FASHION_AND_STYLE = 'fashion_and_style',
     GAMING = 'gaming',
     MUSIC = 'music',
-    MOVIES_AND_TV = 'movies-and-tv',
-    OUTDOOR_ACTIVITIES = 'outdoor-activities',
+    MOVIES_AND_TV = 'movies_and_tv',
+    OUTDOOR_ACTIVITIES = 'outdoor_activities',
     PHOTOGRAPHY = 'photography',
     SPORTS = 'sports',
     TRAVEL = 'travel',
     ANIME = 'anime',
-    BOARD_GAMES = 'board-games',
-    DIY_AND_CRAFTS = 'diy-and-crafts',
+    BOARD_GAMES = 'board_games',
+    DIY_AND_CRAFTS = 'diy_and_crafts',
     GARDENING = 'gardening',
     HIKING = 'hiking',
     KNITTING = 'knitting',
@@ -72,8 +79,8 @@ export enum InterestEnum {
     READING = 'reading',
     VOLUNTEERING = 'volunteering',
     YOGA = 'yoga',
-    TECHNOLOGY_AND_GADGETS = 'technology-and-gadgets',
-    SCIENCE_AND_NATURE = 'science-and-nature',
+    TECHNOLOGY_AND_GADGETS = 'technology_and_gadgets',
+    SCIENCE_AND_NATURE = 'science_and_nature',
     ANIMALS = 'animals',
     LANGUAGES = 'languages',
     PHILOSOPHY = 'philosophy',
@@ -101,12 +108,12 @@ export enum LifestyleEnum {
     STRESS_MANAGEMENT = 'Stress management',
     ALCOHOL_IN_MODERATION = 'Alcohol in moderation',
     MEDICAL_CHECKUPS = 'Regular medical checkups',
-    VACCINATIONS = 'Up-to-date vaccinations',
+    VACCINATIONS = 'Up_to_date vaccinations',
     HYDRATION = 'Adequate hydration',
     VEGETARIAN = 'Vegetarian',
     VEGAN = 'Vegan',
-    GLUTEN_FREE = 'Gluten-free',
-    LOW_CARB = 'Low-carb',
+    GLUTEN_FREE = 'Gluten_free',
+    LOW_CARB = 'Low_carb',
     INTERMITTENT_FASTING = 'Intermittent fasting',
     YOGA = 'Yoga',
     PILATES = 'Pilates',
@@ -138,7 +145,7 @@ export enum PersonalityTraitEnum {
     OPTIMISTIC_AND_POSITIVE = 'Optimistic and positive',
     GENEROUS_AND_THOUGHTFUL = 'Generous and thoughtful',
     CREATIVE_AND_ARTISTIC = 'Creative and artistic',
-    INDEPENDENT_AND_SELF_SUFFICIENT = 'Independent and self-sufficient',
+    INDEPENDENT_AND_SELF_SUFFICIENT = 'Independent and self_sufficient',
     AMBITIOUS_AND_DRIVEN = 'Ambitious and driven',
     EASYGOING_AND_LAIDBACK = 'Easygoing and laidback',
     OUTGOING_AND_SOCIAL = 'Outgoing and social',

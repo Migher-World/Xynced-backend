@@ -3,6 +3,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "plugins": ["@nestjs/swagger/plugin"],
-    "assets": ["templates", "database", "shared/plugins/redis"]
+    "assets": ["templates", "database", "i18n/**/*", "shared/plugins/redis"]
   }
 }

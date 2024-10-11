@@ -35,20 +35,20 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true })
   dateOfBirth: string;
 
-  @Column({ nullable: true, enum: GenderEnum })
-  gender: GenderEnum;
+  @Column({ nullable: true })
+  gender: string;
 
-  @Column({ nullable: true, enum: GenderEnum })
+  @Column({ nullable: true,  })
   preferredGender: GenderEnum;
 
-  @Column({ nullable: true, enum: FaithEnum })
-  faith: FaithEnum;
+  @Column({ nullable: true })
+  faith: string;
 
-  @Column({ nullable: true, enum: RelationshipStatusEnum })
-  relationshipStatus: RelationshipStatusEnum;
+  @Column({ nullable: true })
+  relationshipStatus: string;
 
-  @Column({ nullable: true, enum: EmploymentStatusEnum })
-  employmentStatus: EmploymentStatusEnum;
+  @Column({ nullable: true })
+  employmentStatus: string;
 
   @Column({ nullable: true })
   profession: string;
@@ -59,8 +59,8 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true })
   city: string;
 
-  @Column({ nullable: true, enum: ResidenceStatusEnum })
-  residenceStatus: ResidenceStatusEnum;
+  @Column({ nullable: true })
+  residenceStatus: string;
 
   @Column({ nullable: true })
   countryCode: string;
@@ -77,23 +77,23 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true })
   bio: string;
 
-  @Column({ nullable: true, type: 'text', enum: InterestEnum, array: true })
-  interests: InterestEnum[];
+  @Column({ nullable: true, type: 'text', array: true })
+  interests: string[];
 
-  @Column({ nullable: true, enum: FaithBasedMatchEnum })
-  doesFaithMatter: FaithBasedMatchEnum;
+  @Column({ nullable: true })
+  doesFaithMatter: string;
 
   @Column({ nullable: true, type: 'text', array: true })
   values: string[];
 
   @Column({ nullable: true, type: 'text', array: true })
-  languages: LanguagesEnum[];
+  languages: string[];
 
   @Column({ nullable: true, type: 'text', array: true })
-  relationshipGoals: RelationshipGoalsEnum[];
+  relationshipGoals: string[];
 
-  @Column({ nullable: true, enum: ChildrenEnum })
-  children: ChildrenEnum;
+  @Column({ nullable: true })
+  children: string;
 
   @Column({ nullable: true })
   lifeGoals: string;
@@ -114,22 +114,22 @@ export class Profile extends AbstractEntity {
   matchPreferences: string[];
 
   @Column({ nullable: true, type: 'text', array: true })
-  matchCulturalValues: CulturalValuesEnum[];
+  matchCulturalValues: string[];
 
   @Column({ nullable: true, type: 'text', array: true })
-  faithBasePreferences: FaithEnum[];
+  faithBasePreferences: string[];
 
   @Column({ nullable: true })
   financialStabilityView: string;
 
   @Column({ nullable: true, type: 'text', array: true })
-  personalityTraitInMatch: PersonalityTraitEnum[];
+  personalityTraitInMatch: string[];
 
   @Column({ nullable: true })
   familyAndSocialRelationshipPreferences: string;
 
   @Column({ nullable: true, type: 'text', array: true })
-  healthAndLifestyleChoices: LifestyleEnum[];
+  healthAndLifestyleChoices: string[];
 
   @Column({ nullable: true })
   pastExperiences: string;

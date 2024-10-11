@@ -21,6 +21,8 @@ import { StripeModule } from 'nestjs-stripe';
 import { MatchModule } from './modules/match/match.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { MessagesModule } from './modules/messages/messages.module';
+import * as path from 'path';
+import { AcceptLanguageResolver, HeaderResolver, I18nJsonLoader, I18nModule, QueryResolver } from 'nestjs-i18n';
 const mg = require('nodemailer-mailgun-transport');
 const { google } = require('googleapis');
 
@@ -83,6 +85,19 @@ oauth2Client.setCredentials({
           },
         }
       },
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      loader: I18nJsonLoader,
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+        new HeaderResolver(['x-lang']),
+      ],
     }),
     BullModule.forRoot({
       createClient: () =>
