@@ -1,19 +1,4 @@
 import { BeforeInsert, Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import {
-  ChildrenEnum,
-  CulturalValuesEnum,
-  EmploymentStatusEnum,
-  FaithBasedMatchEnum,
-  FaithEnum,
-  GenderEnum,
-  InterestEnum,
-  LanguagesEnum,
-  LifestyleEnum,
-  PersonalityTraitEnum,
-  RelationshipGoalsEnum,
-  RelationshipStatusEnum,
-  ResidenceStatusEnum,
-} from '../enum/profile.enum';
 import { User } from '../../users/entities/user.entity';
 import { AbstractEntity } from '../../../shared/entities/abstract-entity';
 
@@ -39,7 +24,7 @@ export class Profile extends AbstractEntity {
   gender: string;
 
   @Column({ nullable: true,  })
-  preferredGender: GenderEnum;
+  preferredGender: string;
 
   @Column({ nullable: true })
   faith: string;

@@ -1,5 +1,4 @@
 import { IsOptional, IsString, IsEnum, IsArray, IsBoolean, IsDate, IsDateString, IsNumber } from 'class-validator';
-import { ChildrenEnum, CulturalValuesEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LanguagesEnum, LifestyleEnum, PersonalityTraitEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "../enum/profile.enum";
 
 export class CreateProfileDto {
     @IsString()
@@ -14,21 +13,20 @@ export class CreateProfileDto {
     @IsOptional()
     dateOfBirth: string;
 
-    @IsEnum(GenderEnum)
     @IsOptional()
-    gender: GenderEnum;
+    gender: string;
 
-    @IsEnum(FaithEnum)
     @IsOptional()
-    faith: FaithEnum;
+    preferredGender: string;
 
-    @IsEnum(RelationshipStatusEnum)
     @IsOptional()
-    relationshipStatus: RelationshipStatusEnum;
+    faith: string;
 
-    @IsEnum(EmploymentStatusEnum)
     @IsOptional()
-    employmentStatus: EmploymentStatusEnum;
+    relationshipStatus: string;
+
+    @IsOptional()
+    employmentStatus: string;
 
     @IsString()
     @IsOptional()
@@ -42,9 +40,8 @@ export class CreateProfileDto {
     @IsOptional()
     city: string;
 
-    @IsEnum(ResidenceStatusEnum)
     @IsOptional()
-    residenceStatus: ResidenceStatusEnum;
+    residenceStatus: string;
 
     @IsString()
     @IsOptional()
@@ -68,30 +65,25 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    @IsEnum(InterestEnum, { each: true })
-    interests: InterestEnum[];
+    interests: string[];
 
     @IsArray()
     @IsOptional()
     values: string[];
 
     @IsOptional()
-    @IsEnum(FaithBasedMatchEnum)
-    doesFaithMatter: FaithBasedMatchEnum;
+    doesFaithMatter: string;
 
     @IsArray()
     @IsOptional()
-    @IsEnum(LanguagesEnum, { each: true })
-    languages: LanguagesEnum[];
+    languages: string[];
 
     @IsArray()
     @IsOptional()
-    @IsEnum(RelationshipGoalsEnum, { each: true })
-    relationshipGoals: RelationshipGoalsEnum[];
+    relationshipGoals: string[];
 
     @IsOptional()
-    @IsEnum(ChildrenEnum)
-    children: ChildrenEnum;
+    children: string;
 
     @IsString()
     @IsOptional()
@@ -119,13 +111,11 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    @IsEnum(CulturalValuesEnum, { each: true })
-    matchCulturalValues: CulturalValuesEnum[];
+    matchCulturalValues: string[];
 
     @IsArray()
     @IsOptional()
-    @IsEnum(FaithEnum, { each: true })
-    faithBasePreferences: FaithEnum[];
+    faithBasePreferences: string[];
 
     @IsString()
     @IsOptional()
@@ -133,8 +123,7 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    @IsEnum(PersonalityTraitEnum, { each: true })
-    personalityTraitInMatch: PersonalityTraitEnum[];
+    personalityTraitInMatch: string[];
 
     @IsString()
     @IsOptional()
@@ -142,8 +131,7 @@ export class CreateProfileDto {
 
     @IsArray()
     @IsOptional()
-    @IsEnum(LifestyleEnum, { each: true })
-    healthAndLifestyleChoices: LifestyleEnum[];
+    healthAndLifestyleChoices: string[];
 
     @IsString()
     @IsOptional()
