@@ -161,7 +161,7 @@ export enum CulturalValuesEnum {
     LANGUAGE = 'Language',
     FOOD = 'Food',
     HOLIDAYS = 'Holidays',
-    CLOTHING = 'Cloting',
+    CLOTHING = 'Clothing',
 }
 
 export enum LanguagesEnum {

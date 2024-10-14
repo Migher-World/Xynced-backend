@@ -45,7 +45,7 @@ export class ProfileService extends BasicService<Profile> {
   //   }
   // }
 
-  async getMetadata(lang = 'fr') {
+  async getMetadata(lang = 'en') {
     return {
       employmentStatus: await this.getEnumValuesWithTranslations(EmploymentStatusEnum, 'employment_status', lang),
       faith: await this.getEnumValuesWithTranslations(FaithEnum, 'faith', lang),
@@ -66,7 +66,7 @@ export class ProfileService extends BasicService<Profile> {
   private async getEnumValuesWithTranslations(enumType: any, key: string, lang: string) {
     return Promise.all(
       Object.values(enumType).map(async (value: string) => ({
-        value,
+        value: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
         label: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
       }))
     );
