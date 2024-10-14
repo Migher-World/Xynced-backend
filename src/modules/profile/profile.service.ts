@@ -55,9 +55,9 @@ export class ProfileService extends BasicService<Profile> {
       interest: await this.getEnumValuesWithTranslations(InterestEnum, 'interest', lang),
       faithBasedMatch: await this.getEnumValuesWithTranslations(FaithBasedMatchEnum, 'faith_based_match', lang),
       children: await this.getEnumValuesWithTranslations(ChildrenEnum, 'children', lang),
-      lifestyleChoices: await this.getEnumValuesWithTranslations(LifestyleEnum, 'lifestyle_choices', lang),
+      lifestyleChoices: await this.getEnumValuesWithTranslations(LifestyleEnum, 'lifestyle', lang),
       relationshipGoals: await this.getEnumValuesWithTranslations(RelationshipGoalsEnum, 'relationship_goals', lang),
-      personalityTraitInMatch: await this.getEnumValuesWithTranslations(PersonalityTraitEnum, 'personality_trait_in_match', lang),
+      personalityTraitInMatch: await this.getEnumValuesWithTranslations(PersonalityTraitEnum, 'personality_trait', lang),
       culturalValues: await this.getEnumValuesWithTranslations(CulturalValuesEnum, 'cultural_values', lang),
       languages: await this.getEnumValuesWithTranslations(LanguagesEnum, 'languages', lang),
     };
@@ -65,9 +65,9 @@ export class ProfileService extends BasicService<Profile> {
 
   private async getEnumValuesWithTranslations(enumType: any, key: string, lang: string) {
     return Promise.all(
-      Object.values(enumType).map(async (value) => ({
+      Object.values(enumType).map(async (value: string) => ({
         value,
-        label: this.i18n.t(`${lang}.${key}.${value}`, { lang }),
+        label: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
       }))
     );
   }
