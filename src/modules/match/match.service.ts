@@ -477,16 +477,12 @@ export class MatchService extends BasicService<Match> {
     // locations should be based on the city of the user (get distinct cities from the profile table)
     const distinctCities = await AppDataSource.query(`SELECT DISTINCT city FROM profile`);
 
-    console.log({distinctCities});
-
     distinctCities.forEach((city) => {
       locations[city.city] = 0;
     });
-    console.log(locations);
 
     matches.forEach((match) => {
       const city = match.matchedUser.profile.city;
-      console.log(city);
       locations[city] += 1;
     });
 
