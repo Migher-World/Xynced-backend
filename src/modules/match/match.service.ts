@@ -178,7 +178,7 @@ export class MatchService extends BasicService<Match> {
 
     // get similar gender preferences
     const similarGenderPreferences = await AppDataSource.query(
-      `SELECT * FROM profile where "gender" && ${genderPreference}`
+      `SELECT * FROM profile where "gender" = '${genderPreference}'`
     );
 
     // get children preferences match
@@ -226,10 +226,54 @@ export class MatchService extends BasicService<Match> {
     const matchedUsersIds = usersWithMatch.map((match) => match.userId);
 
     const potentialMatchesFiltered = potentialMatches.filter((match) => !matchedUsersIds.includes(match.userId));
-  
+
+    // remove lesser preferences and keep the most preferred considering the user's preferences such as interests, age, gender, etc 
+    // the matches should not have the current user and should not have duplicate users too
+
+    const potentialMatchesFilteredFinal = potentialMatchesFiltered.filter((match: Profile, index, self) => {
+      const id = match.userId;
+      const matchInterests = match.interests;
+      const matchAge = match.age;
+      const matchChildren = match.children;
+      const matchGender = match.preferredGender;
+      const matchFaithMatters = match.doesFaithMatter;
+      const matchCulturalValues = match.matchCulturalValues;
+      const matchLanguages = match.languages;
+
+      const interestMatch = interests.filter((interest) => matchInterests.includes(interest)).length;
+      const ageMatch = matchAge >= Number(agePreference[0]) && matchAge <= Number(agePreference[1]);
+      const childrenMatch = matchChildren === childrenPreference
+      const genderMatch = matchGender === genderPreference;
+      const faithMatch = matchFaithMatters === doesFaithMatter;
+      const culturalValuesMatch = matchCulturalValues.filter((culturalValue) => culturalValuesPreference.includes(culturalValue)).length;
+      const languagesMatch = matchLanguages.filter((language) => languagesPreference.includes(language)).length;
+
+      const matchPercentage = Math.floor(
+        ((interestMatch + Number(ageMatch) + Number(childrenMatch) + Number(genderMatch) + Number(faithMatch) + culturalValuesMatch + languagesMatch) / 7) * 100,
+      );
+
+      
+      const matchIndex = self.findIndex((m) => m.userId === id);
+      console.log({matchPercentage, smp: self[matchIndex].matchPercentage})
+      
+      if (matchIndex === index) {
+        return true;
+      }
+
+      if (matchPercentage > self[matchIndex].matchPercentage) {
+        return true;
+      }
+
+      return false;
+
+    });
+
+    console.log(potentialMatchesFilteredFinal.length);
+
+    // return potentialMatchesFilteredFinal;
 
     const potentialMatchesMap = new Map();
-    potentialMatchesFiltered.forEach((match) => {
+    potentialMatchesFilteredFinal.forEach((match) => {
       const id = match.userId;
       if (potentialMatchesMap.has(id)) {
         potentialMatchesMap.set(id, potentialMatchesMap.get(id) + 1);
@@ -263,6 +307,8 @@ export class MatchService extends BasicService<Match> {
 
     // create the matches left
     const topMatches = matches.slice(0, matchesLeft);
+    console.log(topMatches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })));
+    return topMatches;
     const data = this.matchRepo.create(
       topMatches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })),
     );
@@ -371,10 +417,95 @@ export class MatchService extends BasicService<Match> {
   }
 
   async getMatchAnalysis() {
-    // this should give the average match compatibility, match success rate, match distribution in terms of age and location, all in percentages.
-    // also show the percentage of unmatched and also reshuffle rate
+    // this function should compute the average match compatibility, match success rate, reshuffle rate, match distribution based on different age groups and also based on different locations
+    // the reshuffle rate should be the number of times a user has reshuffled their matches divided by the total number of matches (should be a percentage)
+    // the match success rate should be the number of matches that have been accepted by both users divided by the total number of matched users (should be a percentage)
+    // the average match compatibility should be the average percentage match of all matches
+    // the match distribution should be the number of matches based on different age groups and locations
 
-    const matches = await this.matchRepo.find();
+    const matches = await this.matchRepo.find({
+      relations: ['matchedUser', 'user', 'matchedUser.profile', 'user.profile'],
+    });
+    const totalMatches = matches.length;
+    const totalMatched = matches.filter((match) => match.userAccepted && match.matchAccepted).length;
+    const totalUnmatched = matches.filter((match) => match.isRejected).length;
+    const reshuffles = await this.cacheService.get(`xyncedMatch:reshuffle-count`);
+    const reshuffleRate = (Number(reshuffles) / totalMatches) * 100;
+    const totalUnmatchedPercentage = (totalUnmatched / totalMatches) * 100;
+
+    const totalPercentage = matches.reduce((acc, match) => acc + match.percentage, 0);
+
+    const averageMatchCompatibility = totalPercentage / totalMatches;
+
+    const matchSuccessRate = (totalMatched / totalMatches) * 100;
+
+    // get match distribution based on age groups
+    const ageGroups = {
+      '18-25': 0,
+      '26-35': 0,
+      '36-45': 0,
+      '46-55': 0,
+      '56-65': 0,
+      '66-75': 0,
+      '76-85': 0,
+      '86-95': 0,
+    };
+
+    matches.forEach((match) => {
+      const age = match.matchedUser.profile.age;
+      if (age >= 18 && age <= 25) {
+        ageGroups['18-25'] += 1;
+      } else if (age >= 26 && age <= 35) {
+        ageGroups['26-35'] += 1;
+      } else if (age >= 36 && age <= 45) {
+        ageGroups['36-45'] += 1;
+      } else if (age >= 46 && age <= 55) {
+        ageGroups['46-55'] += 1;
+      } else if (age >= 56 && age <= 65) {
+        ageGroups['56-65'] += 1;
+      } else if (age >= 66 && age <= 75) {
+        ageGroups['66-75'] += 1;
+      } else if (age >= 76 && age <= 85) {
+        ageGroups['76-85'] += 1;
+      } else if (age >= 86 && age <= 95) {
+        ageGroups['86-95'] += 1;
+      }
+    });
+
+    // get match distribution based on locations
+    const locations = {};
+    // locations should be based on the city of the user (get distinct cities from the profile table)
+    const distinctCities = await AppDataSource.query(`SELECT DISTINCT city FROM profile`);
+
+    console.log({distinctCities});
+
+    distinctCities.forEach((city) => {
+      locations[city.city] = 0;
+    });
+    console.log(locations);
+
+    matches.forEach((match) => {
+      const city = match.matchedUser.profile.city;
+      console.log(city);
+      locations[city] += 1;
+    });
+
+    return {
+      averageMatchCompatibility: averageMatchCompatibility.toPrecision(2),
+      matchSuccessRate: matchSuccessRate.toPrecision(2),
+      reshuffleRate: reshuffleRate.toPrecision(2),
+      totalUnmatchedPercentage: totalUnmatchedPercentage.toPrecision(2),
+      ageGroups,
+      locations,
+    };
+
+    
+  }
+}
+
+
+/* 
+const matches = await this.matchRepo.find();
     const totalMatches = matches.length;
     const totalMatched = matches.filter((match) => match.userAccepted && match.matchAccepted).length;
     const totalUnmatched = matches.filter((match) => match.isRejected).length;
@@ -391,5 +522,4 @@ export class MatchService extends BasicService<Match> {
       matchSuccessRate,
       reshuffleRate,
     };
-  }
-}
+*/
