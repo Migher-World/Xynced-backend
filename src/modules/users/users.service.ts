@@ -6,6 +6,7 @@ import { BasicService } from '../../shared/services/basic-service.service';
 import { RolesService } from '../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { AbstractPaginationDto } from '../../shared/dto/abstract-pagination.dto';
 
 @Injectable()
 export class UsersService extends BasicService<User> {
@@ -34,6 +35,13 @@ export class UsersService extends BasicService<User> {
     // if (isTelephoneExist) {
     //   throw new BadRequestException('Phone number exists');
     // }
+  }
+
+  async findAll(pagination: AbstractPaginationDto) {
+    const query = this.userRepo.createQueryBuilder('user')
+    .leftJoinAndSelect('user.profile', 'profile');
+
+    return this.paginate(query, pagination);
   }
 
   async create(createUserDto: CreateUserDto) {
