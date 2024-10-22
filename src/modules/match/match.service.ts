@@ -186,9 +186,13 @@ export class MatchService extends BasicService<Match> {
     );
 
     // get children preferences match
-    const similarChildrenPreferences = await AppDataSource.query(
-      `SELECT * FROM profile WHERE "children" = '${childrenPreference}'`,
-    );
+    // const similarChildrenPreferences = await AppDataSource.query(
+    //   `SELECT * FROM profile WHERE "children" = REPLACE(${childrenPreference}, '', '''')`,
+    //   // `SELECT * FROM profile WHERE "children" = '+${childrenPreference}+'`,
+    // );
+    const similarChildrenPreferences = await AppDataSource.getRepository(Profile).find({
+      where: { children: childrenPreference },
+    });
 
     // get faith matters match
     const similarFaithMatters = await AppDataSource.query(
