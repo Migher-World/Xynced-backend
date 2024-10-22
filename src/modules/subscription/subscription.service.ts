@@ -90,6 +90,7 @@ export class SubscriptionService extends BasicService<Subscription> {
     const subscription = this.subscriptionRepository.create({
       userId: user.id,
       plan: plans.find((plan) => plan.amount === session.amount_total / 100),
+      amount: session.amount_total / 100,
       stripeSubscriptionId: session.subscription as string,
       status: SubscriptionStatusEnum.ACTIVE,
       startDate: new Date(sub.current_period_start * 1000),
@@ -111,5 +112,51 @@ export class SubscriptionService extends BasicService<Subscription> {
   async handleSubscriptionUpdateWebhook(event: Stripe.Event) {
     const subscription = event.data.object as Stripe.Subscription;
     // Handle subscription update, update your database accordingly
+  }
+
+  // analytics
+  async getSubscriptionsAnalytics() {
+    const subscriptions = await this.subscriptionRepository.find();
+    const activeSubscriptions = subscriptions.filter((sub) => sub.status === SubscriptionStatusEnum.ACTIVE);
+    // total revenue
+    const totalRevenue = activeSubscriptions.reduce((acc, sub) => acc + sub.amount, 0);
+    //  (calculate the last 6 months revenue and compare the first 3 months to the last 3 months in percentage)
+    const lastSixMonthsSubscriptions = activeSubscriptions.filter(
+      (sub) => sub.startDate > new Date(new Date().setMonth(new Date().getMonth() - 6)),
+    );
+    const first3Months = lastSixMonthsSubscriptions.filter(
+      (sub) => sub.startDate < new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    );
+    const last3Months = lastSixMonthsSubscriptions.filter(
+      (sub) => sub.startDate > new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    );
+    const lastQuarterRevenue = last3Months.reduce((acc, sub) => acc + sub.amount, 0);
+    const firstQuarterRevenue = first3Months.reduce((acc, sub) => acc + sub.amount, 0);
+    const revenueGrowth = ((lastQuarterRevenue - firstQuarterRevenue) / totalRevenue) * 100;
+
+    // revenue by plan
+    const revenueByPlan = activeSubscriptions.reduce((acc, sub) => {
+      if (acc[sub.plan.name]) {
+        acc[sub.plan.name] += sub.amount;
+      } else {
+        acc[sub.plan.name] = sub.amount;
+      }
+      return acc;
+    }, {});
+    const highestPerformer = Object.keys(revenueByPlan).reduce((a, b) => (revenueByPlan[a] > revenueByPlan[b] ? a : b));
+    const lowestPerformer = Object.keys(revenueByPlan).reduce((a, b) => (revenueByPlan[a] < revenueByPlan[b] ? a : b));
+    const monthlyRecurringRevenue = activeSubscriptions.reduce((acc, sub) => acc + sub.amount, 0);
+    const annualRecurringRevenue = monthlyRecurringRevenue * 12;
+    return {
+      totalSubscriptions: subscriptions.length,
+      activeSubscriptions: activeSubscriptions.length,
+      totalRevenue,
+      revenueGrowth,
+      revenueByPlan,
+      highestPerformer,
+      lowestPerformer,
+      monthlyRecurringRevenue,
+      annualRecurringRevenue,
+    };
   }
 }

@@ -37,4 +37,9 @@ export class SubscriptionController {
   async getPlans() {
     return resolveResponse(this.subscriptionService.getPlans());
   }
+
+  @Get('admin/analytics')
+  async getAnalytics() {
+    return resolveResponse(this.subscriptionService.getSubscriptionsAnalytics());
+  }
 }
