@@ -1,9 +1,7 @@
 {
     "gender": {
       "male": "Homme",
-      "female": "Femme",
-      "non_binary": "Non-binaire",
-      "prefer_not_to_say": "Préfère ne pas dire"
+      "female": "Femme"
     },
     "relationship_status": {
       "single": "Célibataire",

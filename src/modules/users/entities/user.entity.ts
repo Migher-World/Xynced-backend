@@ -14,6 +14,7 @@ import * as bcrypt from 'bcrypt';
 import { AbstractEntity } from '../../../shared/entities/abstract-entity';
 import { Profile } from '../../profile/entities/profile.entity';
 import { Subscription } from 'rxjs';
+import { Feedback } from '../../feedback/entities/feedback.entity';
 
 @Entity('users')
 export class User extends AbstractEntity {
@@ -48,6 +49,9 @@ export class User extends AbstractEntity {
 
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
+
+  @OneToMany(() => Feedback, (feedback) => feedback.user)
+  feedbacks: Feedback[];
 
   protected verified: boolean;
 

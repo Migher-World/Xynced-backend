@@ -9,10 +9,9 @@ export enum KycStatus {
   
   export enum DocumentTypeEnum {
     PASSPORT = 'passport',
-    NIN = 'nin',
+    GOVERNMENT_ID = 'government_id',
     DRIVERS_LICENSE = 'drivers_license',
-    VOTERS_CARD = 'voters_card',
-    BVN = 'bvn',
+    RESIDENCE_PERMIT = 'residence_permit',
   }
 
 

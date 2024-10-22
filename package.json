@@ -40,6 +40,7 @@
     "@types/cache-manager": "^4.0.2",
     "@types/faker": "^6.6.9",
     "aws-sdk": "^2.1497.0",
+    "axios": "^1.2.2",
     "bcrypt": "^5.0.0",
     "bull": "^4.6.1",
     "cache-manager": "^5.1.3",

@@ -11,6 +11,8 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AppEvents } from '../../constants';
 import { CreateNotificationDto } from '../../shared/alerts/notifications/dto/create-notification.dto';
 import { NotificationTypes } from '../../shared/alerts/notifications/enum/notification-types.enum';
+import { FeedbackService } from '../feedback/feedback.service';
+import { FeedbackDto } from '../feedback/dto/feedback.dto';
 
 @Injectable()
 export class MatchService extends BasicService<Match> {
@@ -18,6 +20,7 @@ export class MatchService extends BasicService<Match> {
     @InjectRepository(Match) private matchRepo: Repository<Match>,
     private cacheService: CacheService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly feedbackService: FeedbackService,
   ) {
     super(matchRepo, 'Match');
   }
@@ -161,6 +164,7 @@ export class MatchService extends BasicService<Match> {
       !culturalValuesPreference ||
       !languagesPreference
     ) {
+      console.log({ interests, agePreference, childrenPreference, genderPreference, doesFaithMatter, culturalValuesPreference, languagesPreference });
       throw new BadRequestException(
         'Please set your preferences to get matches. To set your preferences, go to your profile',
       );
@@ -217,20 +221,18 @@ export class MatchService extends BasicService<Match> {
 
     // remove users that have already been matched by checking the matches table in the database
     const usersWithMatch = await this.matchRepo.createQueryBuilder('match')
-    .where('match.userId = :userId', { userId: user.id })
-    .orWhere('match.matchedUserId = :userId', { userId: user.id })
-    .andWhere('match.userAccepted = true')
+    .where('match.userAccepted = true')
     .andWhere('match.matchAccepted = true')
     .getMany();
 
-    const matchedUsersIds = usersWithMatch.map((match) => match.userId);
+    const matchedUsersIds = usersWithMatch.map((match) => [match.userId, match.matchedUserId]).flat();
 
     const potentialMatchesFiltered = potentialMatches.filter((match) => !matchedUsersIds.includes(match.userId));
 
     // remove lesser preferences and keep the most preferred considering the user's preferences such as interests, age, gender, etc 
     // the matches should not have the current user and should not have duplicate users too
 
-    const potentialMatchesFilteredFinal = potentialMatchesFiltered.filter((match: Profile, index, self) => {
+    const potentialMatchesFilteredFinal = potentialMatchesFiltered.map((match: Profile, index, self) => {
       const id = match.userId;
       const matchInterests = match.interests;
       const matchAge = match.age;
@@ -248,23 +250,15 @@ export class MatchService extends BasicService<Match> {
       const culturalValuesMatch = matchCulturalValues.filter((culturalValue) => culturalValuesPreference.includes(culturalValue)).length;
       const languagesMatch = matchLanguages.filter((language) => languagesPreference.includes(language)).length;
 
-      const matchPercentage = Math.floor(
-        ((interestMatch + Number(ageMatch) + Number(childrenMatch) + Number(genderMatch) + Number(faithMatch) + culturalValuesMatch + languagesMatch) / 7) * 100,
-      );
+      // const matchPercentage = Math.floor(
+      //   ((interestMatch + Number(ageMatch) + Number(childrenMatch) + Number(genderMatch) + Number(faithMatch) + culturalValuesMatch + languagesMatch) / 7) * 100,
+      // );
 
       
       const matchIndex = self.findIndex((m) => m.userId === id);
-      console.log({matchPercentage, smp: self[matchIndex].matchPercentage})
-      
-      if (matchIndex === index) {
-        return true;
-      }
+      // self[matchIndex].matchPercentage = matchPercentage;
 
-      if (matchPercentage > self[matchIndex].matchPercentage) {
-        return true;
-      }
-
-      return false;
+      return self[matchIndex];
 
     });
 
@@ -283,13 +277,14 @@ export class MatchService extends BasicService<Match> {
     });
 
     // ensure that the user is not matched with themselves
+    console.log(potentialMatchesMap.get(user.id));
     potentialMatchesMap.delete(user.id);
 
     // add percentage match to each user based on the preferences and should not be more than 100%
     const percentageMatchMap = new Map();
 
     potentialMatchesMap.forEach((value, key) => {
-      const percentageMatch = Math.floor((value / 6) * 100);
+      const percentageMatch = Math.floor((value / 7) * 100);
       percentageMatchMap.set(key, percentageMatch);
     });
 
@@ -308,7 +303,7 @@ export class MatchService extends BasicService<Match> {
     // create the matches left
     const topMatches = matches.slice(0, matchesLeft);
     console.log(topMatches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })));
-    return topMatches;
+    // return topMatches;
     const data = this.matchRepo.create(
       topMatches.map((id) => ({ userId: user.id, matchedUserId: id, percentage: percentageMatchMap.get(id) })),
     );
@@ -417,12 +412,6 @@ export class MatchService extends BasicService<Match> {
   }
 
   async getMatchAnalysis() {
-    // this function should compute the average match compatibility, match success rate, reshuffle rate, match distribution based on different age groups and also based on different locations
-    // the reshuffle rate should be the number of times a user has reshuffled their matches divided by the total number of matches (should be a percentage)
-    // the match success rate should be the number of matches that have been accepted by both users divided by the total number of matched users (should be a percentage)
-    // the average match compatibility should be the average percentage match of all matches
-    // the match distribution should be the number of matches based on different age groups and locations
-
     const matches = await this.matchRepo.find({
       relations: ['matchedUser', 'user', 'matchedUser.profile', 'user.profile'],
     });
@@ -493,29 +482,27 @@ export class MatchService extends BasicService<Match> {
       totalUnmatchedPercentage: totalUnmatchedPercentage.toPrecision(2),
       ageGroups,
       locations,
-    };
+    };    
+  }
 
-    
+  async unmatchUser(user: User, feedbackDto: FeedbackDto) {
+    const { matchId, } = feedbackDto;
+    const match = await this.findOne(matchId);
+    if (![match.userId, match.matchedUserId].includes(user.id)) {
+      throw new BadRequestException('Match not found');
+    }
+
+    if(!match.userAccepted || !match.matchAccepted) {
+      throw new BadRequestException('This match has not been accepted');
+    }
+
+    match.userAccepted = false;
+    match.matchAccepted = false;
+    match.isRejected = true;
+    await this.matchRepo.save(match);
+    // create feedback
+    await this.feedbackService.create({...feedbackDto, userId: user.id});
+    return { message: 'User unmatched successfully' };
   }
 }
 
-
-/* 
-const matches = await this.matchRepo.find();
-    const totalMatches = matches.length;
-    const totalMatched = matches.filter((match) => match.userAccepted && match.matchAccepted).length;
-    const totalUnmatched = matches.filter((match) => match.isRejected).length;
-    const reshuffles = await this.cacheService.get(`xyncedMatch:reshuffle-count`);
-    const reshuffleRate = (Number(reshuffles) / totalMatches) * 100;
-
-    const totalPercentage = matches.reduce((acc, match) => acc + match.percentage, 0);
-
-    const averageMatchQuality = totalPercentage / totalMatches;
-    const matchSuccessRate = (totalMatched / totalMatches) * 100;
-
-    return {
-      averageMatchQuality,
-      matchSuccessRate,
-      reshuffleRate,
-    };
-*/

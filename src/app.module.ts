@@ -23,6 +23,7 @@ import { ConversationModule } from './modules/conversation/conversation.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import * as path from 'path';
 import { AcceptLanguageResolver, HeaderResolver, I18nJsonLoader, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 const mg = require('nodemailer-mailgun-transport');
 const { google } = require('googleapis');
 
@@ -126,6 +127,7 @@ oauth2Client.setCredentials({
     MatchModule,
     ConversationModule,
     MessagesModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

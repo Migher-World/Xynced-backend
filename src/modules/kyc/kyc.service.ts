@@ -4,27 +4,36 @@ import { DocumentTypeEnum, Kyc } from './entities/kyc.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Helper } from '../../shared/helpers';
+import { RequestController } from '../../shared/core';
 
 @Injectable()
 export class KycService extends BasicService<Kyc> {
-    constructor(
-        @InjectRepository(Kyc)
-        private kycRepository: Repository<Kyc>,
-    ) {
-        super(kycRepository, 'Kyc');
-    }
+  constructor(
+    @InjectRepository(Kyc)
+    private kycRepository: Repository<Kyc>,
+    private readonly requestController: RequestController,
+  ) {
+    super(kycRepository, 'Kyc');
+  }
 
-    async createOrUpdateKyc(userId: string, createKycDto: any) {
-        const kyc = await this.findOne(userId, 'userId', null, false);
-        if (kyc) {
-            return this.update(kyc.id, createKycDto);
-        }
-        return this.create({ ...createKycDto, userId });
+  async createOrUpdateKyc(userId: string, createKycDto: any) {
+    const kyc = await this.findOne(userId, 'userId', null, false);
+    if (kyc) {
+      return this.update(kyc.id, createKycDto);
     }
+    return this.create({ ...createKycDto, userId });
+  }
 
-    async getMetadata() {
-        return {
-            documentType: Object.values(DocumentTypeEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
-        }
-    }
+  async getMetadata() {
+    return {
+      documentType: Object.values(DocumentTypeEnum).map((value) => ({ value, label: Helper.toSentenceCase(value) })),
+    };
+  }
+
+  private async getHeaders(): Promise<Record<string, string>> {
+    return {
+      'Content-Type': 'application/json',
+      'x-api-key': 'undefined'
+    };
+  }
 }

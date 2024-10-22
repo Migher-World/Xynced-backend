@@ -39,7 +39,8 @@ export class UsersService extends BasicService<User> {
 
   async findAll(pagination: AbstractPaginationDto) {
     const query = this.userRepo.createQueryBuilder('user')
-    .leftJoinAndSelect('user.profile', 'profile');
+    .leftJoinAndSelect('user.profile', 'profile')
+    .leftJoinAndSelect('user.feedbacks', 'feedbacks')
 
     return this.paginate(query, pagination);
   }
