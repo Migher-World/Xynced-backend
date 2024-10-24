@@ -147,6 +147,41 @@ export class SubscriptionService extends BasicService<Subscription> {
     const lowestPerformer = Object.keys(revenueByPlan).reduce((a, b) => (revenueByPlan[a] < revenueByPlan[b] ? a : b));
     const monthlyRecurringRevenue = activeSubscriptions.reduce((acc, sub) => acc + sub.amount, 0);
     const annualRecurringRevenue = monthlyRecurringRevenue * 12;
+
+    // calculate revenue trends, the graph should show the revenue trend for the previous 12 months
+    //  it shoud return the month name and the revenue for that month
+    const revenueTrends = activeSubscriptions.reduce((acc, sub) => {
+      const month = sub.startDate.toLocaleString('default', { month: 'long' });
+      if (acc[month]) {
+        acc[month] += sub.amount;
+      } else {
+        acc[month] = sub.amount;
+      }
+      return acc;
+    }, {
+      January: 0,
+      February: 0,
+      March: 0,
+      April: 0,
+      May: 0,
+      June: 0,
+      July: 0,
+      August: 0,
+      September: 0,
+      October: 0,
+      November: 0,
+      December: 0,
+    });
+
+    // calculate churn rate
+    // churn rate is the percentage of customers who have canceled their subscription in a given period
+    // calculate the churn rate for the last 6 months in percentage
+    const lastSixMonthsChurn = subscriptions.filter(
+      (sub) => sub.startDate > new Date(new Date().setMonth(new Date().getMonth() - 6)),
+    );
+    const lastSixMonthsChurnRate = ((subscriptions.length - lastSixMonthsChurn.length) / subscriptions.length) * 100;
+
+
     return {
       totalSubscriptions: subscriptions.length,
       activeSubscriptions: activeSubscriptions.length,
@@ -157,6 +192,8 @@ export class SubscriptionService extends BasicService<Subscription> {
       lowestPerformer,
       monthlyRecurringRevenue,
       annualRecurringRevenue,
+      revenueTrends,
+      churnRate: lastSixMonthsChurnRate,
     };
   }
 }
