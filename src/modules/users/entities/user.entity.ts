@@ -15,6 +15,7 @@ import { AbstractEntity } from '../../../shared/entities/abstract-entity';
 import { Profile } from '../../profile/entities/profile.entity';
 import { Subscription } from 'rxjs';
 import { Feedback } from '../../feedback/entities/feedback.entity';
+import { Report } from '../../report/entities/report.entity';
 
 @Entity('users')
 export class User extends AbstractEntity {
@@ -52,6 +53,12 @@ export class User extends AbstractEntity {
 
   @OneToMany(() => Feedback, (feedback) => feedback.user)
   feedbacks: Feedback[];
+
+  @OneToMany(() => Report, (report) => report.reportingUser)
+  reportsMade: Report[];
+
+  @OneToMany(() => Report, (report) => report.reportedUser)
+  reportsReceived: Report[];
 
   protected verified: boolean;
 
