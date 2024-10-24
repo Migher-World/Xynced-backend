@@ -153,6 +153,7 @@ export class MatchService extends BasicService<Match> {
     const doesFaithMatter = profile.doesFaithMatter;
     const culturalValuesPreference = profile.matchCulturalValues;
     const languagesPreference = profile.languages;
+    const locationPreference = profile.city;
 
     // if any of the preferences are not set, return an error
     if (
@@ -162,7 +163,8 @@ export class MatchService extends BasicService<Match> {
       !genderPreference ||
       !doesFaithMatter ||
       !culturalValuesPreference ||
-      !languagesPreference
+      !languagesPreference ||
+      !locationPreference
     ) {
       console.log({ interests, agePreference, childrenPreference, genderPreference, doesFaithMatter, culturalValuesPreference, languagesPreference });
       throw new BadRequestException(
@@ -185,11 +187,6 @@ export class MatchService extends BasicService<Match> {
       `SELECT * FROM profile where "gender" = '${genderPreference}'`
     );
 
-    // get children preferences match
-    // const similarChildrenPreferences = await AppDataSource.query(
-    //   `SELECT * FROM profile WHERE "children" = REPLACE(${childrenPreference}, '', '''')`,
-    //   // `SELECT * FROM profile WHERE "children" = '+${childrenPreference}+'`,
-    // );
     const similarChildrenPreferences = await AppDataSource.getRepository(Profile).find({
       where: { children: childrenPreference },
     });
@@ -211,6 +208,11 @@ export class MatchService extends BasicService<Match> {
       `SELECT * FROM profile WHERE "languages" && ARRAY[${languagesPreference.map((language) => `'${language}'`)}]`,
     );
 
+    // get location match
+    const similarLocation = await AppDataSource.query(
+      `SELECT * FROM profile WHERE "city" = '${locationPreference}'`,
+    );
+
     // get most closest match based on the above queries, i.e the user with the most similar interests, age preferences, etc
 
     const potentialMatches = [
@@ -221,6 +223,7 @@ export class MatchService extends BasicService<Match> {
       ...similarCulturalValues,
       ...similarLanguages,
       ...similarGenderPreferences,
+      ...similarLocation,
     ];
 
     // remove users that have already been matched by checking the matches table in the database
@@ -236,42 +239,47 @@ export class MatchService extends BasicService<Match> {
     // remove lesser preferences and keep the most preferred considering the user's preferences such as interests, age, gender, etc 
     // the matches should not have the current user and should not have duplicate users too
 
-    const potentialMatchesFilteredFinal = potentialMatchesFiltered.map((match: Profile, index, self) => {
-      const id = match.userId;
-      const matchInterests = match.interests;
-      const matchAge = match.age;
-      const matchChildren = match.children;
-      const matchGender = match.preferredGender;
-      const matchFaithMatters = match.doesFaithMatter;
-      const matchCulturalValues = match.matchCulturalValues;
-      const matchLanguages = match.languages;
+    // const potentialMatchesFilteredFinal = potentialMatchesFiltered.map((match: Profile, index, self) => {
+    //   const id = match.userId;
+    //   const matchInterests = match.interests;
+    //   const matchAge = match.age;
+    //   const matchChildren = match.children;
+    //   const matchGender = match.preferredGender;
+    //   const matchFaithMatters = match.doesFaithMatter;
+    //   const matchCulturalValues = match.matchCulturalValues;
+    //   const matchLanguages = match.languages;
 
-      const interestMatch = interests.filter((interest) => matchInterests.includes(interest)).length;
-      const ageMatch = matchAge >= Number(agePreference[0]) && matchAge <= Number(agePreference[1]);
-      const childrenMatch = matchChildren === childrenPreference
-      const genderMatch = matchGender === genderPreference;
-      const faithMatch = matchFaithMatters === doesFaithMatter;
-      const culturalValuesMatch = matchCulturalValues.filter((culturalValue) => culturalValuesPreference.includes(culturalValue)).length;
-      const languagesMatch = matchLanguages.filter((language) => languagesPreference.includes(language)).length;
+    //   const interestMatch = interests.filter((interest) => matchInterests.includes(interest)).length;
+    //   const ageMatch = matchAge >= Number(agePreference[0]) && matchAge <= Number(agePreference[1]);
+    //   const childrenMatch = matchChildren === childrenPreference
+    //   const genderMatch = matchGender === genderPreference;
+    //   const faithMatch = matchFaithMatters === doesFaithMatter;
+    //   const culturalValuesMatch = matchCulturalValues.filter((culturalValue) => culturalValuesPreference.includes(culturalValue)).length;
+    //   const languagesMatch = matchLanguages.filter((language) => languagesPreference.includes(language)).length;
 
-      // const matchPercentage = Math.floor(
-      //   ((interestMatch + Number(ageMatch) + Number(childrenMatch) + Number(genderMatch) + Number(faithMatch) + culturalValuesMatch + languagesMatch) / 7) * 100,
-      // );
+    //   // const matchPercentage = Math.floor(
+    //   //   ((interestMatch + Number(ageMatch) + Number(childrenMatch) + Number(genderMatch) + Number(faithMatch) + culturalValuesMatch + languagesMatch) / 7) * 100,
+    //   // );
 
       
-      const matchIndex = self.findIndex((m) => m.userId === id);
-      // self[matchIndex].matchPercentage = matchPercentage;
+    //   const matchIndex = self.findIndex((m) => m.userId === id);
+    //   // self[matchIndex].matchPercentage = matchPercentage;
 
-      return self[matchIndex];
+    //   return self[matchIndex];
 
-    });
+    // });
 
-    console.log(potentialMatchesFilteredFinal.length);
+    console.log(potentialMatchesFiltered.length);
+
+    // remove opposite gender matches
+    potentialMatchesFiltered.filter(
+      (match) => match.gender === user.profile.preferredGender,
+    );
 
     // return potentialMatchesFilteredFinal;
 
     const potentialMatchesMap = new Map();
-    potentialMatchesFilteredFinal.forEach((match) => {
+    potentialMatchesFiltered.forEach((match) => {
       const id = match.userId;
       if (potentialMatchesMap.has(id)) {
         potentialMatchesMap.set(id, potentialMatchesMap.get(id) + 1);
@@ -288,7 +296,7 @@ export class MatchService extends BasicService<Match> {
     const percentageMatchMap = new Map();
 
     potentialMatchesMap.forEach((value, key) => {
-      const percentageMatch = Math.floor((value / 7) * 100);
+      const percentageMatch = Math.floor((value / 8) * 100);
       percentageMatchMap.set(key, percentageMatch);
     });
 
