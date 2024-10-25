@@ -27,6 +27,11 @@ export class UsersController {
     return this.usersService.findAll(pagination);
   }
 
+  @Get(':id')
+  findOne(@Query('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+
   // @Post('assign-role')
   // async assignRole(@Body() assignRoleDto: AssignRoleDto) {
   //   return resolveResponse(

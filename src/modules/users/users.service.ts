@@ -45,6 +45,15 @@ export class UsersService extends BasicService<User> {
     return this.paginate(query, pagination);
   }
 
+  async findOne(id: string) {
+    const query = this.userRepo.createQueryBuilder('user')
+    .leftJoinAndSelect('user.profile', 'profile')
+    .leftJoinAndSelect('user.feedbacks', 'feedbacks')
+    .where('user.id = :id', { id });
+
+    return query.getOne();
+  }
+
   async create(createUserDto: CreateUserDto) {
     let { password } = createUserDto;
 
