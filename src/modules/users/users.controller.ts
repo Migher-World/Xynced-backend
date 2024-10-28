@@ -29,7 +29,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Query('id') id: string) {
-    return this.usersService.findOne(id);
+    return this.usersService.findOneUser(id);
   }
 
   // @Post('assign-role')

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { resolveResponse } from '../../shared/resolvers';
 import { CreateSubscriptionDto } from './dto/subscription.dto';
@@ -34,8 +34,8 @@ export class SubscriptionController {
 
   @Get('/plans')
   @Public()
-  async getPlans() {
-    return resolveResponse(this.subscriptionService.getPlans());
+  async getPlans(@Query('lang') lang: string) {
+    return resolveResponse(this.subscriptionService.getPlans(lang));
   }
 
   @Get('admin/analytics')

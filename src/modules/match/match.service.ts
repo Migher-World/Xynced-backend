@@ -269,17 +269,24 @@ export class MatchService extends BasicService<Match> {
 
     // });
 
-    console.log(potentialMatchesFiltered.length);
-
     // remove opposite gender matches
-    potentialMatchesFiltered.filter(
-      (match) => match.gender === user.profile.preferredGender,
+    // potentialMatchesFiltered.filter(
+    //   (match) => match.gender === user.profile.preferredGender,
+    // );
+
+    // Remove users that are in the checkMatches array
+    // const potentialMatchesFilteredFinal = potentialMatchesFiltered.filter(
+    //   (match) => !checkMatches.map((m) => m.matchedUserId).includes(match.userId),
+    // );
+
+    const potentialMatchesFilteredFinal = potentialMatchesFiltered.filter(
+      (match) =>
+        match.gender === user.profile.preferredGender &&
+        !checkMatches.some((m) => m.matchedUserId === match.userId)
     );
 
-    // return potentialMatchesFilteredFinal;
-
     const potentialMatchesMap = new Map();
-    potentialMatchesFiltered.forEach((match) => {
+    potentialMatchesFilteredFinal.forEach((match) => {
       const id = match.userId;
       if (potentialMatchesMap.has(id)) {
         potentialMatchesMap.set(id, potentialMatchesMap.get(id) + 1);

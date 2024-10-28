@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { AfterLoad, Column, Entity, ManyToOne } from 'typeorm';
 import { AbstractEntity } from '../../../shared/entities/abstract-entity';
 import { User } from '../../users/entities/user.entity';
 import { features } from 'process';
@@ -52,6 +52,33 @@ export const plans = [
     ],
   },
 ];
+
+const frenchPlans = [
+    {
+      "name": "Xynced Starter",
+      "description": "Ce plan vous permet de faire vos premiers pas vers la recherche de votre âme sœur.",
+      "amount": 0,
+      "duration": 30,
+      "status": "active",
+      "features": ["messages_illimités"]
+    },
+    {
+      "name": "Xynced Guided",
+      "description": "Ce plan offre une expérience de matchmaking personnalisée.",
+      "amount": 35,
+      "duration": 30,
+      "status": "active",
+      "features": ["messages_illimités", "correspondance_personnalisée", "correspondance_ai"]
+    },
+    {
+      "name": "Xynced Elite",
+      "description": "Ce plan propose un service de matchmaking premium et un mentorat en relations.",
+      "amount": 0,
+      "duration": 30,
+      "status": "active",
+      "features": ["messages_illimités", "correspondance_personnalisée", "filtres_avancés", "correspondance_ai"]
+    }
+  ];
 
 @Entity('subscription')
 export class Subscription extends AbstractEntity {
@@ -109,4 +136,12 @@ export class Subscription extends AbstractEntity {
 
   @Column()
   updatedAt: Date;
+
+  getPlan(lang = 'en') {
+    return lang === 'en' ? plans.find((p) => p.name === this.plan.name) : frenchPlans.find((p) => p.name === this.plan.name);
+  }
+}
+
+export const getPlans = (lang = 'en') => {
+    return lang === 'en' ? plans : frenchPlans;
 }

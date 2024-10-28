@@ -45,7 +45,7 @@ export class UsersService extends BasicService<User> {
     return this.paginate(query, pagination);
   }
 
-  async findOne(id: string) {
+  async findOneUser(id: string) {
     const query = this.userRepo.createQueryBuilder('user')
     .leftJoinAndSelect('user.profile', 'profile')
     .leftJoinAndSelect('user.feedbacks', 'feedbacks')

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { BasicService } from '../../shared/services/basic-service.service';
-import { plans, Subscription, SubscriptionStatusEnum } from './entities/subscription.entity';
+import { getPlans, plans, Subscription, SubscriptionStatusEnum } from './entities/subscription.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSubscriptionDto } from './dto/subscription.dto';
@@ -19,8 +19,8 @@ export class SubscriptionService extends BasicService<Subscription> {
     super(subscriptionRepository, 'Subscription');
   }
 
-  async getPlans() {
-    return plans;
+  async getPlans(lang) {
+    return getPlans(lang);
   }
 
   async getUserSubscription(user: User) {
