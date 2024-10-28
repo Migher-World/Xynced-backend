@@ -24,12 +24,16 @@ export class UsersController {
 
   @Get()
   findAll(@Query() pagination: AbstractPaginationDto) {
-    return this.usersService.findAll(pagination);
+    return resolveResponse(
+      this.usersService.findAll(pagination),
+    )
   }
 
   @Get(':id')
   findOne(@Query('id') id: string) {
-    return this.usersService.findOneUser(id);
+    return resolveResponse(
+      this.usersService.findOneUser(id),
+    )
   }
 
   // @Post('assign-role')
