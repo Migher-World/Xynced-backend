@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -30,7 +30,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Query('id') id: string) {
+  findOne(@Param('id') id: string) {
     return resolveResponse(
       this.usersService.findOneUser(id),
     )
