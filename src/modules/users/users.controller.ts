@@ -36,6 +36,13 @@ export class UsersController {
     )
   }
 
+  @Get('admin/overview')
+  async overview() {
+    return resolveResponse(
+      this.usersService.getUserOverview(),
+    )
+  }
+
   // @Post('assign-role')
   // async assignRole(@Body() assignRoleDto: AssignRoleDto) {
   //   return resolveResponse(

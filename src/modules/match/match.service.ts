@@ -442,7 +442,6 @@ export class MatchService extends BasicService<Match> {
     const totalUnmatched = users.filter((user) => !matched.some((match) => match.userId === user.id || match.matchedUserId === user.id)).length;
     const reshuffles = await this.cacheService.get(`xyncedMatch:reshuffle-count`);
     const reshuffleRate = (Number(reshuffles) / totalMatches) * 100;
-    console.log({ totalMatches, totalMatched, totalUnmatched, reshuffles, reshuffleRate });
     const totalUnmatchedPercentage = (totalUnmatched / users.length) * 100;
 
     const totalPercentage = matches.reduce((acc, match) => acc + match.percentage, 0);
@@ -503,6 +502,8 @@ export class MatchService extends BasicService<Match> {
       matchSuccessRate: matchSuccessRate.toPrecision(2),
       reshuffleRate: reshuffleRate.toPrecision(2),
       totalUnmatchedPercentage: totalUnmatchedPercentage.toPrecision(2),
+      matchedUsersCount: totalMatched,
+      unmatchedUsersCount: totalUnmatched,
       ageGroups,
       locations,
     };    

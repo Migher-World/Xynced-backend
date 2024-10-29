@@ -69,6 +69,28 @@ export class UsersService extends BasicService<User> {
     return user;
   }
 
+  async getUserOverview() {
+    // a graph of users created per month
+    const query = this.userRepo.createQueryBuilder('user')
+    .select('COUNT(user.id)', 'count')
+    .addSelect('TO_CHAR(DATE_TRUNC(\'month\', user.createdAt), \'Mon\')', 'month')
+    .groupBy('month');
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const data = await query.getRawMany();
+    const result = [];
+
+    for (const month of months) {
+      const monthData = data.find((d) => d.month === month);
+      if (monthData) {
+        result.push(monthData);
+      } else {
+        result.push({ month: month, count: "0" });
+      }
+    }
+    return result;
+  }
+
   // async assignRole(assignRoleDto: AssignRoleDto) {
   //   const { userId, roleId } = assignRoleDto;
   //   const user = await this.findOne(userId);
