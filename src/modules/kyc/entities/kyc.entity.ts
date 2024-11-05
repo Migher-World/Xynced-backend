@@ -8,10 +8,11 @@ export enum KycStatus {
   }
   
   export enum DocumentTypeEnum {
-    PASSPORT = 'passport',
-    GOVERNMENT_ID = 'government_id',
-    DRIVERS_LICENSE = 'drivers_license',
-    RESIDENCE_PERMIT = 'residence_permit',
+    PASSPORT = 'PP',
+    GOVERNMENT_ID = 'ID',
+    DRIVERS_LICENSE = 'DL',
+    RESIDENCE_PERMIT = 'RP',
+    UTILITY_BILL = 'UB',
   }
 
 
@@ -31,7 +32,4 @@ export class Kyc extends AbstractEntity {
 
     @Column({ nullable: true })
     approvedBy: string;
-
-    @Column()
-    photoUrl: string;
 }

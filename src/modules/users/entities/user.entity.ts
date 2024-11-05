@@ -48,6 +48,9 @@ export class User extends AbstractEntity {
   @Column({ default: false })
   phoneNumberVerified: boolean;
 
+  @Column({ default: false })
+  kycVerified: boolean;
+
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
 

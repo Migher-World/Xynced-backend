@@ -1,5 +1,6 @@
-import { IsNotEmpty } from "class-validator";
-import { DocumentTypeEnum } from "../entities/kyc.entity";
+import { IsNotEmpty, IsOptional } from "class-validator";
+import { DocumentTypeEnum, KycStatus } from "../entities/kyc.entity";
+import { Transform } from "class-transformer";
 
 export class CreateKycDto {
     @IsNotEmpty()
@@ -8,6 +9,9 @@ export class CreateKycDto {
     @IsNotEmpty()
     documentUrl: string;
 
-    @IsNotEmpty()
-    photoUrl: string;
+    @IsOptional()
+    @Transform(({ value }) => value === null ? 'CAD' : value)
+    country: string
+
+    status?: KycStatus;
 }

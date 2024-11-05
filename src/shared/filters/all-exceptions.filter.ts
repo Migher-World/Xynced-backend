@@ -2,6 +2,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { TypeORMError } from 'typeorm';
 import { isDev } from '../../environment/isDev';
+import { RentifyError } from '../core';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -32,6 +33,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
       errorFormat.code = ormStatus;
       console.log('error is', exception.message);
       return response.status(ormStatus).json(errorFormat);
+    }
+
+    if (exception instanceof RentifyError) {
+      const rentifyResponse = exception.details?.response as any;
+      errorFormat.code = exception.details?.status || status;
+      console.log('error is', rentifyResponse);
+      errorFormat.message = rentifyResponse?.data.message || rentifyResponse?.data.detail || exception.message;
+      errorFormat.error = exception.constructor.name;
+      return response.status(errorFormat.code).json(errorFormat);
     }
 
     errorFormat.code = status;

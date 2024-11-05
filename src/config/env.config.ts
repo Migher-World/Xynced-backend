@@ -32,6 +32,12 @@ const env = {
   googleapis: {
     clientId: envVar.get('GOOGLE_CLIENT_ID').asString(),
     clientSecret: envVar.get('GOOGLE_CLIENT_SECRET').asString()
+  },
+  prembly: {
+    apiKey: envVar.get('PREMBLY_API_KEY').asString(),
+    sdkKey: envVar.get('PREMBLY_SDK_KEY').asString(),
+    appId: envVar.get('PREMBLY_APP_ID').asString(),
+    baseUrl: envVar.get('PREMBLY_BASE_URL').asString(),
   }
 };
 
