@@ -5,6 +5,7 @@ import { DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import env from './config/env.config';
+import * as bodyParser from 'body-parser';
 import * as basicAuth from 'express-basic-auth';
 
 const appName = env.appName;
@@ -16,6 +17,8 @@ async function bootstrap() {
   // });
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.enableCors();
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
