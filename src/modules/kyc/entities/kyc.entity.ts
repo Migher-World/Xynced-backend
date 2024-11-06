@@ -32,4 +32,7 @@ export class Kyc extends AbstractEntity {
 
     @Column({ nullable: true })
     approvedBy: string;
+
+    @Column({ nullable: true })
+    country: string;
 }
