@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { MatchService } from './match.service';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { resolveResponse } from '../../shared/resolvers';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FeedbackDto } from '../feedback/dto/feedback.dto';
+import { UseRoles } from '../../shared/decorators/role.decorator';
+import { RoleGuard } from '../../shared/guards/roles.guard';
 
 @Controller('match')
 @ApiTags('Match')
@@ -43,6 +45,8 @@ export class MatchController {
   }
 
   @Get('/admin/match-analysis')
+  @UseRoles('admin')
+  @UseGuards(RoleGuard)
   getMatchAnalysis() {
     return resolveResponse(this.matchService.getMatchAnalysis());
   }

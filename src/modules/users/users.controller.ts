@@ -1,10 +1,12 @@
-import { Controller, Post, Body, Get, Query, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Param, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AssignRoleDto } from './dto/assign-role.dto';
 import { resolveResponse } from '../../shared/resolvers';
 import { AbstractPaginationDto } from '../../shared/dto/abstract-pagination.dto';
+import { RoleGuard } from '../../shared/guards/roles.guard';
+import { UseRoles } from '../../shared/decorators/role.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -37,17 +39,19 @@ export class UsersController {
   }
 
   @Get('admin/overview')
+  @UseRoles('admin')
+  @UseGuards(RoleGuard)
   async overview() {
     return resolveResponse(
       this.usersService.getUserOverview(),
     )
   }
 
-  // @Post('assign-role')
-  // async assignRole(@Body() assignRoleDto: AssignRoleDto) {
-  //   return resolveResponse(
-  //     this.usersService.assignRole(assignRoleDto),
-  //     'Role Assigned',
-  //   );
-  // }
+  @Post('assign-role')
+  async assignRole(@Body() assignRoleDto: AssignRoleDto) {
+    return resolveResponse(
+      this.usersService.assignRole(assignRoleDto),
+      'Role Assigned',
+    );
+  }
 }
