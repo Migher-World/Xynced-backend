@@ -110,26 +110,11 @@ export class Subscription extends AbstractEntity {
   @Column({ default: 0 })
   amount: number;
 
-  // @Column({ default: false })
-  // autoRenew: boolean;
-
-  // @Column({ default: false })
-  // isTrial: boolean;
-
   @Column({ default: false })
   isCancelled: boolean;
 
   @Column({ nullable: true })
-  stripeSubscriptionId: string;
-
-  // @Column()
-  // cancelledAt: Date;
-
-  // @Column()
-  // cancelledBy: string;
-
-  // @Column()
-  // cancelledReason: string;
+  paypalSubscriptionId: string;
 
   @Column()
   createdAt: Date;

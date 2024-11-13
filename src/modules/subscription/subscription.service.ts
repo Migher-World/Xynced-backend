@@ -8,6 +8,7 @@ import { StripeService } from '../../shared/plugins/stripe/stripe.service';
 import { User } from '../users/entities/user.entity';
 import Stripe from 'stripe';
 import { AppDataSource } from '../../config/db.config';
+import { PaypalService } from '../../shared/plugins/paypal/paypal.service';
 
 // TODO: webhook to cancel subscription when expired
 @Injectable()
@@ -15,6 +16,7 @@ export class SubscriptionService extends BasicService<Subscription> {
   constructor(
     @InjectRepository(Subscription) private readonly subscriptionRepository: Repository<Subscription>,
     private readonly stripeService: StripeService,
+    private readonly paypalService: PaypalService,
   ) {
     super(subscriptionRepository, 'Subscription');
   }
@@ -38,29 +40,47 @@ export class SubscriptionService extends BasicService<Subscription> {
       return activeSubscription;
     }
 
-    const customer = await this.stripeService.createCustomer(user.email, user.profile.fullName);
-    const products = await this.stripeService.getProducts();
-    const product = products.data.find(
-      (product) => product.name.toLowerCase() === subscription.plan.toLocaleLowerCase(),
-    );
-    const price = product.default_price as Stripe.Price;
-    if (price.unit_amount == 0) {
-      const subscription = this.subscriptionRepository.create({
-        userId: user.id,
-        plan: plans.find((plan) => plan.amount === 0),
-        status: SubscriptionStatusEnum.ACTIVE,
-        startDate: new Date(),
-        endDate: new Date(new Date().setDate(new Date().getDate() + 30)),
-      });
-      return this.subscriptionRepository.save(subscription);
+    // const customer = await this.stripeService.createCustomer(user.email, user.profile.fullName);
+    // const products = await this.stripeService.getProducts();
+    // const product = products.data.find(
+    //   (product) => product.name.toLowerCase() === subscription.plan.toLocaleLowerCase(),
+    // );
+    // const price = product.default_price as Stripe.Price;
+    // if (price.unit_amount == 0) {
+    //   const subscription = this.subscriptionRepository.create({
+    //     userId: user.id,
+    //     plan: plans.find((plan) => plan.amount === 0),
+    //     status: SubscriptionStatusEnum.ACTIVE,
+    //     startDate: new Date(),
+    //     endDate: new Date(new Date().setDate(new Date().getDate() + 30)),
+    //   });
+    //   return this.subscriptionRepository.save(subscription);
+    // }
+    // const session = await this.stripeService.createCheckoutSession(
+    //   price.id,
+    //   customer.id,
+    //   subscription.successUrl,
+    //   subscription.cancelUrl,
+    // );
+    // return session.url;
+
+    const plans = await this.paypalService.getPlans();
+    console.log({ plans });
+    const plan = plans.find((p) => p.name.toLowerCase() === subscription.plan.toLowerCase());
+    if (!plan) {
+      throw new BadRequestException('Invalid plan');
     }
-    const session = await this.stripeService.createCheckoutSession(
-      price.id,
-      customer.id,
-      subscription.successUrl,
-      subscription.cancelUrl,
-    );
-    return session.url;
+    const subscriptionPlan: any = await this.paypalService.createSubscription(plan.id);
+    const subscriptionData = {
+      userId: user.id,
+      plan: plan,
+      amount: plan.amount,
+      paypalSubscriptionId: subscriptionPlan.id,
+      status: SubscriptionStatusEnum.ACTIVE,
+      startDate: new Date(),
+      endDate: new Date(new Date().setDate(new Date().getDate() + plan.duration)),
+    };
+    return {subscriptionPlan, subscriptionData};
   }
 
   async handleWebhook(payload: Stripe.Event) {
@@ -68,7 +88,7 @@ export class SubscriptionService extends BasicService<Subscription> {
     console.log({ event: JSON.stringify(event) });
     switch (event.type) {
       case 'checkout.session.completed':
-        return this.handleCheckoutSessionCompletedWebhook(event);
+        // return this.handleCheckoutSessionCompletedWebhook(event);
       //   case 'payment_intent.succeeded':
       //     return this.handlePaymentIntentWebhook(event);
       case 'subscription_schedule.updated':
@@ -78,28 +98,28 @@ export class SubscriptionService extends BasicService<Subscription> {
     }
   }
 
-  async handleCheckoutSessionCompletedWebhook(event: Stripe.Event) {
-    const session = event.data.object as Stripe.Checkout.Session;
-    // const subscription = await this.subscriptionRepository.findOne({
-    // where: { stripeSubscriptionId: session.subscription as string },
-    // });
-    // subscription.status = SubscriptionStatusEnum.ACTIVE;
-    const sub = await this.stripeService.getSubscription(session.subscription as string);
-    const subscribedCustomer = sub.customer as Stripe.Customer;
-    const user = await AppDataSource.getRepository(User).findOne({ where: { email: subscribedCustomer.email } });
-    const subscription = this.subscriptionRepository.create({
-      userId: user.id,
-      plan: plans.find((plan) => plan.amount === session.amount_total / 100),
-      amount: session.amount_total / 100,
-      stripeSubscriptionId: session.subscription as string,
-      status: SubscriptionStatusEnum.ACTIVE,
-      startDate: new Date(sub.current_period_start * 1000),
-      endDate: new Date(sub.current_period_end * 1000),
-    });
-    const result = await this.subscriptionRepository.save(subscription);
-    console.log({ result });
-    return result;
-  }
+  // async handleCheckoutSessionCompletedWebhook(event: Stripe.Event) {
+  //   const session = event.data.object as Stripe.Checkout.Session;
+  //   // const subscription = await this.subscriptionRepository.findOne({
+  //   // where: { stripeSubscriptionId: session.subscription as string },
+  //   // });
+  //   // subscription.status = SubscriptionStatusEnum.ACTIVE;
+  //   const sub = await this.stripeService.getSubscription(session.subscription as string);
+  //   const subscribedCustomer = sub.customer as Stripe.Customer;
+  //   const user = await AppDataSource.getRepository(User).findOne({ where: { email: subscribedCustomer.email } });
+  //   const subscription = this.subscriptionRepository.create({
+  //     userId: user.id,
+  //     plan: plans.find((plan) => plan.amount === session.amount_total / 100),
+  //     amount: session.amount_total / 100,
+  //     stripeSubscriptionId: session.subscription as string,
+  //     status: SubscriptionStatusEnum.ACTIVE,
+  //     startDate: new Date(sub.current_period_start * 1000),
+  //     endDate: new Date(sub.current_period_end * 1000),
+  //   });
+  //   const result = await this.subscriptionRepository.save(subscription);
+  //   console.log({ result });
+  //   return result;
+  // }
 
   //   async handlePaymentIntentWebhook(event: Stripe.Event) {
   //     const paymentIntent = event.data.object as Stripe.PaymentIntent;

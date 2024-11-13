@@ -87,7 +87,7 @@ export class ProfileService extends BasicService<Profile> {
       stage5b: ['children', 'lifeGoals', 'educationalBackground', 'whatWouldYouLikeYourMatchToKnow'],
       stage6a: ['agePreference', 'locationPreference', 'matchPreferences', 'preferredGender'],
       stage6b: ['matchCulturalValues', 'faithBasePreferences', 'financialStabilityView', 'personalityTraitInMatch'],
-      stage6c: ['familyAndSocialRelationshipPreferences', 'healthAndLifestyleChoices', 'pastExperiences', 'dealBreaker'],
+      stage6c: ['healthAndLifestyleChoices'],
       final: ['awareXyncedForLTR', 'readyForLTR', 'doYouHaveChildren', 'howManyChildren', 'willYouBeOpenWithYourMatch', 'theseWillBeMadeVisible'],
     }
 

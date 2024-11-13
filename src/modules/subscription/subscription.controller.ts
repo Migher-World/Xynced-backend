@@ -28,11 +28,11 @@ export class SubscriptionController {
     ));
   }
 
-  @Post('/webhook')
-  @Public()
-  async handleWebhook(@Body() payload: any) {
-    return resolveResponse(this.subscriptionService.handleWebhook(payload));
-  }
+  // @Post('/webhook')
+  // @Public()
+  // async handleWebhook(@Body() payload: any) {
+  //   return resolveResponse(this.subscriptionService.handleWebhook(payload));
+  // }
 
   @Get('/plans')
   @Public()

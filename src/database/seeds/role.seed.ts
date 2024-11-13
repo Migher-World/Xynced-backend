@@ -5,10 +5,10 @@ export default class RoleSeeder {
   public async run(_: unknown, connection: DataSource): Promise<void> {
     const entities = [Role];
 
-    for (const singleEntity of entities) {
-      const repository = connection.getRepository(singleEntity);
-      repository.query(`TRUNCATE TABLE "${repository.metadata.tableName}" CASCADE;`);
-    }
+    // for (const singleEntity of entities) {
+    //   const repository = connection.getRepository(singleEntity);
+    //   repository.query(`TRUNCATE TABLE "${repository.metadata.tableName}" CASCADE;`);
+    // }
 
     await connection
       .createQueryBuilder()

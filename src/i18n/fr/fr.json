@@ -13,28 +13,21 @@
       "open_relationship": "Relation ouverte"
     },
     "faith": {
-      "christian_penticostal": "Chrétien (Pentecôtiste)",
-      "christian_catholic": "Chrétien (Catholique)",
-      "muslim": "Musulman(e)",
-      "hindu": "Hindou(e)",
-      "buddhist": "Bouddhiste",
-      "judaism": "Judaïsme",
-      "sikhism": "Sikhisme",
       "african_traditional": "Tradition Africaine",
       "atheist": "Athée",
+      "christian": "Chrétien(ne)",
+      "muslim": "Musulman(e)",
       "non_religious": "Non-religieux",
       "other": "Autre"
     },
     "employment_status": {
       "employed_full_time": "Employé(e) à temps plein",
       "employed_part_time": "Employé(e) à temps partiel",
-      "self_employed": "Travailleur(se) indépendant(e)",
-      "unemployed": "Sans emploi",
-      "student": "Étudiant(e)",
-      "retired": "Retraité(e)",
       "homemaker": "Femme/Homme au foyer",
-      "freelancer": "Freelance",
-      "contractor": "Contractuel(le)"
+      "retired": "Retraité(e)",
+      "self_employed": "Travailleur(se) indépendant(e)",
+      "student": "Étudiant(e)",
+      "unemployed": "Sans emploi"
     },
     "residence_status": {
       "citizen": "Citoyen(ne)",

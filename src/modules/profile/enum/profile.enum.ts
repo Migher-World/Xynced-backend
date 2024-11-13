@@ -23,8 +23,7 @@ export enum RelationshipStatusEnum {
 }
 
 export enum FaithEnum {
-    CHRISTIAN_PENTICOSTAL = 'christian_penticostal',
-    CHRISTIAN_CATHOLIC = 'christian_catholic',
+    CHRISTIAN = 'christian',
     MUSLIM = 'muslim',
     HINDU = 'hindu',
     BUDDHIST = 'buddhist',
