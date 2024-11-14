@@ -43,8 +43,6 @@ export enum EmploymentStatusEnum {
     STUDENT = 'student',
     RETIRED = 'retired',
     HOMEMAKER = 'homemaker',
-    FREELANCER = 'freelancer',
-    CONTRACTOR = 'contractor',
 }
 
 export enum ResidenceStatusEnum {
