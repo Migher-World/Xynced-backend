@@ -160,5 +160,14 @@
     "gujarati": "Gujarati",
     "kannada": "Kannada",
     "malayalam": "Malayalam"
+  },
+  "education": {
+    "bachelors": "Bachelor's degree",
+    "college": "College",
+    "doctorate": "Doctorate",
+    "post_graduate": "Post-graduate",
+    "high_school": "High school",
+    "skill_certification": "Skill certification",
+    "no_diploma": "No diploma"
   }
 }

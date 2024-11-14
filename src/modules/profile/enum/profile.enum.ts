@@ -99,6 +99,16 @@ export enum ChildrenEnum {
     MAYBE = 'maybe',
 }
 
+export enum EducationalBackgroundEnum {
+    BACHELORS = 'bachelors',
+    COLLEGE = 'college',
+    DOCTORATE = 'doctorate',
+    POST_GRADUATE = 'post_graduate',
+    HIGH_SCHOOL = 'high_school',
+    SKILL_CERTIFICATE = 'skill_certification',
+    NO_DIPLOMA = 'no_diploma',
+}
+
 export enum LifestyleEnum {
     HEALTHY_EATING = 'healthy_eating',
     REGULAR_EXERCISE = 'regular_exercise',

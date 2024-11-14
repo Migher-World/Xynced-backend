@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { I18nService } from 'nestjs-i18n';
 import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { ChildrenEnum, CulturalValuesEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LanguagesEnum, LifestyleEnum, PersonalityTraitEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
+import { ChildrenEnum, CulturalValuesEnum, EducationalBackgroundEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LanguagesEnum, LifestyleEnum, PersonalityTraitEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
 import { Helper } from '../../shared/helpers';
 
 @Injectable()
@@ -60,6 +60,7 @@ export class ProfileService extends BasicService<Profile> {
       personalityTraitInMatch: await this.getEnumValuesWithTranslations(PersonalityTraitEnum, 'personality_trait', lang),
       culturalValues: await this.getEnumValuesWithTranslations(CulturalValuesEnum, 'cultural_values', lang),
       languages: await this.getEnumValuesWithTranslations(LanguagesEnum, 'languages', lang),
+      education: await this.getEnumValuesWithTranslations(EducationalBackgroundEnum, 'education', lang),
     };
   }
 
@@ -84,7 +85,7 @@ export class ProfileService extends BasicService<Profile> {
       stage4b: ['pictures'],
       stage4c: ['bio', 'interests'],
       stage5a: ['values', 'doesFaithMatter', 'languages', 'relationshipGoals'],
-      stage5b: ['children', 'lifeGoals', 'educationalBackground', 'whatWouldYouLikeYourMatchToKnow'],
+      stage5b: ['children', 'educationalBackground'],
       stage6a: ['agePreference', 'locationPreference', 'matchPreferences', 'preferredGender'],
       stage6b: ['matchCulturalValues', 'faithBasePreferences', 'financialStabilityView', 'personalityTraitInMatch'],
       stage6c: ['healthAndLifestyleChoices'],
