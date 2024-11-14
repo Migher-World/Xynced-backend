@@ -80,6 +80,7 @@ export enum InterestEnum {
     PHILOSOPHY = 'philosophy',
     HISTORY = 'history',
     POLITICS = 'politics',
+    I_AM_OPEN = 'i_am_open',
 }
 
 export enum FaithBasedMatchEnum {

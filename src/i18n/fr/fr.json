@@ -65,7 +65,8 @@
     "languages": "Langues",
     "philosophy": "Philosophie",
     "history": "Histoire",
-    "politics": "Politique"
+    "politics": "Politique",
+    "i_am_open": "Je suis ouvert(e)"
   },
   "faith_based_match": {
     "yes": "Oui, la foi est importante pour moi",
