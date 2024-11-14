@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { BasicService } from '../../shared/services/basic-service.service';
 import { Match } from './entities/match.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { AppDataSource } from '../../config/db.config';
 import { Profile } from '../profile/entities/profile.entity';
@@ -188,7 +188,9 @@ export class MatchService extends BasicService<Match> {
     );
 
     const similarChildrenPreferences = await AppDataSource.getRepository(Profile).find({
-      where: { children: childrenPreference },
+      where: {
+        children: In(childrenPreference),
+      }
     });
 
     // get faith matters match

@@ -74,9 +74,12 @@
     "maybe": "Open to dating someone with a different faith"
   },
   "children": {
-    "no": "Not planning on having children",
-    "yes": "Planning on having children",
-    "maybe": "Open to the idea of having children"
+    "i_have_children": "I have children",
+    "i_dont_have_children": "I don't have children",
+    "i_dont_want_children": "I don't want children",
+    "i_want_children": "I want children",
+    "its_complicated": "It's complicated",
+    "no_preference": "No preference"
   },
   "lifestyle": {
     "healthy_eating": "Healthy eating",

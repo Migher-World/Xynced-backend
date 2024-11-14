@@ -73,9 +73,12 @@
     "maybe": "Ouvert à fréquenter quelqu'un d'une autre foi"
   },
   "children": {
-    "no": "Ne prévois pas d'avoir des enfants",
-    "yes": "Prévois d'avoir des enfants",
-    "maybe": "Ouvert à l'idée d'avoir des enfants"
+    "i_have_children": "J'ai des enfants",
+    "i_dont_have_children": "Je n'ai pas d'enfants",
+    "i_dont_want_children": "Je ne veux pas d'enfants",
+    "i_want_children": "Je veux des enfants",
+    "its_complicated": "C'est compliqué",
+    "no_preference": "Pas de préférence"
   },
   "lifestyle": {
     "healthy_eating": "Alimentation saine",

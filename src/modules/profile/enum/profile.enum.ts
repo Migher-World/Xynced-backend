@@ -92,9 +92,12 @@ export enum FaithBasedMatchEnum {
 }
 
 export enum ChildrenEnum {
-    NO = 'no',
-    YES = 'yes',
-    MAYBE = 'maybe',
+    I_HAVE_CHILDREN = 'i_have_children',
+    I_DONT_HAVE_CHILDREN = 'i_dont_have_children',
+    I_DONT_WANT_CHILDREN = 'i_dont_want_children',
+    I_WANT_CHILDREN = 'i_want_children',
+    ITS_COMPLICATED = 'its_complicated',
+    NO_PREFERENCE = 'no_preference',
 }
 
 export enum EducationalBackgroundEnum {

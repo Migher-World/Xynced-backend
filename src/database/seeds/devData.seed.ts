@@ -98,10 +98,11 @@ export default class devDataSeeder {
                 Helper.faker.number.int({ min: 0, max: Object.values(RelationshipGoalsEnum).length - 1 })
               ],
           ),
-          children:
-            Object.values(ChildrenEnum)[
+          children: [...Array(1)].map(
+            () => Object.values(ChildrenEnum)[
               Helper.faker.number.int({ min: 0, max: Object.values(ChildrenEnum).length - 1 })
-            ],
+            ]
+          ),
           lifeGoals: Helper.faker.lorem.sentence(),
           educationalBackground: Helper.faker.lorem.sentence(),
           whatWouldYouLikeYourMatchToKnow: Helper.faker.lorem.sentence(),

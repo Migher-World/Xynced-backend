@@ -82,8 +82,9 @@ export class CreateProfileDto {
     @IsOptional()
     relationshipGoals: string[];
 
+    @IsArray()
     @IsOptional()
-    children: string;
+    children: string[];
 
     @IsString()
     @IsOptional()
