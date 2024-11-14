@@ -7,10 +7,10 @@ export class CreateSubscriptionDto {
     plan: string;
 
     @IsNotEmpty()
-    @IsUrl()
+    // @IsUrl()
     successUrl: string;
 
     @IsNotEmpty()
-    @IsUrl()
+    // @IsUrl()
     cancelUrl: string;
 }
