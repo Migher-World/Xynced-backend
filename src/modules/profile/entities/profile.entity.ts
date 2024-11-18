@@ -23,8 +23,8 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true })
   gender: string;
 
-  @Column({ nullable: true,  })
-  preferredGender: string;
+//   @Column({ nullable: true,  })
+//   preferredGender: string;
 
   @Column({ nullable: true })
   faith: string;
@@ -80,29 +80,29 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true, type: 'text', array: true })
   children: string[];
 
-  @Column({ nullable: true })
-  lifeGoals: string;
+//   @Column({ nullable: true })
+//   lifeGoals: string;
 
   @Column({ nullable: true })
   educationalBackground: string;
 
-  @Column({ nullable: true })
-  whatWouldYouLikeYourMatchToKnow: string;
+//   @Column({ nullable: true })
+//   whatWouldYouLikeYourMatchToKnow: string;
 
   @Column({ nullable: true, type: 'text', array: true })
   agePreference: string[];
 
-  @Column({ nullable: true, type: 'text', array: true })
-  locationPreference: string[];
+//   @Column({ nullable: true, type: 'text', array: true })
+//   locationPreference: string[];
 
   @Column({ nullable: true, type: 'text', array: true })
   matchPreferences: string[];
 
-  @Column({ nullable: true, type: 'text', array: true })
-  matchCulturalValues: string[];
+//   @Column({ nullable: true, type: 'text', array: true })
+//   matchCulturalValues: string[];
 
-  @Column({ nullable: true, type: 'text', array: true })
-  faithBasePreferences: string[];
+//   @Column({ nullable: true, type: 'text', array: true })
+//   faithBasePreferences: string[];
 
   @Column({ nullable: true })
   financialStabilityView: string;
@@ -110,17 +110,17 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true, type: 'text', array: true })
   personalityTraitInMatch: string[];
 
-  @Column({ nullable: true })
-  familyAndSocialRelationshipPreferences: string;
+//   @Column({ nullable: true })
+//   familyAndSocialRelationshipPreferences: string;
 
   @Column({ nullable: true, type: 'text', array: true })
   healthAndLifestyleChoices: string[];
 
-  @Column({ nullable: true })
-  pastExperiences: string;
+//   @Column({ nullable: true })
+//   pastExperiences: string;
 
-  @Column({ nullable: true })
-  dealBreaker: string;
+//   @Column({ nullable: true })
+//   dealBreaker: string;
 
   // qustions part
   @Column({ nullable: true })

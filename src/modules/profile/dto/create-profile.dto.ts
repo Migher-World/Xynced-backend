@@ -16,8 +16,8 @@ export class CreateProfileDto {
     @IsOptional()
     gender: string;
 
-    @IsOptional()
-    preferredGender: string;
+    // @IsOptional()
+    // preferredGender: string;
 
     @IsOptional()
     faith: string;
@@ -86,37 +86,37 @@ export class CreateProfileDto {
     @IsOptional()
     children: string[];
 
-    @IsString()
-    @IsOptional()
-    lifeGoals: string;
+    // @IsString()
+    // @IsOptional()
+    // lifeGoals: string;
 
     @IsString()
     @IsOptional()
     educationalBackground: string;
 
-    @IsString()
-    @IsOptional()
-    whatWouldYouLikeYourMatchToKnow: string;
+    // @IsString()
+    // @IsOptional()
+    // whatWouldYouLikeYourMatchToKnow: string;
 
     @IsArray()
     @IsOptional()
     agePreference: string[];
 
-    @IsArray()
-    @IsOptional()
-    locationPreference: string[];
+    // @IsArray()
+    // @IsOptional()
+    // locationPreference: string[];
 
     @IsArray()
     @IsOptional()
     matchPreferences: string[];
 
-    @IsArray()
-    @IsOptional()
-    matchCulturalValues: string[];
+    // @IsArray()
+    // @IsOptional()
+    // matchCulturalValues: string[];
 
-    @IsArray()
-    @IsOptional()
-    faithBasePreferences: string[];
+    // @IsArray()
+    // @IsOptional()
+    // faithBasePreferences: string[];
 
     @IsString()
     @IsOptional()
@@ -126,21 +126,21 @@ export class CreateProfileDto {
     @IsOptional()
     personalityTraitInMatch: string[];
 
-    @IsString()
-    @IsOptional()
-    familyAndSocialRelationshipPreferences: string;
+    // @IsString()
+    // @IsOptional()
+    // familyAndSocialRelationshipPreferences: string;
 
     @IsArray()
     @IsOptional()
     healthAndLifestyleChoices: string[];
 
-    @IsString()
-    @IsOptional()
-    pastExperiences: string;
+    // @IsString()
+    // @IsOptional()
+    // pastExperiences: string;
 
-    @IsString()
-    @IsOptional()
-    dealBreaker: string;
+    // @IsString()
+    // @IsOptional()
+    // dealBreaker: string;
 
     @IsBoolean()
     @IsOptional()

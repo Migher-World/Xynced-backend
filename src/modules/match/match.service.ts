@@ -149,9 +149,9 @@ export class MatchService extends BasicService<Match> {
     const interests = profile.interests;
     const agePreference = profile.agePreference;
     const childrenPreference = profile.children;
-    const genderPreference = profile.preferredGender;
+    // const genderPreference = profile.preferredGender;
     const doesFaithMatter = profile.doesFaithMatter;
-    const culturalValuesPreference = profile.matchCulturalValues;
+    // const culturalValuesPreference = profile.matchCulturalValues;
     const languagesPreference = profile.languages;
     const locationPreference = profile.city;
 
@@ -160,13 +160,13 @@ export class MatchService extends BasicService<Match> {
       !interests ||
       !agePreference ||
       !childrenPreference ||
-      !genderPreference ||
+      // !genderPreference ||
       !doesFaithMatter ||
-      !culturalValuesPreference ||
+      // !culturalValuesPreference ||
       !languagesPreference ||
       !locationPreference
     ) {
-      console.log({ interests, agePreference, childrenPreference, genderPreference, doesFaithMatter, culturalValuesPreference, languagesPreference });
+      console.log({ interests, agePreference, childrenPreference, doesFaithMatter, languagesPreference });
       throw new BadRequestException(
         'Please set your preferences to get matches. To set your preferences, go to your profile',
       );
@@ -182,11 +182,6 @@ export class MatchService extends BasicService<Match> {
       `SELECT * FROM profile WHERE "age" BETWEEN ${agePreference[0]} AND ${agePreference[1]}`,
     );
 
-    // get similar gender preferences
-    const similarGenderPreferences = await AppDataSource.query(
-      `SELECT * FROM profile where "gender" = '${genderPreference}'`
-    );
-
     const similarChildrenPreferences = await AppDataSource.getRepository(Profile).find({
       where: {
         children: In(childrenPreference),
@@ -196,13 +191,6 @@ export class MatchService extends BasicService<Match> {
     // get faith matters match
     const similarFaithMatters = await AppDataSource.query(
       `SELECT * FROM profile WHERE "doesFaithMatter" = '${doesFaithMatter}'`,
-    );
-
-    // get cultural values match
-    const similarCulturalValues = await AppDataSource.query(
-      `SELECT * FROM profile WHERE "matchCulturalValues" && ARRAY[${culturalValuesPreference.map(
-        (culturalValue) => `'${culturalValue}'`,
-      )}]`,
     );
 
     // get languages match
@@ -222,9 +210,7 @@ export class MatchService extends BasicService<Match> {
       ...similarAgePreferences,
       ...similarChildrenPreferences,
       ...similarFaithMatters,
-      ...similarCulturalValues,
       ...similarLanguages,
-      ...similarGenderPreferences,
       ...similarLocation,
     ];
 
@@ -283,7 +269,6 @@ export class MatchService extends BasicService<Match> {
 
     const potentialMatchesFilteredFinal = potentialMatchesFiltered.filter(
       (match) =>
-        match.gender === user.profile.preferredGender &&
         !checkMatches.some((m) => m.matchedUserId === match.userId)
     );
 
