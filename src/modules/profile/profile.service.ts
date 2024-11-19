@@ -109,6 +109,7 @@ export class ProfileService extends BasicService<Profile> {
       stage5a: ['profilePicture'],
       stage5b: ['pictures'],
       stage6a: ['agePreference', 'personalityTraitInMatch', 'financialStabilityView', 'healthAndLifestyleChoices'],
+      final: ['locationPreference'],
     };
 
     const activeStage = Object.keys(stages).find((stage) => {
