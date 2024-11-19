@@ -102,7 +102,7 @@ export class ProfileService extends BasicService<Profile> {
 
     const stages: Record<string, Array<keyof typeof profile>> = {
       stage3a: ['preferredName', 'dateOfBirth', 'gender', 'faith'],
-      stage3b: ['doesFaithMatter', 'culturalValues', 'languages', 'relationshipStatus'],
+      stage3b: ['doesFaithMatter', 'values', 'languages', 'relationshipStatus'],
       stage4a: ['relationshipGoals', 'children', 'educationalBackground', 'employmentStatus'],
       stage4b: ['profession', 'interests', 'country', 'city'],
       stage4c: ['residenceStatus', 'phoneNumber'],

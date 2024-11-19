@@ -110,9 +110,9 @@ export class CreateProfileDto {
     @IsOptional()
     matchPreferences: string[];
 
-    @IsArray()
-    @IsOptional()
-    culturalValues: string[];
+    // @IsArray()
+    // @IsOptional()
+    // culturalValues: string[];
 
     // @IsArray()
     // @IsOptional()

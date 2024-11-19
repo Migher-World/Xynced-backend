@@ -98,8 +98,8 @@ export class Profile extends AbstractEntity {
   @Column({ nullable: true, type: 'text', array: true })
   matchPreferences: string[];
 
-  @Column({ nullable: true, type: 'text', array: true })
-  culturalValues: string[];
+  // @Column({ nullable: true, type: 'text', array: true })
+  // culturalValues: string[];
 
 //   @Column({ nullable: true, type: 'text', array: true })
 //   faithBasePreferences: string[];
