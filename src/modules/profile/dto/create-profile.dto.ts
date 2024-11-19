@@ -102,17 +102,17 @@ export class CreateProfileDto {
     @IsOptional()
     agePreference: string[];
 
-    // @IsArray()
-    // @IsOptional()
-    // locationPreference: string[];
+    @IsArray()
+    @IsOptional()
+    locationPreference: string[];
 
     @IsArray()
     @IsOptional()
     matchPreferences: string[];
 
-    // @IsArray()
-    // @IsOptional()
-    // matchCulturalValues: string[];
+    @IsArray()
+    @IsOptional()
+    culturalValues: string[];
 
     // @IsArray()
     // @IsOptional()

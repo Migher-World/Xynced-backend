@@ -5,12 +5,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { I18nService } from 'nestjs-i18n';
 import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { ChildrenEnum, CulturalValuesEnum, EducationalBackgroundEnum, EmploymentStatusEnum, FaithBasedMatchEnum, FaithEnum, GenderEnum, InterestEnum, LanguagesEnum, LifestyleEnum, PersonalityTraitEnum, RelationshipGoalsEnum, RelationshipStatusEnum, ResidenceStatusEnum } from "./enum/profile.enum";
+import {
+  ChildrenEnum,
+  CulturalValuesEnum,
+  EducationalBackgroundEnum,
+  EmploymentStatusEnum,
+  FaithBasedMatchEnum,
+  FaithEnum,
+  GenderEnum,
+  InterestEnum,
+  LanguagesEnum,
+  LifestyleEnum,
+  PersonalityTraitEnum,
+  RelationshipGoalsEnum,
+  RelationshipStatusEnum,
+  ResidenceStatusEnum,
+} from './enum/profile.enum';
 import { Helper } from '../../shared/helpers';
 
 @Injectable()
 export class ProfileService extends BasicService<Profile> {
-  constructor(@InjectRepository(Profile) private profileRepository: Repository<Profile>, private readonly i18n: I18nService) {
+  constructor(
+    @InjectRepository(Profile) private profileRepository: Repository<Profile>,
+    private readonly i18n: I18nService,
+  ) {
     super(profileRepository, 'Profile');
   }
 
@@ -57,7 +75,11 @@ export class ProfileService extends BasicService<Profile> {
       children: await this.getEnumValuesWithTranslations(ChildrenEnum, 'children', lang),
       lifestyleChoices: await this.getEnumValuesWithTranslations(LifestyleEnum, 'lifestyle', lang),
       relationshipGoals: await this.getEnumValuesWithTranslations(RelationshipGoalsEnum, 'relationship_goals', lang),
-      personalityTraitInMatch: await this.getEnumValuesWithTranslations(PersonalityTraitEnum, 'personality_trait', lang),
+      personalityTraitInMatch: await this.getEnumValuesWithTranslations(
+        PersonalityTraitEnum,
+        'personality_trait',
+        lang,
+      ),
       culturalValues: await this.getEnumValuesWithTranslations(CulturalValuesEnum, 'cultural_values', lang),
       languages: await this.getEnumValuesWithTranslations(LanguagesEnum, 'languages', lang),
       education: await this.getEnumValuesWithTranslations(EducationalBackgroundEnum, 'education', lang),
@@ -69,7 +91,7 @@ export class ProfileService extends BasicService<Profile> {
       Object.values(enumType).map(async (value: string) => ({
         value: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
         label: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
-      }))
+      })),
     );
   }
 
@@ -79,18 +101,15 @@ export class ProfileService extends BasicService<Profile> {
     // const keys = Object.keys(profile).filter((key) => key !== 'id' && key !== 'userId');
 
     const stages: Record<string, Array<keyof typeof profile>> = {
-      stage3a: ['dateOfBirth', 'gender', 'faith', 'relationshipStatus', 'employmentStatus'],
-      stage3b: ['profession', 'country', 'city', 'residenceStatus', 'countryCode', 'phoneNumber'],
-      stage4a: ['profilePicture'],
-      stage4b: ['pictures'],
-      stage4c: ['bio', 'interests'],
-      stage5a: ['values', 'doesFaithMatter', 'languages', 'relationshipGoals'],
-      stage5b: ['children', 'educationalBackground'],
-      stage6a: ['agePreference', 'matchPreferences'],
-      stage6b: ['financialStabilityView', 'personalityTraitInMatch'],
-      stage6c: ['healthAndLifestyleChoices'],
-      final: ['awareXyncedForLTR', 'readyForLTR', 'doYouHaveChildren', 'howManyChildren', 'willYouBeOpenWithYourMatch', 'theseWillBeMadeVisible'],
-    }
+      stage3a: ['preferredName', 'dateOfBirth', 'gender', 'faith'],
+      stage3b: ['doesFaithMatter', 'culturalValues', 'languages', 'relationshipStatus'],
+      stage4a: ['relationshipGoals', 'children', 'educationalBackground', 'employmentStatus'],
+      stage4b: ['profession', 'interests', 'country', 'city'],
+      stage4c: ['residenceStatus', 'phoneNumber'],
+      stage5a: ['profilePicture'],
+      stage5b: ['pictures'],
+      stage6a: ['agePreference', 'personalityTraitInMatch', 'financialStabilityView', 'healthAndLifestyleChoices'],
+    };
 
     const activeStage = Object.keys(stages).find((stage) => {
       return stages[stage].some((key) => !profile[key]);
@@ -99,6 +118,6 @@ export class ProfileService extends BasicService<Profile> {
     return {
       activeStage,
       stages,
-    } 
+    };
   }
 }
