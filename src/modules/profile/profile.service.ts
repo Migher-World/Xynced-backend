@@ -12,6 +12,7 @@ import {
   EmploymentStatusEnum,
   FaithBasedMatchEnum,
   FaithEnum,
+  FinancialViewEnum,
   GenderEnum,
   InterestEnum,
   LanguagesEnum,
@@ -83,6 +84,7 @@ export class ProfileService extends BasicService<Profile> {
       culturalValues: await this.getEnumValuesWithTranslations(CulturalValuesEnum, 'cultural_values', lang),
       languages: await this.getEnumValuesWithTranslations(LanguagesEnum, 'languages', lang),
       education: await this.getEnumValuesWithTranslations(EducationalBackgroundEnum, 'education', lang),
+      financialViews: await this.getEnumValuesWithTranslations(FinancialViewEnum, 'financial_view', lang),
     };
   }
 

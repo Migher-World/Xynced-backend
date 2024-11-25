@@ -195,3 +195,11 @@ export enum LanguagesEnum {
     KANNADA = 'Kannada',
     MALAYALAM = 'Malayalam',
 }
+
+export enum FinancialViewEnum {
+    VERY_IMPORTANT = 'very_important',
+    IMPORTANT = 'important',
+    SOMEWHAT_IMPORTANT = 'somewhat_important',
+    NOT_IMPORTANT = 'not_important',
+    STILL_FIGURING = 'still_figuring'
+}

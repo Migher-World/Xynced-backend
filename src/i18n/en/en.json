@@ -173,5 +173,12 @@
     "high_school": "High school",
     "skill_certification": "Skill certification",
     "no_diploma": "No diploma"
+  },
+  "financial_view": {
+    "very_important": "Very important, I prioritize financial stability",
+    "important": "⁠Important, but I'm open to different approaches",
+    "somewhat_important": "⁠Somewhat important, I manage as best as I can",
+    "not_important": "Not very important, I take risks with money",
+    "still_figuring": "I'm still figuring it out"
   }
 }
