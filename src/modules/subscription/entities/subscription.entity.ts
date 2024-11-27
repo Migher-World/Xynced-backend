@@ -62,23 +62,23 @@ const frenchPlans = [
       "description": "Ce plan vous permet de faire vos premiers pas vers la recherche de votre âme sœur.",
       "amount": 0,
       "duration": 30,
-      "status": "active",
+      "status": PlanStatusEnum.ACTIVE,
       "features": ["messages_illimités"]
     },
     {
       "name": "Xynced Guided",
       "description": "Ce plan offre une expérience de matchmaking personnalisée.",
-      "amount": 35,
-      "duration": 30,
-      "status": "active",
+      "amount": 350,
+      "duration": 90,
+      "status": PlanStatusEnum.ACTIVE,
       "features": ["messages_illimités", "correspondance_personnalisée", "correspondance_ai"]
     },
     {
       "name": "Xynced Elite",
       "description": "Ce plan propose un service de matchmaking premium et un mentorat en relations.",
-      "amount": 0,
-      "duration": 30,
-      "status": "active",
+      "amount": 650,
+      "duration": 90,
+      "status": PlanStatusEnum.INACTIVE,
       "features": ["messages_illimités", "correspondance_personnalisée", "filtres_avancés", "correspondance_ai"]
     }
   ];
