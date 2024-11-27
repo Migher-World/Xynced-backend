@@ -28,6 +28,11 @@ export class SubscriptionController {
     ));
   }
 
+  @Get('/verify/:subscription_id')
+  async verifySubscription(@CurrentUser() user: User, @Query('subscription_id') subId: string) {
+    return resolveResponse(this.subscriptionService.verifySubscription(subId, user));
+  }
+
   // @Post('/webhook')
   // @Public()
   // async handleWebhook(@Body() payload: any) {

@@ -26,16 +26,20 @@ export class SubscriptionService extends BasicService<Subscription> {
   }
 
   async getUserSubscription(user: User) {
-    const sub = await this.subscriptionRepository.findOne({ where: { userId: user.id, status: SubscriptionStatusEnum.ACTIVE } });
+    const sub = await this.subscriptionRepository.findOne({
+      where: { userId: user.id, status: SubscriptionStatusEnum.ACTIVE },
+    });
     if (!sub) {
-        throw new BadRequestException('User has no active subscription');
+      throw new BadRequestException('User has no active subscription');
     }
     return sub;
   }
 
   async createSubscription(subscription: CreateSubscriptionDto, user: User) {
     // check if user has active subscription
-    const activeSubscription = await this.subscriptionRepository.findOne({ where: { userId: user.id, status: SubscriptionStatusEnum.ACTIVE } });
+    const activeSubscription = await this.subscriptionRepository.findOne({
+      where: { userId: user.id, status: SubscriptionStatusEnum.ACTIVE },
+    });
     if (activeSubscription) {
       return activeSubscription;
     }
@@ -46,16 +50,6 @@ export class SubscriptionService extends BasicService<Subscription> {
     //   (product) => product.name.toLowerCase() === subscription.plan.toLocaleLowerCase(),
     // );
     // const price = product.default_price as Stripe.Price;
-    // if (price.unit_amount == 0) {
-    //   const subscription = this.subscriptionRepository.create({
-    //     userId: user.id,
-    //     plan: plans.find((plan) => plan.amount === 0),
-    //     status: SubscriptionStatusEnum.ACTIVE,
-    //     startDate: new Date(),
-    //     endDate: new Date(new Date().setDate(new Date().getDate() + 30)),
-    //   });
-    //   return this.subscriptionRepository.save(subscription);
-    // }
     // const session = await this.stripeService.createCheckoutSession(
     //   price.id,
     //   customer.id,
@@ -64,23 +58,57 @@ export class SubscriptionService extends BasicService<Subscription> {
     // );
     // return session.url;
 
-    const plans = await this.paypalService.getPlans();
-    console.log({ plans });
-    const plan = plans.find((p) => p.name.toLowerCase() === subscription.plan.toLowerCase());
+    // const plans = await this.paypalService.getPlans();
+    // console.log({ plans });
+    const plan = plans.find((p) => p.id === subscription.plan);
     if (!plan) {
       throw new BadRequestException('Invalid plan');
     }
-    const subscriptionPlan: any = await this.paypalService.createSubscription(plan.id);
-    const subscriptionData = {
-      userId: user.id,
-      plan: plan,
-      amount: plan.amount,
-      paypalSubscriptionId: subscriptionPlan.id,
-      status: SubscriptionStatusEnum.ACTIVE,
-      startDate: new Date(),
-      endDate: new Date(new Date().setDate(new Date().getDate() + plan.duration)),
+    if (plan.amount == 0) {
+      const subscription = this.subscriptionRepository.create({
+        userId: user.id,
+        plan: plans.find((plan) => plan.amount === 0),
+        status: SubscriptionStatusEnum.ACTIVE,
+        startDate: new Date(),
+        endDate: new Date(new Date().setDate(new Date().getDate() + 30)),
+      });
+      return this.subscriptionRepository.save(subscription);
+    }
+    const subscriptionPlan: any = await this.paypalService.createSubscription(
+      plan.id,
+      subscription.successUrl,
+      subscription.cancelUrl,
+    );
+    console.log({ subscriptionPlan });
+    // const subscriptionData = {
+    //   userId: user.id,
+    //   plan: plan,
+    //   amount: plan.amount,
+    //   paypalSubscriptionId: subscriptionPlan.id,
+    //   status: SubscriptionStatusEnum.ACTIVE,
+    //   startDate: new Date(),
+    //   endDate: new Date(new Date().setDate(new Date().getDate() + plan.duration)),
+    // };
+    return {
+      checkoutUrl: subscriptionPlan.links[0].href,
     };
-    return {subscriptionPlan, subscriptionData};
+  }
+
+  async verifySubscription(sub_id: string, user: User) {
+    const sub = await this.paypalService.getSubscription(sub_id);
+    console.log({ sub });
+
+    const subscription = this.subscriptionRepository.create({
+      userId: user.id,
+      plan: plans.find((p) => p.id === sub.plan_id),
+      amount: parseFloat(sub.billing_info.last_payment.amount.value),
+      paypalSubscriptionId: sub.id,
+      status: SubscriptionStatusEnum.ACTIVE,
+      startDate: new Date(sub.start_time),
+      endDate: new Date(sub.billing_info.next_billing_time),
+    });
+
+    return this.subscriptionRepository.save(subscription);
   }
 
   async handleWebhook(payload: Stripe.Event) {
@@ -88,7 +116,7 @@ export class SubscriptionService extends BasicService<Subscription> {
     console.log({ event: JSON.stringify(event) });
     switch (event.type) {
       case 'checkout.session.completed':
-        // return this.handleCheckoutSessionCompletedWebhook(event);
+      // return this.handleCheckoutSessionCompletedWebhook(event);
       //   case 'payment_intent.succeeded':
       //     return this.handlePaymentIntentWebhook(event);
       case 'subscription_schedule.updated':
@@ -170,28 +198,31 @@ export class SubscriptionService extends BasicService<Subscription> {
 
     // calculate revenue trends, the graph should show the revenue trend for the previous 12 months
     //  it shoud return the month name and the revenue for that month
-    const revenueTrends = activeSubscriptions.reduce((acc, sub) => {
-      const month = sub.startDate.toLocaleString('default', { month: 'long' });
-      if (acc[month]) {
-        acc[month] += sub.amount;
-      } else {
-        acc[month] = sub.amount;
-      }
-      return acc;
-    }, {
-      January: 0,
-      February: 0,
-      March: 0,
-      April: 0,
-      May: 0,
-      June: 0,
-      July: 0,
-      August: 0,
-      September: 0,
-      October: 0,
-      November: 0,
-      December: 0,
-    });
+    const revenueTrends = activeSubscriptions.reduce(
+      (acc, sub) => {
+        const month = sub.startDate.toLocaleString('default', { month: 'long' });
+        if (acc[month]) {
+          acc[month] += sub.amount;
+        } else {
+          acc[month] = sub.amount;
+        }
+        return acc;
+      },
+      {
+        January: 0,
+        February: 0,
+        March: 0,
+        April: 0,
+        May: 0,
+        June: 0,
+        July: 0,
+        August: 0,
+        September: 0,
+        October: 0,
+        November: 0,
+        December: 0,
+      },
+    );
 
     // calculate churn rate
     // churn rate is the percentage of customers who have canceled their subscription in a given period
@@ -200,7 +231,6 @@ export class SubscriptionService extends BasicService<Subscription> {
       (sub) => sub.startDate > new Date(new Date().setMonth(new Date().getMonth() - 6)),
     );
     const lastSixMonthsChurnRate = ((subscriptions.length - lastSixMonthsChurn.length) / subscriptions.length) * 100;
-
 
     return {
       totalSubscriptions: subscriptions.length,

@@ -1,159 +1,38 @@
-// import { BadRequestException, Injectable } from '@nestjs/common';
-// import * as paypal from '@paypal/checkout-server-sdk';
-
-// @Injectable()
-// export class PaypalService {
-//   private client: paypal.core.PayPalHttpClient;
-
-//   constructor() {
-//     const environment = new paypal.core.SandboxEnvironment(
-//       process.env.PAYPAL_CLIENT_ID,
-//       process.env.PAYPAL_CLIENT_SECRET,
-//     );
-//     this.client = new paypal.core.PayPalHttpClient(environment);
-//   }
-
-//   async createSubscription(planId: string): Promise<any> {
-//     const request = new paypal.subscriptions.SubscriptionCreateRequest();
-//     request.requestBody({
-//       plan_id: planId,
-//       application_context: {
-//         return_url: 'https://your-app-url.com/success',
-//         cancel_url: 'https://your-app-url.com/cancel',
-//       },
-//     });
-
-//     try {
-//       const response = await this.client.execute(request);
-//       return response.result;
-//     } catch (error) {
-//       throw new BadRequestException(`PayPal subscription creation failed: ${error.message}`);
-//     }
-//   }
-
-//   async captureSubscription(subscriptionId: string): Promise<any> {
-//     const request = new paypal.subscriptions.SubscriptionCaptureRequest(subscriptionId);
-//     try {
-//       const response = await this.client.execute(request);
-//       return response.result;
-//     } catch (error) {
-//       throw new BadRequestException(`PayPal subscription capture failed: ${error.message}`);
-//     }
-//   }
-
-//   async getPlans(): Promise<any> {
-//     console.log(Object.keys(paypal));
-//     const request = new paypal.billingPlans.BillingPlanListRequest();
-//     try {
-//       const response = await this.client.execute(request);
-//       return response.result;
-//     } catch (error) {
-//       throw new BadRequestException(`PayPal get plans failed: ${error.message}`);
-//     }
-//   }
-// }
-
-
-import { Injectable } from '@nestjs/common';
-import * as paypal from 'paypal-rest-sdk';
+import { Injectable } from "@nestjs/common";
+import { RequestController } from "../../core";
+import { User } from "../../../modules/users/entities/user.entity";
 
 @Injectable()
 export class PaypalService {
-  constructor() {
-    paypal.configure({
-      mode: 'sandbox', // Change to 'live' for production
-      client_id: process.env.PAYPAL_CLIENT_ID,
-      client_secret: process.env.PAYPAL_CLIENT_SECRET,
-    });
-  }
+    auth: string;
+    constructor(private requestController: RequestController) {
+        this.auth = `Basic ${Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString('base64')}`;
+      }
 
-  async createSubscription(planId: string) {
-    const billingPlanAttributes = {
-      name: 'Xynced Subscription Plan',
-      description: 'Monthly Subscription for Xynced',
-      type: 'INFINITE',
-      payment_definitions: [
-        {
-          name: 'Monthly Payment',
-          type: 'REGULAR',
-          frequency: 'MONTH',
-          frequency_interval: '1',
-          amount: {
-            currency: 'USD',
-            value: '35.00', // Adjust based on the selected plan
-          },
-          cycles: '0',
-        },
-      ],
-      merchant_preferences: {
-        auto_bill_amount: 'YES',
-        initial_fail_amount_action: 'CONTINUE',
-        return_url: 'https://your-app-url.com/success',
-        cancel_url: 'https://your-app-url.com/cancel',
-      },
-    };
-
-    try {
-      const plan: any = await new Promise((resolve, reject) =>
-        paypal.billingPlan.create(billingPlanAttributes, (error, plan) => {
-          if (error) reject(error);
-          else resolve(plan);
-        })
-      );
-
-      const updatedPlan = await new Promise((resolve, reject) =>
-        paypal.billingPlan.update(
-          plan.id,
-          [{ op: 'replace', path: '/', value: { state: 'ACTIVE' } }],
-          (error, response) => {
-            if (error) reject(error);
-            else resolve(response);
-          }
-        )
-      );
-
-      return updatedPlan;
-    } catch (error) {
-      throw new Error(`PayPal subscription creation failed: ${error.message}`);
+    async createSubscription(planId: string, successUrl: string, cancelUrl: string) {
+        const response = await this.requestController.post('https://api-m.sandbox.paypal.com/v1/billing/subscriptions', {}, {
+            plan_id: planId,
+            application_context: {
+                user_action: 'SUBSCRIBE_NOW',
+                return_url: successUrl,
+                cancel_url: cancelUrl,
+            },
+        }, {
+            headers: {
+                Authorization: this.auth,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response;
     }
-  }
 
-  async createBillingAgreement(planId: string) {
-    const billingAgreementAttributes = {
-      name: 'Xynced Subscription Agreement',
-      description: 'Agreement for Xynced monthly subscription',
-      start_date: new Date(Date.now() + 60 * 1000).toISOString(), // Start 1 minute from now
-      plan: { id: planId },
-      payer: { payment_method: 'paypal' },
-    };
-
-    try {
-      const agreement = await new Promise((resolve, reject) =>
-        paypal.billingAgreement.create(billingAgreementAttributes, (error, agreement) => {
-          if (error) reject(error);
-          else resolve(agreement);
-        })
-      );
-
-      return agreement;
-    } catch (error) {
-      throw new Error(`PayPal billing agreement creation failed: ${error.message}`);
+    async getSubscription(subscriptionId: string) {
+        const response = await this.requestController.get<any>(`https://api-m.sandbox.paypal.com/v1/billing/subscriptions/${subscriptionId}`, {}, {
+            headers: {
+                Authorization: this.auth,
+                'Content-Type': 'application/json',
+            },
+        });
+        return response;
     }
-  }
-
-  async getPlans() {
-    try {
-      const plans: any = await new Promise((resolve, reject) =>
-        paypal.billingPlan.list({ status: 'ACTIVE' }, (error, plans) => {
-          if (error) reject(error);
-          else resolve(plans);
-        })
-      );
-
-      return plans;
-    } catch (error) {
-      throw new Error(`PayPal get plans failed: ${error.message}`);
-    }
-  }
 }
-

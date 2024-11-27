@@ -38,7 +38,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof RentifyError) {
       const rentifyResponse = exception.details?.response as any;
       errorFormat.code = exception.details?.status || status;
-      console.log('error is', rentifyResponse);
+      console.log('error is', rentifyResponse.data);
       errorFormat.message = rentifyResponse?.data.message || rentifyResponse?.data.detail || exception.message;
       errorFormat.error = exception.constructor.name;
       return response.status(errorFormat.code).json(errorFormat);
