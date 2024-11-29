@@ -58,6 +58,7 @@ export const plans = [
 
 const frenchPlans = [
     {
+      "id": 'free-plan',
       "name": "Xynced Starter",
       "description": "Ce plan vous permet de faire vos premiers pas vers la recherche de votre âme sœur.",
       "amount": 0,
@@ -66,6 +67,7 @@ const frenchPlans = [
       "features": ["messages_illimités"]
     },
     {
+      "id": 'P-5DP551195H644460BM5DPRRA',
       "name": "Xynced Guided",
       "description": "Ce plan offre une expérience de matchmaking personnalisée.",
       "amount": 350,
@@ -74,6 +76,7 @@ const frenchPlans = [
       "features": ["messages_illimités", "correspondance_personnalisée", "correspondance_ai"]
     },
     {
+      "id": 'P-inactive-plan',
       "name": "Xynced Elite",
       "description": "Ce plan propose un service de matchmaking premium et un mentorat en relations.",
       "amount": 650,
