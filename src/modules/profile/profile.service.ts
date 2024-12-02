@@ -19,6 +19,7 @@ import {
   LifestyleEnum,
   LocationEnum,
   PersonalityTraitEnum,
+  ProfessionEnum,
   RelationshipGoalsEnum,
   RelationshipStatusEnum,
   ResidenceStatusEnum,
@@ -87,6 +88,7 @@ export class ProfileService extends BasicService<Profile> {
       education: await this.getEnumValuesWithTranslations(EducationalBackgroundEnum, 'education', lang),
       financialViews: await this.getEnumValuesWithTranslations(FinancialViewEnum, 'financial_view', lang),
       locationPreference: await this.getEnumValuesWithTranslations(LocationEnum, 'location', lang),
+      profession: await this.getEnumValuesWithTranslations(ProfessionEnum, 'profession', lang),
     };
   }
 
