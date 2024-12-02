@@ -180,5 +180,16 @@
     "somewhat_important": "⁠Somewhat important, I manage as best as I can",
     "not_important": "Not very important, I take risks with money",
     "still_figuring": "I'm still figuring it out"
+  },
+  "location": {
+    "australia": "Australia",
+    "canada": "Canada",
+    "france": "France",
+    "germany": "Germany",
+    "italy": "Italy",
+    "new_zealand": "New Zealand",
+    "spain": "Spain",
+    "united_kingdom": "United Kingdom",
+    "united_states": "United States"
   }
 }

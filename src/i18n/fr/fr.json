@@ -179,5 +179,16 @@
     "somewhat_important": "Assez important, je gère du mieux que je peux",
     "not_important": "Pas très important, je prends des risques avec l'argent",
     "still_figuring": "⁠Je suis encore en train de réfléchir à ce sujet"
+  },
+  "location": {
+    "australia": "Australie",
+    "canada": "Canada",
+    "france": "France",
+    "germany": "Allemagne",
+    "italy": "Italie",
+    "new_zealand": "Nouvelle-Zélande",
+    "spain": "Espagne",
+    "united_kingdom": "Royaume-Uni",
+    "united_states": "États-Unis"
   }
 }

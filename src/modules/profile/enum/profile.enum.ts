@@ -203,3 +203,15 @@ export enum FinancialViewEnum {
     NOT_IMPORTANT = 'not_important',
     STILL_FIGURING = 'still_figuring'
 }
+
+export enum LocationEnum {
+    AUSTRALIA = 'Australia',
+    CANADA = 'Canada',
+    FRANCE = 'France',
+    GERMANY = 'Germany',
+    ITALY = 'Italy',
+    NEW_ZEALAND = 'new_zealand',
+    SPAIN = 'Spain',
+    UNITED_KINGDOM = 'United_Kingdom',
+    UNITED_STATES = 'United_States',
+}
