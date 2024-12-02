@@ -17,6 +17,7 @@ import {
   InterestEnum,
   LanguagesEnum,
   LifestyleEnum,
+  LocationEnum,
   PersonalityTraitEnum,
   RelationshipGoalsEnum,
   RelationshipStatusEnum,
@@ -85,7 +86,7 @@ export class ProfileService extends BasicService<Profile> {
       languages: await this.getEnumValuesWithTranslations(LanguagesEnum, 'languages', lang),
       education: await this.getEnumValuesWithTranslations(EducationalBackgroundEnum, 'education', lang),
       financialViews: await this.getEnumValuesWithTranslations(FinancialViewEnum, 'financial_view', lang),
-      locationPreference: await this.getEnumValuesWithTranslations(FinancialViewEnum, 'location', lang),
+      locationPreference: await this.getEnumValuesWithTranslations(LocationEnum, 'location', lang),
     };
   }
 
