@@ -93,12 +93,15 @@ export class ProfileService extends BasicService<Profile> {
   }
 
   private async getEnumValuesWithTranslations(enumType: any, key: string, lang: string) {
-    return Promise.all(
+    const data = await Promise.all(
       Object.values(enumType).map(async (value: string) => ({
         value: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
         label: this.i18n.t(`${lang}.${key}.${value.toLowerCase()}`, { lang }),
       })),
     );
+
+    // make data of each enum type to be sorted by label
+    return data.sort((a, b) => a.label.localeCompare(b.label));
   }
 
   async getStage(userId: string) {
