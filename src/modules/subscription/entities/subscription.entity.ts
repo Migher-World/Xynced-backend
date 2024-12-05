@@ -35,7 +35,7 @@ export const plans = [
     id: 'P-5DP551195H644460BM5DPRRA',
     name: 'Xynced Guided',
     description: 'This plan provides a personalized matchmaking experience.',
-    amount: 350,
+    amount: 150,
     duration: 90,
     status: PlanStatusEnum.ACTIVE,
     features: [PlanFeatureEnum.UNLIMITED_MESSAGES, PlanFeatureEnum.PERSONALIZED_MATCH, PlanFeatureEnum.AI_MATCHING],
@@ -44,7 +44,7 @@ export const plans = [
     id: 'P-inactive-plan',
     name: 'Xynced Elite',
     description: 'This plan offers a premium matchmaking service and relationship mentorship.',
-    amount: 650,
+    amount: 350,
     duration: 90,
     status: PlanStatusEnum.INACTIVE,
     features: [
@@ -70,7 +70,7 @@ const frenchPlans = [
       "id": 'P-5DP551195H644460BM5DPRRA',
       "name": "Xynced Guided",
       "description": "Ce plan offre une expérience de matchmaking personnalisée.",
-      "amount": 350,
+      "amount": 150,
       "duration": 90,
       "status": PlanStatusEnum.ACTIVE,
       "features": ["messages_illimités", "correspondance_personnalisée", "correspondance_ai"]
@@ -79,7 +79,7 @@ const frenchPlans = [
       "id": 'P-inactive-plan',
       "name": "Xynced Elite",
       "description": "Ce plan propose un service de matchmaking premium et un mentorat en relations.",
-      "amount": 650,
+      "amount": 350,
       "duration": 90,
       "status": PlanStatusEnum.INACTIVE,
       "features": ["messages_illimités", "correspondance_personnalisée", "filtres_avancés", "correspondance_ai"]

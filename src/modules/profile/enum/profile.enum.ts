@@ -134,6 +134,7 @@ export enum LifestyleEnum {
     SKIN_CARE = 'skin_care',
     ENVIROMENTAL_CONSCIOUSNESS = 'environmental_consciousness',
     COMMUNITY_INVOLVEMENT = 'community_involvement',
+    NO_ALCOHOL = 'no_alcohol',
 }
 
 export enum RelationshipGoalsEnum {
