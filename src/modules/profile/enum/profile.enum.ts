@@ -195,7 +195,7 @@ export enum LanguagesEnum {
     German = "German",
     Greek = "Greek",
     Hausa = "Hausa",
-    Hebrew = "Hebrew",
+    Hebrew = "Hebrew",  
     Hindi = "Hindi",
     Hungarian = "Hungarian",
     Igbo = "Igbo",
