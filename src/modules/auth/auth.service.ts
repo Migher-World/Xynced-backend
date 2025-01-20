@@ -51,7 +51,7 @@ export class AuthService {
     const createEmailDto: CreateEmailDto = {
       subject: 'Confirm OTP',
       template: 'otp',
-      senderEmail: 'Xynced Info <info@lendhive.app>',
+      senderEmail: 'Xynced Info <webmaster@xynced.com>',
       metaData: {
         code: otp,
       },

@@ -14,6 +14,7 @@ const env = {
   emailHost: envVar.get('EMAIL_HOST').required().asString(),
   emailUser: envVar.get('EMAIL_USERNAME').required().asString(),
   emailPassword: envVar.get('EMAIL_PASSWORD').required().asString(),
+  emailRefreshToken: envVar.get('EMAIL_REFRESH_TOKEN').required().asString(),
   docsPassword: envVar.get('DOCS_PASSWORD').required().asString(),
   redisUrl: envVar.get('REDIS_URL').required().asString(),
   mailgunApiKey: envVar.get('MAILGUN_API_KEY').asString(),

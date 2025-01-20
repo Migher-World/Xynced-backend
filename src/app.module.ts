@@ -31,14 +31,11 @@ const { google } = require('googleapis');
 const oauth2Client = new google.auth.OAuth2(
   env.googleapis.clientId,
   env.googleapis.clientSecret,
-  'http://localhost'
+  'https://developers.google.com/oauthplayground'
 );
 
-
-const refreshToken = "1//03bwqTfsWUpsuCgYIARAAGAMSNwF-L9Irz_aMFm3Gvmsd16wR68r2je4qjz5IZLr4zd1NQJ9Ka_lpzPgw-tQ31z643VpulHJy2g0";
-
 oauth2Client.setCredentials({
-  refresh_token: refreshToken
+  refresh_token: env.emailRefreshToken
 });
 
 
@@ -52,31 +49,22 @@ oauth2Client.setCredentials({
       useFactory: async () => {
         const accessToken = await oauth2Client.getAccessToken();
         
-        console.log(accessToken.token);
-        
         return {
-          // transport: {
-          //   // host: process.env.EMAIL_HOST,
-          //   // secure: true,
-          //   // port: 465,
-          //   service: 'gmail',
-          //   auth: {
-          //     type: 'OAuth2',
-          //     clientId: env.googleapis.clientId,
-          //     clientSecret: env.googleapis.clientId,
-          //     refreshToken: refreshToken,
-          //     accessToken: accessToken.token,
-          //     user: env.emailUser,
-          //     // pass: env.emailHost,
-          //   },
-          // },
           transport: {
-            host: env.emailHost,
-            secure: true,
+            service: 'gmail',
+            scope: 'https://mail.google.com',
             auth: {
+              type: 'OAuth2',
+              clientId: env.googleapis.clientId,
+              clientSecret: env.googleapis.clientId,
+              refreshToken: accessToken.res.data.refresh_token,
+              accessToken: accessToken.token,
               user: env.emailUser,
-              pass: env.emailPassword,
+              // pass: env.emailPassword,
             },
+            tls: {
+              rejectUnauthorized: false
+            }            
           },
           template: {
             dir: __dirname + '/templates',

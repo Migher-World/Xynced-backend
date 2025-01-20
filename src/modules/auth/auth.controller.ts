@@ -41,6 +41,7 @@ export class AuthController {
   }
 
   @Post('send-otp')
+  @Public()
   async sendOtp(@Body() dto: GenerateOTPDto) {
     return resolveResponse(this.authService.sendOtp(dto.identifier));
   }
